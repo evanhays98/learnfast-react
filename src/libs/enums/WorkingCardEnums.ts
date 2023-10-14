@@ -1,0 +1,7 @@
+export enum WorkingCardHistoryEnums {
+  ADD_ONE_POINT = 'ADD_ONE_POINT',
+  MARK_AS_KNOWN = 'MARK_AS_KNOWN',
+  MISS_ANSWER = 'MISS_ANSWER',
+  RESET_CARD = 'RESET_CARD',
+  FINISH_CARD = 'FINISH_CARD',
+}
