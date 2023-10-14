@@ -3,7 +3,7 @@ import { createUseStyles } from 'react-jss';
 import { Theme, theme } from 'src/libs/theme';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useChapter } from '../../libs/api/src/chapter';
-import { useWorkingCards } from '../../libs/api/src';
+import { useMe, useWorkingCards } from '../../libs/api/src';
 import { Button, CenteredLoader, Icon } from '../../libs/core';
 import { WorkCard } from './component/WorkCard';
 
@@ -60,6 +60,7 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
 export const Work = () => {
   const classes = useStyles({ theme });
   const { id } = useParams();
+  const { data: me, isLoading } = useMe();
   const navigate = useNavigate();
   const { data: chapter, isLoading: chapterLoading } = useChapter(id);
   const { data: workingCards, isLoading: workingCardsLoading, refetch: resetWorkingCards } = useWorkingCards(id);
@@ -96,6 +97,14 @@ export const Work = () => {
       </div>
       <div className={classes.errorContainer}>Working cards not found</div>
     </div>;
+  }
+
+  if (isLoading) {
+    return <CenteredLoader />;
+  }
+
+  if (!me) {
+    navigate('/login');
   }
 
   const onFinish = async () => {

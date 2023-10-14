@@ -7,11 +7,12 @@ import { Icon, Icons } from '../Icons';
 
 const useStyles = createUseStyles<string, { line: boolean, bgColor: Colors, color: Colors }, any>((theme: Theme) => ({
   blockColor: props => ({
-    background: theme.colors[props.bgColor],
+    background: props.line ? theme.colors.transparent : theme.colors[props.bgColor],
     minWidth: !props.line && theme.marginBase * 10,
     borderRadius: theme.borderRadius.std,
     ...theme.fonts.label,
-    color: theme.colors[props.color],
+    color: props.line ? theme.colors.lightBeige : theme.colors[props.color],
+    textDecoration: props.line ? 'underline' : 'none',
     fontWeight: 'bold',
     display: 'flex',
     border: 0,

@@ -9,6 +9,7 @@ import Input from '../../libs/core/Input/Input';
 import * as Yup from 'yup';
 import { useChapters, useCreateChapter } from '../../libs/api/src/chapter';
 import { useNavigate } from 'react-router-dom';
+import { useMe } from '../../libs/api/src';
 
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
@@ -63,6 +64,7 @@ const validationSchema = Yup.object().shape({
 export const Home = () => {
   const classes = useStyles({ theme });
   const { mutateAsync: createChapter } = useCreateChapter();
+  const { data: me } = useMe();
   const { data: chapters } = useChapters();
   const navigate = useNavigate();
   const [isOpened, setIsOpened] = React.useState(false);

@@ -1,7 +1,7 @@
 import Axios, { AxiosRequestConfig } from 'axios';
 import qs from 'qs';
 
-export const API_URL = 'http://localhost:3003';
+export const API_URL = 'https://clear-waistcoat-colt.cyclic.app';
 
 export const fetchWithAuth = async <T = any>(
   options: AxiosRequestConfig,

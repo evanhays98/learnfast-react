@@ -1,10 +1,10 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
 import { theme, Theme } from '../../libs/theme';
-import { Button, PageTitle } from '../../libs/core';
+import { Button, CenteredLoader, PageTitle } from '../../libs/core';
 import Input from '../../libs/core/Input/Input';
 import { Form, Formik } from 'formik';
-import { useLogin } from '../../libs/api/src';
+import { useLogin, useMe } from '../../libs/api/src';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -33,6 +33,7 @@ interface Values {
 export const Login = () => {
   const classes = useStyles({ theme });
   const { mutateAsync: login } = useLogin();
+  const { data: me, isLoading } = useMe(true);
   const navigate = useNavigate();
 
 
@@ -45,6 +46,15 @@ export const Login = () => {
     }
   };
 
+  if (isLoading) {
+    return <CenteredLoader />;
+  }
+
+  if (me) {
+    navigate('/home');
+  }
+
+
   return (
     <div className={classes.page}>
       <PageTitle text={'Sign in'} />
@@ -53,10 +63,13 @@ export const Login = () => {
           <div className={classes.container}>
             <Input title='Mail or Pseudo' name='identifier' />
             <Input title='Password' name='password' type='password' eye />
-            <Button text='Connect' type='submit' full />
+            <Button text='Connect' type='submit' full={true} />
           </div>
         </Form>
       </Formik>
+      <Button text="Don't have an account" line={true} onClick={() => {
+        navigate('/register');
+      }} />
     </div>
   );
 };
