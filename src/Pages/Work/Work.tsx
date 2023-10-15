@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Theme, theme } from 'src/libs/theme';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useChapter } from '../../libs/api/src/chapter';
+import { useChapter } from '../../libs/api/src';
 import { useWorkingCards } from '../../libs/api/src';
 import { Button, CenteredLoader, Icon } from '../../libs/core';
 import { WorkCard } from './component/WorkCard';
+import { Form, Formik } from 'formik';
+import Input from '../../libs/core/Input/Input';
 
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
@@ -64,9 +66,6 @@ export const Work = () => {
   const { data: chapter, isLoading: chapterLoading } = useChapter(id);
   const { data: workingCards, isLoading: workingCardsLoading, refetch: resetWorkingCards } = useWorkingCards(id);
   const [number, setNumber] = React.useState(0);
-  useEffect(() => {
-    console.log('number', number);
-  }, [number]);
 
   if (chapterLoading || workingCardsLoading) {
     return <CenteredLoader />;
@@ -108,6 +107,7 @@ export const Work = () => {
   };
 
   return (
+
     <div className={classes.globalContainer}>
       <div className={classes.titleContainer}>
         <div className={classes.textTitleContainer}>

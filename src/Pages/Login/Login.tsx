@@ -54,11 +54,11 @@ export const Login = () => {
           <div className={classes.container}>
             <Input title='Mail or Pseudo' name='identifier' />
             <Input title='Password' name='password' type='password' eye />
-            <Button text='Connect' type='submit' full={true} />
+            <Button text='Connect' type='submit' full />
           </div>
         </Form>
       </Formik>
-      <Button text="Don't have an account" line={true} onClick={() => {
+      <Button text="Don't have an account" line onClick={() => {
         navigate('/register');
       }} />
     </div>

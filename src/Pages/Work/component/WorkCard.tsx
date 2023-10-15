@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { theme, Theme } from '../../../libs/theme';
 import { Button, Icon } from '../../../libs/core';
@@ -6,6 +6,7 @@ import classnames from 'classnames';
 import { useVerificationWorkingCard, useWorkingCard } from '../../../libs/api/src';
 import { WorkingCardHistoryEnums } from '../../../libs/enums';
 import { Points } from './Points';
+import { Form, Formik, FormikHelpers, useFormikContext } from 'formik';
 
 interface Props {
   workingCardId?: string;
@@ -97,11 +98,15 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   },
 }));
 
+interface Values {
+  answer: string;
+}
+
 export const WorkCard = ({ workingCardId, onFinish }: Props) => {
 
   const classes = useStyles({ theme });
+  const ref = useRef<HTMLInputElement | null>(null);
   const { data: workingCard } = useWorkingCard(workingCardId);
-  const [value, setValue] = useState('');
   const [reveal, setReveal] = useState(false);
   const [miss, setMiss] = useState(false);
   const fieldTranslation = workingCard?.card?.fieldTranslation;
@@ -122,8 +127,9 @@ export const WorkCard = ({ workingCardId, onFinish }: Props) => {
 
   }, [fieldTranslation]);
 
-  const onVerification = async (value: string) => {
-    const answerWorkingCard = await verificationWorkingCard({ answer: value });
+
+  const onVerification = async (values: Values, { resetForm }: FormikHelpers<Values>) => {
+    const answerWorkingCard = await verificationWorkingCard({ answer: values.answer });
     const lastHistory = answerWorkingCard.history[answerWorkingCard.history.length - 1];
     if (lastHistory === WorkingCardHistoryEnums.MISS_ANSWER) {
       setMiss(true);
@@ -134,51 +140,67 @@ export const WorkCard = ({ workingCardId, onFinish }: Props) => {
       setMiss(false);
       onFinish();
     }, 4000);
-    setValue('');
+    resetForm();
     return false;
+  };
+
+  useEffect(() => {
+    focusInput();
+  }, [ref, workingCard]);
+
+  const focusInput = () => {
+    if (ref.current) {
+      ref.current.focus();
+    }
   };
 
 
   return (
-    <div className={classes.contentSentence}>
-      {workingCard &&
-        <div className={classes.content}>
-          <Points workingCard={workingCard} />
-        </div>
-      }
-      <div className={classes.content1}>
-        {content.map((item, index) => {
-            if (item.hide) {
-              return (
-                <div className={classnames(classes.request, {
-                  [classes.requestReveal]: reveal,
-                })}>
-                  <div className={classnames(classes.hidContent, {
-                    [classes.hideContentError]: miss && reveal,
-                  })}>
-                    {item.sentence}
-                  </div>
-                  {!reveal &&
-                    <input className={classnames(classes.input, {
-                      [classes.revealInput]: reveal,
-                    })} type='text' value={value}
-                           onChange={(e) => {
-                             setValue(e.target.value);
-                           }} />
-                  }
-                </div>);
+    <div className={classes.contentSentence} >
+    <Formik initialValues={{ answer: '' }} onSubmit={onVerification}>
+      {({ values: { answer }, setFieldValue }) => (
+        <Form>
+            {workingCard &&
+              <div className={classes.content}>
+                <Points workingCard={workingCard} />
+              </div>
             }
-            return <p className={classes.text}>{item.sentence}</p>;
-          },
-        )}
-      </div>
-      <div className={classes.content2}>
-        <p className={classes.translation}>{fieldTranslation?.translation}</p>
-        <p className={classes.indication}>{fieldTranslation?.information}</p>
-      </div>
-      <div className={classes.buttonContainer}>
-        <Button text='dwa' icon={Icon.check} onClick={() => onVerification(value)} />
-      </div>
+            <div className={classes.content1}>
+              {content.map((item, index) => {
+                  if (item.hide) {
+                    return (
+                      <div className={classnames(classes.request, {
+                        [classes.requestReveal]: reveal,
+                      })}>
+                        <div className={classnames(classes.hidContent, {
+                          [classes.hideContentError]: miss && reveal,
+                        })}>
+                          {item.sentence}
+                        </div>
+                        {!reveal &&
+                          <input ref={ref} className={classnames(classes.input, {
+                            [classes.revealInput]: reveal,
+                          })} type='text' value={answer}
+                                 onChange={async (e) => {
+                                   await setFieldValue('answer', e.target.value);
+                                 }} />
+                        }
+                      </div>);
+                  }
+                  return <p className={classes.text}>{item.sentence}</p>;
+                },
+              )}
+            </div>
+            <div className={classes.content2}>
+              <p className={classes.translation}>{fieldTranslation?.translation}</p>
+              <p className={classes.indication}>{fieldTranslation?.information}</p>
+            </div>
+            <div className={classes.buttonContainer}>
+              <Button text='dwa' icon={Icon.check} type="submit" />
+            </div>
+        </Form>
+      )}
+    </Formik>
     </div>
   );
 };
