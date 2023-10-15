@@ -12,7 +12,8 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     borderRadius: theme.borderRadius.std,
   },
   active: {
-    background: theme.colors.orange,
+    background: `linear-gradient( -80deg, ${'#7E6CA1'} 0%, ${'#5C4565'} 100%)`,
+    boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.75)',
   },
   icon: {
     fontSize: theme.icon.large,

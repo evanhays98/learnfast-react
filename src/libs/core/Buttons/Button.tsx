@@ -7,7 +7,7 @@ import { Icon, Icons } from '../Icons';
 
 const useStyles = createUseStyles<string, { line: boolean, bgColor: Colors, color: Colors }, any>((theme: Theme) => ({
   blockColor: props => ({
-    background: props.line ? theme.colors.transparent : theme.colors[props.bgColor],
+    background: `${props.line ? theme.colors.transparent : theme.colors[props.bgColor]}`,
     minWidth: !props.line && theme.marginBase * 10,
     borderRadius: theme.borderRadius.std,
     ...theme.fonts.label,
@@ -35,6 +35,7 @@ const useStyles = createUseStyles<string, { line: boolean, bgColor: Colors, colo
 
 interface BaseButtonProps {
   className?: string;
+  test?: string;
   bgColor?: Colors; // Change to your Colors type
   color?: Colors; // Change to your Colors type
   iconColor?: string; // Change to your Colors type
@@ -60,7 +61,7 @@ interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
 type GenericButtonProps = ButtonProps | LinkProps | AProps;
 
 export const Button = (props: BaseButtonProps & GenericButtonProps) => {
-  const { full, line, icon, color, bgColor, square, ...rest } = props;
+  const { full, line, icon, color, bgColor, test, square, className, ...rest } = props;
   const classes = useStyles({
     line: line || false,
     theme,
@@ -80,11 +81,11 @@ export const Button = (props: BaseButtonProps & GenericButtonProps) => {
 
   return (
     <ButtonComp
-      className={classnames(classes.blockColor, {
+      className={classnames(classes.blockColor, className, {
         [classes.full]: full,
         [classes.line]: line,
         [classes.square]: square,
-      }, props.className)}
+      }, test)}
       {...rest}
     >
       {props.children}

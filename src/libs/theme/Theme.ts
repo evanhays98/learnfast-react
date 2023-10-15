@@ -37,14 +37,14 @@ const basicColors = {
 };
 */
 const basicColors = {
-  yellowGradient: `linear-gradient(180deg, ${'#61c0e7'} 0%, ${'#00BFFF'} 100%)`, // header background
-  darkGradient: `linear-gradient(200deg, ${'#203238'} 0%, ${'#141515'} 40%, ${'#000000'} 100%)`, // page background
+  yellowGradient: `linear-gradient(180deg, ${'#505471'} 0%, ${'#2F283DAA'} 80%, ${'#1D1B2F22'} 100%)`, // header background
+  darkGradient: `linear-gradient(200deg, ${'#29343E'} 0%, ${'#070C19'} 40%, ${'#0A042C'} 100%)`, // page background
   lightGray: '#e4ecec', // text color primary
-  lightBeige: '#87CEEB', // text color secondary
-  transparentYellow: '#87CEEB20', // background button color secondary
-  orange: '#0077be', // strong color text
-  transparentDarkGray: 'rgba(34,40,45,0.33)', // background container color primary
-  brownGradiant: `linear-gradient(180deg, ${'#017fcb'} 0%, ${'#00598d'} 100%)`, // background button color primary
+  lightBeige: '#FF82FE', // text color secondary
+  transparentYellow: 'rgba(135,175,235,0.13)', // background button color secondary
+  orange: '#F66550', // strong color text
+  transparentDarkGray: 'rgba(30,39,51,0.33)', // background container color primary
+  brownGradiant: `linear-gradient(180deg, ${'#FFC05F'} 0%, ${'#FF7E51'} 100%)`, // background button color primary
   transparent: '#FFFFFF00', // transparent
   black: '#000000', // black
   red: '#b93333', // red
@@ -113,7 +113,7 @@ export const theme = {
       lineHeight: 1.5,
     },
     h2: {
-      fontFamily: 'Kodchasan, sans-serif',
+      fontFamily: 'Consolas, sans-serif',
       color: basicColors.lightGray,
       fontWeight: 900,
       fontSize: 35,

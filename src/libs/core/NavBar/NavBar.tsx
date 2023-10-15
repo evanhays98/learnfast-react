@@ -20,6 +20,7 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
     zIndex: 100,
+    boxShadow: '0px -10px 30px -10px rgba(80, 84, 133, 0.8)',
   },
   pageContainer: {
     width: '100%',

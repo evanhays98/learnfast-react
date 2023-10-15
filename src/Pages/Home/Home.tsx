@@ -28,7 +28,9 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   },
   title: {
     ...theme.fonts.h2,
-    color: theme.colors.orange,
+    background: `-webkit-linear-gradient(100deg, ${'#a12206BB'} 0%, ${'#f37054BB'} 100%)`,
+    WebkitBackgroundClip: 'text',
+    color: 'transparent',
   },
   modalContainer: {
     ...theme.basicFlex,
@@ -48,6 +50,9 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   chapterDesc: {
     ...theme.fonts.caption,
   },
+  button: {
+    background: theme.colors.orange,
+  },
 }));
 
 interface Values {
@@ -62,6 +67,7 @@ const validationSchema = Yup.object().shape({
 
 
 export const Home = () => {
+  console.log(localStorage.getItem('userToken'));
   const classes = useStyles({ theme });
   const { data: me } = useMe();
   const { mutateAsync: createChapter } = useCreateChapter();
@@ -106,7 +112,7 @@ export const Home = () => {
             <div className={classes.modalContainer}>
               <Input title='title' name='title' />
               <Input title='description' name='description' />
-              <Button text='submit' type='submit' full={true} />
+              <Button test={classes.button} text='submit' type='submit' full />
             </div>
           </Form>
         </Formik>

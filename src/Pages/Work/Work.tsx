@@ -1,13 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { createUseStyles } from 'react-jss';
 import { Theme, theme } from 'src/libs/theme';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useChapter } from '../../libs/api/src';
-import { useWorkingCards } from '../../libs/api/src';
+import { useChapter, useWorkingCards } from '../../libs/api/src';
 import { Button, CenteredLoader, Icon } from '../../libs/core';
 import { WorkCard } from './component/WorkCard';
-import { Form, Formik } from 'formik';
-import Input from '../../libs/core/Input/Input';
 
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
@@ -55,6 +52,9 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     justifyContent: 'center',
     alignItems: 'center',
     flex: 1,
+  },
+  button: {
+    background: theme.colors.orange,
   },
 }));
 
@@ -114,7 +114,7 @@ export const Work = () => {
           <h1 className={classes.title}>{chapter.title}</h1>
           <p className={classes.description}>{chapter.description}</p>
         </div>
-        <Button icon={Icon.close} square={true} onClick={() => {
+        <Button className={classes.button} icon={Icon.close} square={true} onClick={() => {
           navigate('/home');
         }} />
       </div>
