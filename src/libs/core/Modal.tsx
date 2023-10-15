@@ -74,7 +74,7 @@ export const Modal = ({ children, isOpen, setIsOpen, title }: Props) => {
       <div className={classnames(classes.container, { [classes.animationContainer]: !isOpen })}
            ref={ref => ref && setHeight(ref.clientHeight)}>
         <div className={classes.headerContainer}>
-          <Button square onClick={() => {
+          <Button square={true} onClick={() => {
             setIsOpen(false);
           }}>
             <Icons icon={Icon.close} size={theme.icon.normal + 2}></Icons>

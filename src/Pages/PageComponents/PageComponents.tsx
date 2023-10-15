@@ -106,8 +106,8 @@ export const PageComponents = () => {
         <div className={classes.blockColorContainer}>
           <Button>hello</Button>
           <Button icon={Icon.profile} onClick={() => setIsOpened(true)}>hello</Button>
-          <Button full>hello</Button>
-          <Button full line bgColor='transparent' color={ColorsTest.orange}>Send again</Button>
+          <Button full={true}>hello</Button>
+          <Button full={true} line={true} bgColor='transparent' color={ColorsTest.orange}>Send again</Button>
         </div>
         <div className={classes.blockColorContainer}>
           <div className={classes.boxContainer}>

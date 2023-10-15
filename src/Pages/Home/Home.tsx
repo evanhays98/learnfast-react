@@ -63,8 +63,8 @@ const validationSchema = Yup.object().shape({
 
 export const Home = () => {
   const classes = useStyles({ theme });
-  const { mutateAsync: createChapter } = useCreateChapter();
   const { data: me } = useMe();
+  const { mutateAsync: createChapter } = useCreateChapter();
   const { data: chapters } = useChapters();
   const navigate = useNavigate();
   const [isOpened, setIsOpened] = React.useState(false);
@@ -81,7 +81,7 @@ export const Home = () => {
     <div className={classes.globalContainer}>
       <div className={classes.titleContainer}>
         <h1 className={classes.title}>Chapters</h1>
-        <Button square onClick={() => {
+        <Button square={true} onClick={() => {
           setIsOpened(true);
         }
         }>
@@ -92,7 +92,7 @@ export const Home = () => {
         <div key={chapter.id} className={classes.chapterContainer}>
           <h2 className={classes.chapterTitle}>{chapter.title}</h2>
           <p className={classes.chapterDesc}>{chapter.description}</p>
-          <Button text='Work on this chapter' full onClick={
+          <Button text='Work on this chapter' full={true} onClick={
             () => {
               navigate('/chapter/' + chapter.id);
             }
@@ -106,7 +106,7 @@ export const Home = () => {
             <div className={classes.modalContainer}>
               <Input title='title' name='title' />
               <Input title='description' name='description' />
-              <Button text='submit' type='submit' full />
+              <Button text='submit' type='submit' full={true} />
             </div>
           </Form>
         </Formik>

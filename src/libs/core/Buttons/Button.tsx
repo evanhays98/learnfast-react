@@ -2,7 +2,7 @@ import classnames from 'classnames';
 import React from 'react';
 import { createUseStyles } from 'react-jss';
 import { Colors, theme, Theme } from '../../theme';
-import { Link, LinkProps } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { Icon, Icons } from '../Icons';
 
 const useStyles = createUseStyles<string, { line: boolean, bgColor: Colors, color: Colors }, any>((theme: Theme) => ({
@@ -33,15 +33,15 @@ const useStyles = createUseStyles<string, { line: boolean, bgColor: Colors, colo
 }));
 
 
-interface Props {
+interface BaseButtonProps {
   className?: string;
-  bgColor?: Colors;
-  color?: Colors;
-  iconColor?: Colors;
+  bgColor?: Colors; // Change to your Colors type
+  color?: Colors; // Change to your Colors type
+  iconColor?: string; // Change to your Colors type
   text?: string;
   children?: React.ReactNode;
   full?: boolean;
-  icon?: Icon;
+  icon?: Icon; // Change to your Icon type
   line?: boolean;
   square?: boolean;
   sizeIcon?: number;
@@ -49,34 +49,47 @@ interface Props {
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
 
-interface AProps extends React.LinkHTMLAttributes<HTMLLinkElement> {
+interface AProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
   href: string;
 }
 
-export type GenericButtonProps = ButtonProps | LinkProps | AProps;
+interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
+  to: string;
+}
 
+type GenericButtonProps = ButtonProps | LinkProps | AProps;
 
-export const Button = (props: Props & GenericButtonProps) => {
+export const Button = (props: BaseButtonProps & GenericButtonProps) => {
+  const { full, line, icon, color, bgColor, square, ...rest } = props;
   const classes = useStyles({
-    line: props.line || false,
+    line: line || false,
     theme,
-    bgColor: props.bgColor || 'brownGradiant',
-    color: props.color || 'lightGray',
+    bgColor: bgColor || 'brownGradiant',
+    color: color || 'lightGray',
   });
+
   let ButtonComp: any = 'button';
+
   if ('to' in props) {
     ButtonComp = (lprops: any) => <Link to={props.to} {...lprops} />;
   }
+
   if ('href' in props) {
     ButtonComp = 'a';
   }
-  return <ButtonComp className={classnames(classes.blockColor, {
-    [classes.full]: props.full,
-    [classes.line]: props.line,
-    [classes.square]: props.square,
-  }, props.className)} {...props} >
-    {props.children}
-    {props.text && props.text}
-    {props.icon && <Icons icon={props.icon} size={16} />}
-  </ButtonComp>;
+
+  return (
+    <ButtonComp
+      className={classnames(classes.blockColor, {
+        [classes.full]: full,
+        [classes.line]: line,
+        [classes.square]: square,
+      }, props.className)}
+      {...rest}
+    >
+      {props.children}
+      {props.text && props.text}
+      {icon && <Icons icon={icon} size={16} />}
+    </ButtonComp>
+  );
 };

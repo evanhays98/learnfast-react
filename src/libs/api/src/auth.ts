@@ -11,7 +11,7 @@ export const useLogout = () => {
     await queryClient.invalidateQueries();
     queryClient.removeQueries();
     localStorage.removeItem('userToken');
-    window.location.replace('/login');
+    window.location.replace('/#/login');
   }, [queryClient]);
 
   return useMutation<void, AxiosError, void>(queryCreate(`/v2/auth/logout`), {
@@ -54,7 +54,7 @@ export const useLogin = () => {
     {
       onSuccess: (data) => {
         queryClient.setQueryData(['users', data.id], data);
-        queryClient.setQueryData(['auth', 'me'], data);
+        queryClient.setQueryData(['users', 'me'], data);
       },
     },
   );
@@ -67,7 +67,7 @@ export const useRegister = () => {
     {
       onSuccess: (data) => {
         queryClient.setQueryData(['users', data.id], data);
-        queryClient.setQueryData(['auth', 'me'], data);
+        queryClient.setQueryData(['users', 'me'], data);
       },
     },
   );

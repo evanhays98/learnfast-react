@@ -3,7 +3,7 @@ import { createUseStyles } from 'react-jss';
 import { Theme, theme } from 'src/libs/theme';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useChapter } from '../../libs/api/src/chapter';
-import { useMe, useWorkingCards } from '../../libs/api/src';
+import { useWorkingCards } from '../../libs/api/src';
 import { Button, CenteredLoader, Icon } from '../../libs/core';
 import { WorkCard } from './component/WorkCard';
 
@@ -60,7 +60,6 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
 export const Work = () => {
   const classes = useStyles({ theme });
   const { id } = useParams();
-  const { data: me, isLoading } = useMe();
   const navigate = useNavigate();
   const { data: chapter, isLoading: chapterLoading } = useChapter(id);
   const { data: workingCards, isLoading: workingCardsLoading, refetch: resetWorkingCards } = useWorkingCards(id);
@@ -76,7 +75,7 @@ export const Work = () => {
   if (!chapter) {
     return <div className={classes.globalContainer}>
       <div className={classes.titleContainer}>
-        <Button icon={Icon.close} square onClick={() => {
+        <Button icon={Icon.close} square={true} onClick={() => {
           navigate('/home');
         }} />
       </div>
@@ -91,7 +90,7 @@ export const Work = () => {
           <h1 className={classes.title}>{chapter.title}</h1>
           <p className={classes.description}>{chapter.description}</p>
         </div>
-        <Button icon={Icon.close} square onClick={() => {
+        <Button icon={Icon.close} square={true} onClick={() => {
           navigate('/home');
         }} />
       </div>
@@ -99,16 +98,7 @@ export const Work = () => {
     </div>;
   }
 
-  if (isLoading) {
-    return <CenteredLoader />;
-  }
-
-  if (!me) {
-    navigate('/login');
-  }
-
   const onFinish = async () => {
-    console.log('OnFinish');
     if (number === workingCards.length - 1) {
       await resetWorkingCards();
       setNumber(0);
@@ -124,7 +114,7 @@ export const Work = () => {
           <h1 className={classes.title}>{chapter.title}</h1>
           <p className={classes.description}>{chapter.description}</p>
         </div>
-        <Button icon={Icon.close} square onClick={() => {
+        <Button icon={Icon.close} square={true} onClick={() => {
           navigate('/home');
         }} />
       </div>

@@ -1,11 +1,11 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
 import { theme, Theme } from '../../libs/theme';
-import { Button, CenteredLoader, PageTitle } from '../../libs/core';
+import { Button, PageTitle } from '../../libs/core';
 import Input from '../../libs/core/Input/Input';
 import { Form, Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
-import { useMe, useRegister } from '../../libs/api/src';
+import { useRegister } from '../../libs/api/src';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   page: {
@@ -34,7 +34,6 @@ interface Values {
 export const Register = () => {
   const classes = useStyles({ theme });
   const { mutateAsync: register } = useRegister();
-  const { data: me, isLoading } = useMe(true);
   const navigate = useNavigate();
 
   const submit = async (values: Values) => {
@@ -45,15 +44,6 @@ export const Register = () => {
     });
     navigate('/home');
   };
-
-  if (isLoading) {
-    return <CenteredLoader />;
-  }
-
-  if (me) {
-    navigate('/home');
-  }
-
 
   return (
     <div className={classes.page}>
@@ -66,7 +56,7 @@ export const Register = () => {
             <Input title='Pseudo' name='pseudo' />
             <Input title='Password' name='password' type='password' eye />
             <Input title='Confirm Password' name='confirmPassword' type='password' eye />
-            <Button text='Join' type='submit' full />
+            <Button text='Join' type='submit' full={true} />
           </div>
         </Form>
       </Formik>

@@ -1,10 +1,10 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
 import { theme, Theme } from '../../libs/theme';
-import { Button, CenteredLoader, PageTitle } from '../../libs/core';
+import { Button, PageTitle } from '../../libs/core';
 import Input from '../../libs/core/Input/Input';
 import { Form, Formik } from 'formik';
-import { useLogin, useMe } from '../../libs/api/src';
+import { useLogin } from '../../libs/api/src';
 import { useNavigate } from 'react-router-dom';
 
 
@@ -33,7 +33,6 @@ interface Values {
 export const Login = () => {
   const classes = useStyles({ theme });
   const { mutateAsync: login } = useLogin();
-  const { data: me, isLoading } = useMe(true);
   const navigate = useNavigate();
 
 
@@ -45,14 +44,6 @@ export const Login = () => {
       throw e;
     }
   };
-
-  if (isLoading) {
-    return <CenteredLoader />;
-  }
-
-  if (me) {
-    navigate('/home');
-  }
 
 
   return (
