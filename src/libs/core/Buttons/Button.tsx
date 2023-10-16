@@ -11,7 +11,7 @@ const useStyles = createUseStyles<string, { line: boolean, bgColor: Colors, colo
     minWidth: !props.line && theme.marginBase * 10,
     borderRadius: theme.borderRadius.std,
     ...theme.fonts.label,
-    color: props.line ? theme.colors.lightBeige : theme.colors[props.color],
+    color: props.line ? theme.colors.lightGray : theme.colors[props.color],
     textDecoration: props.line ? 'underline' : 'none',
     fontWeight: 'bold',
     display: 'flex',
@@ -19,7 +19,7 @@ const useStyles = createUseStyles<string, { line: boolean, bgColor: Colors, colo
     alignItems: 'center',
     alignContent: 'center',
     justifyContent: 'center',
-    padding: !props.line ? theme.marginBase / 2 : [theme.marginBase / 4, theme.marginBase],
+    padding: !props.line ? theme.marginBase : [theme.marginBase / 4, theme.marginBase],
     gap: !props.line ? theme.marginBase * 2 : theme.marginBase,
   }),
   full: {
@@ -29,13 +29,13 @@ const useStyles = createUseStyles<string, { line: boolean, bgColor: Colors, colo
     width: theme.marginBase * 5,
     height: theme.marginBase * 5,
     minWidth: `${theme.marginBase * 5}px !important`,
+    padding: 0,
   },
 }));
 
 
 interface BaseButtonProps {
   className?: string;
-  test?: string;
   bgColor?: Colors; // Change to your Colors type
   color?: Colors; // Change to your Colors type
   iconColor?: string; // Change to your Colors type
@@ -61,7 +61,7 @@ interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
 type GenericButtonProps = ButtonProps | LinkProps | AProps;
 
 export const Button = (props: BaseButtonProps & GenericButtonProps) => {
-  const { full, line, icon, color, bgColor, test, square, className, ...rest } = props;
+  const { full, line, icon, color, bgColor, square, className, ...rest } = props;
   const classes = useStyles({
     line: line || false,
     theme,
@@ -81,16 +81,16 @@ export const Button = (props: BaseButtonProps & GenericButtonProps) => {
 
   return (
     <ButtonComp
-      className={classnames(classes.blockColor, className, {
+      className={classnames(classes.blockColor, {
         [classes.full]: full,
         [classes.line]: line,
         [classes.square]: square,
-      }, test)}
+      }, className)}
       {...rest}
     >
       {props.children}
       {props.text && props.text}
-      {icon && <Icons icon={icon} size={16} />}
+      {icon && <Icons icon={icon} size={square ? 24 : 20} />}
     </ButtonComp>
   );
 };

@@ -37,18 +37,18 @@ const basicColors = {
 };
 */
 const basicColors = {
-  yellowGradient: `linear-gradient(180deg, ${'#505471'} 0%, ${'#2F283DAA'} 80%, ${'#1D1B2F22'} 100%)`, // header background
+  yellowGradient: `linear-gradient(180deg, ${'#505471'} 0%, ${'#2F283DAA'} 80%, ${'#1D1B2F11'} 100%)`, // header background
   darkGradient: `linear-gradient(200deg, ${'#29343E'} 0%, ${'#070C19'} 40%, ${'#0A042C'} 100%)`, // page background
   lightGray: '#e4ecec', // text color primary
   lightBeige: '#FF82FE', // text color secondary
   transparentYellow: 'rgba(135,175,235,0.13)', // background button color secondary
-  orange: '#F66550', // strong color text
+  orange: '#FF7E51', // strong color text
   transparentDarkGray: 'rgba(30,39,51,0.33)', // background container color primary
   brownGradiant: `linear-gradient(180deg, ${'#FFC05F'} 0%, ${'#FF7E51'} 100%)`, // background button color primary
   transparent: '#FFFFFF00', // transparent
-  black: '#000000', // black
-  red: '#b93333', // red
-  green: '#3da23d', // green
+  black: '#0e0d10', // black
+  red: '#e75b92', // red
+  green: '#79d279', // green
 };
 
 /*const basicColors = {
@@ -106,63 +106,70 @@ export const theme = {
   },
   fonts: {
     h1: {
-      fontFamily: 'Kodchasan, sans-serif',
+      fontFamily: 'Montserrat, sans-serif',
       color: basicColors.lightGray,
       fontWeight: 900,
-      fontSize: 44,
+      fontSize: 30,
       lineHeight: 1.5,
     },
     h2: {
-      fontFamily: 'Consolas, sans-serif',
+      fontFamily: 'Montserrat, sans-serif',
       color: basicColors.lightGray,
       fontWeight: 900,
-      fontSize: 35,
+      fontSize: 25,
       lineHeight: 1.5,
     },
     h3: {
-      fontFamily: 'Kodchasan, sans-serif',
+      fontFamily: 'Montserrat, sans-serif',
       color: basicColors.lightGray,
       fontWeight: 900,
-      fontSize: 28,
-      lineHeight: 1.5,
-    },
-    h4: {
-      fontFamily: 'Kodchasan, sans-serif',
-      color: basicColors.lightGray,
-      fontWeight: 700,
       fontSize: 20,
       lineHeight: 1.5,
     },
+    h4: {
+      fontFamily: 'Montserrat, sans-serif',
+      color: basicColors.lightGray,
+      fontWeight: 700,
+      fontSize: 18,
+      lineHeight: 1.5,
+    },
     h5: {
-      fontFamily: 'Kodchasan, sans-serif',
+      fontFamily: 'Montserrat, sans-serif',
       color: basicColors.lightGray,
       fontWeight: 700,
       fontSize: 16,
       lineHeight: 1.5,
     },
     body: {
-      fontFamily: 'Kodchasan, sans-serif',
+      fontFamily: 'Montserrat, sans-serif',
       color: basicColors.lightGray,
       fontWeight: 400,
       fontSize: 16,
       lineHeight: 1.5,
     },
     caption: {
-      fontFamily: 'Kodchasan, sans-serif',
+      fontFamily: 'Montserrat, sans-serif',
       color: basicColors.lightGray,
       fontWeight: 400,
       fontSize: 14,
       lineHeight: 1.5,
     },
+    caption2: {
+      fontFamily: 'Montserrat, sans-serif',
+      color: basicColors.lightGray,
+      fontWeight: 500,
+      fontSize: 12,
+      lineHeight: 1.5,
+    },
     label: {
-      fontFamily: 'Kodchasan, sans-serif',
+      fontFamily: 'Montserrat, sans-serif',
       color: basicColors.lightGray,
       fontWeight: 700,
       lineHeight: 1.5,
       fontSize: 14,
     },
     calendarText: {
-      fontFamily: 'Kodchasan, sans-serif',
+      fontFamily: 'Montserrat, sans-serif',
       color: basicColors.lightGray,
       fontWeight: 400,
       fontSize: 12,

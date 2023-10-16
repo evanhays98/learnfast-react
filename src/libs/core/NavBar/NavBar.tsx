@@ -6,7 +6,7 @@ import { Icon } from '../Icons';
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   page: {
-    height: '100vh',
+    height: '100%',
     display: 'flex',
     flexDirection: 'column',
     position: 'relative',

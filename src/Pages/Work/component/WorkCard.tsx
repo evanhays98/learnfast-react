@@ -6,7 +6,7 @@ import classnames from 'classnames';
 import { useVerificationWorkingCard, useWorkingCard } from '../../../libs/api/src';
 import { WorkingCardHistoryEnums } from '../../../libs/enums';
 import { Points } from './Points';
-import { Form, Formik, FormikHelpers, useFormikContext } from 'formik';
+import { Form, Formik, FormikHelpers } from 'formik';
 
 interface Props {
   workingCardId?: string;
@@ -20,17 +20,21 @@ interface CutSentence {
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   contentSentence: {
+    background: `repeating-linear-gradient(${120}deg, ${'rgba(209,206,250,0.12)'} 0%, ${'rgba(182,179,227,0.04)'} 50%, ${'rgba(165,160,236,0.14)'} 100%)`,
+    borderRadius: theme.borderRadius.std,
+    boxShadow: `0px 0px 30px 0px ${'rgba(215,154,239,0.4)'}`,
+    border: `1px solid ${'rgba(129,96,248,0.2)'}`,
     ...theme.basicFlex,
     flexDirection: 'column',
     alignItems: 'left',
     gap: theme.marginBase * 2,
     padding: theme.marginBase * 2,
-    borderRadius: theme.borderRadius.std,
-    backgroundColor: theme.colors.transparentYellow,
     width: '100%',
   },
   content1: {
     textAlign: 'justify',
+    marginTop: theme.marginBase * 2,
+    marginBottom: theme.marginBase * 2,
   },
   content: {
     display: 'flex',
@@ -48,8 +52,8 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     color: theme.colors.orange,
   },
   indication: {
-    ...theme.fonts.caption,
-    color: theme.colors.lightBeige,
+    ...theme.fonts.caption2,
+    color: '#cea3cd',
   },
   text: {
     ...theme.fonts.caption,
@@ -59,7 +63,7 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   request: {
     display: 'inline',
     position: 'relative',
-    padding: 6,
+    padding: [4, 16],
     margin: theme.marginBase / 2,
   },
   requestReveal: {
@@ -77,6 +81,8 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   },
   input: {
     ...theme.fonts.label,
+    fontSize: 14,
+    fontWeight: 600,
     backgroundColor: theme.colors.lightGray,
     textAlign: 'center',
     color: theme.colors.black,
@@ -95,6 +101,12 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   buttonContainer: {
     display: 'flex',
     justifyContent: 'flex-end',
+  },
+  button: {
+    background: `repeating-linear-gradient(120deg, ${'rgba(238,229,223,0.4)'} 0%, ${'rgba(232,217,206,0.3)'} 50%, ${'rgba(232,186,157,0.4)'} 100%)`,
+    border: `1px solid ${'rgba(239,112,111,0.05)'}`,
+    position: 'relative',
+    boxShadow: `0px 0px 10px 0px ${'rgba(202,176,238,0.15)'}`,
   },
 }));
 
@@ -156,10 +168,10 @@ export const WorkCard = ({ workingCardId, onFinish }: Props) => {
 
 
   return (
-    <div className={classes.contentSentence} >
-    <Formik initialValues={{ answer: '' }} onSubmit={onVerification}>
-      {({ values: { answer }, setFieldValue }) => (
-        <Form>
+    <div className={classes.contentSentence}>
+      <Formik initialValues={{ answer: '' }} onSubmit={onVerification}>
+        {({ values: { answer }, setFieldValue }) => (
+          <Form>
             {workingCard &&
               <div className={classes.content}>
                 <Points workingCard={workingCard} />
@@ -196,11 +208,11 @@ export const WorkCard = ({ workingCardId, onFinish }: Props) => {
               <p className={classes.indication}>{fieldTranslation?.information}</p>
             </div>
             <div className={classes.buttonContainer}>
-              <Button text='dwa' icon={Icon.check} type="submit" />
+              <Button className={classes.button} text='Submit' icon={Icon.check} type='submit' />
             </div>
-        </Form>
-      )}
-    </Formik>
+          </Form>
+        )}
+      </Formik>
     </div>
   );
 };

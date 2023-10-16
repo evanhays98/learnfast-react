@@ -9,7 +9,9 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   },
   title: {
     ...theme.fonts.h1,
-    color: theme.colors.orange,
+    background: `-webkit-linear-gradient(100deg, ${'#EF706F'} 0%, ${'#c27437'} 100%)`,
+    WebkitBackgroundClip: 'text',
+    color: 'transparent',
   },
 }));
 

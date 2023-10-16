@@ -9,13 +9,16 @@ import { WorkCard } from './component/WorkCard';
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   globalContainer: {
-    minHeight: '100%',
+    height: '100%',
     display: 'flex',
     justifyContent: 'flex-start',
-    gap: theme.marginBase * 6,
     flexDirection: 'column',
-    padding: theme.marginBase,
-    paddingBottom: theme.marginBase * 6,
+    overflow: 'scroll',
+  },
+  firstTitleContainer: {
+    ...theme.basicFlex,
+    justifyContent: 'space-between',
+    width: '100%',
   },
   errorContainer: {
     minHeight: '100%',
@@ -27,24 +30,33 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     padding: theme.marginBase,
     paddingBottom: theme.marginBase * 6,
   },
+  container: {
+    flex: 1,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: theme.marginBase * 2,
+    zIndex: 1,
+  },
   titleContainer: {
     ...theme.basicFlex,
-    justifyContent: 'space-between',
-    gap: theme.marginBase * 3,
-  },
-  textTitleContainer: {
-    ...theme.basicFlex,
-    alignItems: 'flex-start',
-    flexDirection: 'column',
     gap: theme.marginBase,
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    boxShadow: `0px 0px 50px -15px ${'rgba(30,1,30,0.75)'}`,
+    padding: theme.marginBase,
+    backdropFilter: 'blur(10px)',
+    background: `-webkit-linear-gradient(180deg, ${'rgba(170,174,220,0.1)'} 0%, ${'rgba(79,105,171,0.1)'} 100%)`,
   },
   title: {
     ...theme.fonts.h2,
-    color: theme.colors.orange,
+    background: `-webkit-linear-gradient(100deg, ${'#EF706F'} 0%, ${'#c27437'} 100%)`,
+    WebkitBackgroundClip: 'text',
+    color: 'transparent',
   },
   description: {
     ...theme.fonts.label,
-    color: theme.colors.lightBeige,
+    color: theme.colors.lightGray,
   },
   cardBlockContainer: {
     minHeight: '100%',
@@ -54,7 +66,9 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     flex: 1,
   },
   button: {
-    background: theme.colors.orange,
+    background: `repeating-linear-gradient(45deg, ${'rgba(232,202,229,0.5)'} 0%, ${'rgba(225,185,218,0.5)'} 50%, ${'rgba(169,123,169,0.5)'} 100%)`,
+    position: 'relative',
+    boxShadow: '0px 0px 10px 0px rgba(0,0,0,0.75)',
   },
 }));
 
@@ -74,7 +88,7 @@ export const Work = () => {
   if (!chapter) {
     return <div className={classes.globalContainer}>
       <div className={classes.titleContainer}>
-        <Button icon={Icon.close} square={true} onClick={() => {
+        <Button icon={Icon.close} square onClick={() => {
           navigate('/home');
         }} />
       </div>
@@ -110,18 +124,21 @@ export const Work = () => {
 
     <div className={classes.globalContainer}>
       <div className={classes.titleContainer}>
-        <div className={classes.textTitleContainer}>
-          <h1 className={classes.title}>{chapter.title}</h1>
-          <p className={classes.description}>{chapter.description}</p>
+        <div className={classes.firstTitleContainer}>
+          <h1 className={classes.title}>Chapters</h1>
+          <Button className={classes.button} square sizeIcon={theme.icon.large + 10} icon={Icon.close} onClick={() => {
+            navigate('/home');
+          }
+          } />
         </div>
-        <Button className={classes.button} icon={Icon.close} square={true} onClick={() => {
-          navigate('/home');
-        }} />
+        <p className={classes.description}>{chapter.description}</p>
       </div>
-      <div className={classes.cardBlockContainer}>
-        <WorkCard workingCardId={workingCards[number].id}
-                  onFinish={onFinish}
-        />
+      <div className={classes.container}>
+        <div className={classes.cardBlockContainer}>
+          <WorkCard workingCardId={workingCards[number].id}
+                    onFinish={onFinish}
+          />
+        </div>
       </div>
     </div>
 

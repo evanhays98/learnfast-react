@@ -20,11 +20,12 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   points: {
     width: 10,
     height: 10,
-    borderRadius: 10,
-    backgroundColor: theme.colors.lightBeige,
+    border: `1px solid ${'rgba(111,71,180,0.5)'}`,
   },
   pointsUp: {
-    backgroundColor: theme.colors.orange,
+    border: 'none',
+    borderRadius: 2,
+    background: `radial-gradient(circle, ${'rgb(162,52,156)'} 0%, ${'rgb(162,93,180)'} 100%)`,
   },
 }));
 

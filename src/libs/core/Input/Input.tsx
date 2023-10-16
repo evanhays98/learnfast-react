@@ -47,7 +47,7 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
       top: -theme.marginBase * 3,
       left: 0,
       fontWeight: 700,
-      color: theme.colors.orange,
+      color: '#c5b1ec',
       transition: 'all ease-in-out 0.2s',
       paddingLeft: '1%',
     },
@@ -65,7 +65,7 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   },
   hasValue: {
     fontWeight: 700,
-    color: theme.colors.orange,
+    color: '#c5b1ec',
     top: -theme.marginBase * 3,
     left: 0,
     transition: 'all ease-in-out 0.2s',
