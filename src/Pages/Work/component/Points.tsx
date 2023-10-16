@@ -45,7 +45,7 @@ export const Points = ({ workingCard }: Props) => {
   return (
     <div className={classes.content}>
       {list.map((num) => (
-        <div className={classnames(classes.points, {
+        <div key={num} className={classnames(classes.points, {
           [classes.pointsUp]: num < workingCard.points,
         })} />
       ))}

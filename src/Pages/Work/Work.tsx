@@ -100,8 +100,6 @@ export const Work = () => {
     return <CenteredLoader />;
   }
 
-  console.log(number, workingCards?.length);
-
   if (!chapter) {
     return <div className={classes.globalContainer}>
       <div className={classes.titleContainer}>
@@ -151,12 +149,11 @@ export const Work = () => {
         </div>
         <p className={classes.description}>{chapter.description}</p>
       </div>
+
       <div className={classes.container}>
-        <div className={classes.cardBlockContainer}>
-          <WorkCard workingCardId={workingCards[number].id}
-                    onFinish={onFinish}
-          />
-        </div>
+        <WorkCard workingCardId={workingCards[number].id}
+                  onFinish={onFinish}
+        />
       </div>
     </div>
 

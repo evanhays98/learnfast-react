@@ -63,6 +63,7 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   request: {
     display: 'inline',
     position: 'relative',
+    transition: 'all .5s ease',
     padding: [4, 16],
     margin: theme.marginBase / 2,
   },
@@ -77,10 +78,12 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   },
   revealInput: {
     opacity: 0,
-    transition: 'all 2s ease',
+    background: 'transparent',
   },
   input: {
     ...theme.fonts.label,
+    transition: 'opacity .5s ease',
+    opacity: 1,
     fontSize: 14,
     fontWeight: 600,
     backgroundColor: theme.colors.lightGray,
@@ -91,7 +94,6 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     borderRadius: theme.borderRadius.std,
     top: 0,
     left: 0,
-    opacity: 1,
     outline: 'none',
     border: 'none',
   },
@@ -132,6 +134,46 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
       zIndex: -1,
     },
   },
+  animatedBlock: {
+    transition: 'all 1s ease',
+    opacity: 1,
+    animationDuration: '.5s',
+    animationTimingFunction: 'ease',
+    animationFillMode: 'forwards',
+
+    '&.hide': {
+      animationName: '$disappear',
+    },
+  },
+
+  '@keyframes appear': {
+    '0%': {
+      opacity: 1,
+      transform: 'translateX(450px)',
+    },
+    '100%': {
+      opacity: 1,
+      transform: 'translateX(0)',
+    },
+  },
+
+  '@keyframes disappear': {
+    '0%': {
+      opacity: 1,
+      transform: 'translateX(0px)',
+    },
+    '100%': {
+      opacity: 1,
+      transform: 'translateX(-450px)',
+    },
+  },
+  disappear: {
+    animationName: '$disappear',
+  },
+  appear: {
+    animationName: '$appear',
+  },
+
 }));
 
 interface Values {
@@ -142,14 +184,15 @@ export const WorkCard = ({ workingCardId, onFinish }: Props) => {
 
   const classes = useStyles({ theme });
   const ref = useRef<HTMLInputElement | null>(null);
+  const reff = useRef<HTMLInputElement | null>(null);
   const { data: workingCard } = useWorkingCard(workingCardId);
   const [reveal, setReveal] = useState(false);
   const [miss, setMiss] = useState(false);
   const fieldTranslation = workingCard?.card?.fieldTranslation;
   const { mutateAsync: verificationWorkingCard } = useVerificationWorkingCard(workingCard?.id);
   const synth = window.speechSynthesis;
-
-  const [language, setLanguage] = useState('fr-FR'); // Set the initial language (English, United States)
+  const [appear, setAppear] = useState(false);
+  const [disappear, setDisappear] = useState(false);
 
 
   const content: CutSentence[] = useMemo(() => {
@@ -168,31 +211,42 @@ export const WorkCard = ({ workingCardId, onFinish }: Props) => {
 
   }, [fieldTranslation]);
 
+  useEffect(() => {
+    setTimeout(() => {
+      setDisappear(false);
+      setAppear(true);
+    }, 100);
+    setTimeout(() => {
+      setAppear(false);
+      focusInput();
+    }, 600);
+  }, [content]);
+
 
   const onVerification = async (values: Values, { resetForm }: FormikHelpers<Values>) => {
+    focusInput2();
     const answerWorkingCard = await verificationWorkingCard({ answer: values.answer });
     const lastHistory = answerWorkingCard.history[answerWorkingCard.history.length - 1];
+    const utterance = new SpeechSynthesisUtterance(fieldTranslation?.sentence.split('//').join(''));
+    utterance.lang = 'fr-FR';
     if (lastHistory === WorkingCardHistoryEnums.MISS_ANSWER) {
       setMiss(true);
     }
     setReveal(true);
-    const utterance = new SpeechSynthesisUtterance(fieldTranslation?.sentence.split('//').join(''));
-    utterance.lang = language; // Set the language for the utterance
-    synth.speak(utterance);
+    setTimeout(() => {
+      synth.speak(utterance);
+    }, 300);
     utterance.onend = () => {
+      setDisappear(true);
       setTimeout(() => {
         setReveal(false);
         setMiss(false);
         onFinish();
-      }, 1000);
+      }, 500);
       resetForm();
-    }
+    };
     return false;
   };
-
-  useEffect(() => {
-    focusInput();
-  }, [ref, workingCard]);
 
   const focusInput = () => {
     if (ref.current) {
@@ -200,9 +254,19 @@ export const WorkCard = ({ workingCardId, onFinish }: Props) => {
     }
   };
 
+  const focusInput2 = () => {
+    if (reff.current) {
+      reff.current.focus();
+    }
+  };
+
 
   return (
-    <div className={classes.contentSentence}>
+    <div className={classnames(classes.contentSentence, classes.animatedBlock, {
+      [classes.disappear]: disappear,
+      [classes.appear]: appear,
+    })}>
+      <input style={{ opacity: 0, position: 'absolute', top: 0 }} ref={reff} type='text' />
       <Formik initialValues={{ answer: '' }} onSubmit={onVerification}>
         {({ values: { answer }, setFieldValue }) => (
           <Form>
@@ -219,18 +283,18 @@ export const WorkCard = ({ workingCardId, onFinish }: Props) => {
                         [classes.requestReveal]: reveal,
                       })}>
                         <div className={classnames(classes.hidContent, {
-                          [classes.hideContentError]: miss && reveal,
+                          [classes.hideContentError]: miss,
                         })}>
                           {item.sentence}
                         </div>
-                        {!reveal &&
-                          <input ref={ref} className={classnames(classes.input, {
-                            [classes.revealInput]: reveal,
-                          })} type='text' value={answer}
-                                 onChange={async (e) => {
-                                   await setFieldValue('answer', e.target.value);
-                                 }} />
-                        }
+
+                        <input ref={ref} style={{ opacity: `${reveal ? 0 : 1}` }} id='input'
+                               className={classnames(classes.input, {
+                                 [classes.revealInput]: reveal,
+                               })} type='text' value={reveal ? 'true' : answer}
+                               onChange={async (e) => {
+                                 await setFieldValue('answer', e.target.value);
+                               }} />
                       </div>);
                   }
                   return <p className={classes.text}>{item.sentence}</p>;
