@@ -58,14 +58,14 @@ export const Login = () => {
   const submit = async (values: Values) => {
     try {
       await login(values);
-      navigate('/home');
+      navigate('/');
     } catch (e) {
       throw e;
     }
   };
 
   if (me && !isLoading) {
-    navigate('/home');
+    navigate('/');
   }
 
 

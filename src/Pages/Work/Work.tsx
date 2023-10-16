@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Theme, theme } from 'src/libs/theme';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -9,11 +9,14 @@ import { WorkCard } from './component/WorkCard';
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   globalContainer: {
-    height: '100%',
-    display: 'flex',
-    justifyContent: 'flex-start',
-    flexDirection: 'column',
+    backdropFilter: 'blur(2px)',
+    position: 'fixed',
+    height: window.innerHeight,
+    top: 0,
+    left: 0,
+    right: 0,
     overflow: 'scroll',
+    transition: 'all 0.3s ease-in-out',
   },
   firstTitleContainer: {
     ...theme.basicFlex,
@@ -31,12 +34,19 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     paddingBottom: theme.marginBase * 6,
   },
   container: {
-    flex: 1,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
+    zIndex: 91,
+    background: `${theme.colors.black}AA`,
+    backdropFilter: 'blur(10px)',
+    borderRadius: [theme.borderRadius.large, theme.borderRadius.large, 0, 0],
+    boxShadow: theme.boxShadow.std,
+    width: '100%',
     padding: theme.marginBase * 2,
-    zIndex: 1,
+    position: 'fixed',
+    bottom: 0,
+    left: 0,
+    minHeight: 400,
+    height: 'fit-content',
+    transition: 'all 0.3s ease-in-out',
   },
   titleContainer: {
     ...theme.basicFlex,
@@ -47,6 +57,8 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     padding: theme.marginBase,
     backdropFilter: 'blur(10px)',
     background: `-webkit-linear-gradient(180deg, ${'rgba(170,174,220,0.1)'} 0%, ${'rgba(79,105,171,0.1)'} 100%)`,
+    position: 'sticky',
+    top: 0,
   },
   title: {
     ...theme.fonts.h2,
@@ -59,7 +71,6 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     color: theme.colors.lightGray,
   },
   cardBlockContainer: {
-    minHeight: '100%',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -81,15 +92,21 @@ export const Work = () => {
   const { data: workingCards, isLoading: workingCardsLoading, refetch: resetWorkingCards } = useWorkingCards(id);
   const [number, setNumber] = React.useState(0);
 
+  useEffect(() => {
+    setNumber(0);
+  }, [workingCards]);
+
   if (chapterLoading || workingCardsLoading) {
     return <CenteredLoader />;
   }
+
+  console.log(number, workingCards?.length);
 
   if (!chapter) {
     return <div className={classes.globalContainer}>
       <div className={classes.titleContainer}>
         <Button icon={Icon.close} square onClick={() => {
-          navigate('/home');
+          navigate('/');
         }} />
       </div>
       <div className={classes.errorContainer}>Chapter not found</div>
@@ -99,13 +116,14 @@ export const Work = () => {
   if (!workingCards || workingCards.length === 0) {
     return <div className={classes.globalContainer}>
       <div className={classes.titleContainer}>
-        <div className={classes.textTitleContainer}>
+        <div className={classes.firstTitleContainer}>
           <h1 className={classes.title}>{chapter.title}</h1>
-          <p className={classes.description}>{chapter.description}</p>
+          <Button className={classes.button} square sizeIcon={theme.icon.large + 10} icon={Icon.close} onClick={() => {
+            navigate('/');
+          }
+          } />
         </div>
-        <Button icon={Icon.close} square={true} onClick={() => {
-          navigate('/home');
-        }} />
+        <p className={classes.description}>{chapter.description}</p>
       </div>
       <div className={classes.errorContainer}>Working cards not found</div>
     </div>;
@@ -125,9 +143,9 @@ export const Work = () => {
     <div className={classes.globalContainer}>
       <div className={classes.titleContainer}>
         <div className={classes.firstTitleContainer}>
-          <h1 className={classes.title}>Chapters</h1>
+          <h1 className={classes.title}>{chapter.title}</h1>
           <Button className={classes.button} square sizeIcon={theme.icon.large + 10} icon={Icon.close} onClick={() => {
-            navigate('/home');
+            navigate('/');
           }
           } />
         </div>

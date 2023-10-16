@@ -9,6 +9,7 @@ import Input from '../../libs/core/Input/Input';
 import * as Yup from 'yup';
 import { useChapters, useCreateChapter } from '../../libs/api/src';
 import { ChapterInformation } from './component/ChapterInformation';
+import PWAInstallButton from 'src/libs/core/InstallPWA';
 
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
@@ -104,6 +105,7 @@ export const Home = () => {
           <Icons icon={Icon.addFolder} size={theme.icon.normal + 8} />
         </Button>
       </div>
+      <PWAInstallButton />
       <div className={classes.container}>
         {chapters?.map((chapter) => (
           <ChapterInformation chapter={chapter} key={chapter.id} />

@@ -41,7 +41,7 @@ export const NavBar = ({ children }: Props) => {
         {children}
       </div>
       <div className={classes.navBar}>
-        <NavBarLink icon={Icon.home} to='/home' />
+        <NavBarLink icon={Icon.home} to='/' />
         <NavBarLink icon={Icon.work} to='/work' />
         <NavBarLink icon={Icon.profile} to='/profile' />
       </div>

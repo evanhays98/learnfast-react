@@ -89,7 +89,7 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     width: '100%',
     position: 'absolute',
     borderRadius: theme.borderRadius.std,
-    top: 2,
+    top: 0,
     left: 0,
     opacity: 1,
     outline: 'none',

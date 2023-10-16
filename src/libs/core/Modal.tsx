@@ -7,7 +7,7 @@ import classnames from 'classnames';
 
 const useStyles = createUseStyles<string, { height: number }, any>((theme: Theme) => ({
   mainContainer: {
-    background: `${theme.colors.orange}20`,
+    background: `-webkit-linear-gradient(90deg, ${'rgba(239,112,111,0.05)'} 0%, ${'rgba(194,116,55,0.1)'} 100%)`,
     backdropFilter: 'blur(2px)',
     position: 'fixed',
     height: window.innerHeight,
@@ -23,7 +23,7 @@ const useStyles = createUseStyles<string, { height: number }, any>((theme: Theme
   },
   container: {
     zIndex: 91,
-    background: `${theme.colors.black}AA`,
+    background: `linear-gradient(100deg, ${'rgba(15,7,28,0.8)'} 0%, ${'rgba(8,6,24,0.8)'} 100%)`,
     backdropFilter: 'blur(10px)',
     borderRadius: [theme.borderRadius.large, theme.borderRadius.large, 0, 0],
     boxShadow: theme.boxShadow.std,
@@ -65,6 +65,7 @@ interface Props {
 export const Modal = ({ children, isOpen, setIsOpen, title }: Props) => {
   const [height, setHeight] = React.useState(0);
   const classes = useStyles({ theme, height: height });
+
 
   return (
 

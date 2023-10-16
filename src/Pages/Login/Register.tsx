@@ -61,11 +61,11 @@ export const Register = () => {
       password: values.password,
       pseudo: values.pseudo,
     });
-    navigate('/home');
+    navigate('/');
   };
 
   if (me && !isLoading) {
-    navigate('/home');
+    navigate('/');
   }
 
   console.log(me, isLoading);

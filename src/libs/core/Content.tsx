@@ -4,7 +4,7 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 
 export const Content = () => {
-  const { data: me } = useMe();
+  useMe();
 
   return (
     <NavBar>
