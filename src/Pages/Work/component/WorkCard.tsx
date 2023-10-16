@@ -147,6 +147,11 @@ export const WorkCard = ({ workingCardId, onFinish }: Props) => {
   const [miss, setMiss] = useState(false);
   const fieldTranslation = workingCard?.card?.fieldTranslation;
   const { mutateAsync: verificationWorkingCard } = useVerificationWorkingCard(workingCard?.id);
+  const synth = window.speechSynthesis;
+
+  const [language, setLanguage] = useState('fr-FR'); // Set the initial language (English, United States)
+
+
   const content: CutSentence[] = useMemo(() => {
     const cutSentence = fieldTranslation?.sentence?.split('//');
     const res: any[] = [];
@@ -171,12 +176,17 @@ export const WorkCard = ({ workingCardId, onFinish }: Props) => {
       setMiss(true);
     }
     setReveal(true);
-    setTimeout(() => {
-      setReveal(false);
-      setMiss(false);
-      onFinish();
-    }, 4000);
-    resetForm();
+    const utterance = new SpeechSynthesisUtterance(fieldTranslation?.sentence.split('//').join(''));
+    utterance.lang = language; // Set the language for the utterance
+    synth.speak(utterance);
+    utterance.onend = () => {
+      setTimeout(() => {
+        setReveal(false);
+        setMiss(false);
+        onFinish();
+      }, 1000);
+      resetForm();
+    }
     return false;
   };
 

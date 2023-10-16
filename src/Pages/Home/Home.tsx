@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Theme, theme } from 'src/libs/theme';
 import { Icon, Icons } from '../../libs/core';
@@ -109,8 +109,7 @@ export const Home = () => {
           <h1 className={classes.title}>Chapters</h1>
           <Button className={classes.button} square onClick={() => {
             setIsOpened(true);
-          }
-          }>
+          }}>
             <Icons icon={Icon.addFolder} size={theme.icon.normal + 8} />
           </Button>
         </div>
