@@ -21,6 +21,7 @@ const useStyles = createUseStyles<string, { line: boolean, bgColor: Colors, colo
     justifyContent: 'center',
     padding: !props.line ? theme.marginBase : [theme.marginBase / 4, theme.marginBase],
     gap: !props.line ? theme.marginBase * 2 : theme.marginBase,
+    backdropFilter: props.line ? 'none' : 'blur(10px)',
   }),
   full: {
     width: '100%',

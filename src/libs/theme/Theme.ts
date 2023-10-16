@@ -44,7 +44,7 @@ const basicColors = {
   transparentYellow: 'rgba(135,175,235,0.13)', // background button color secondary
   orange: '#FF7E51', // strong color text
   transparentDarkGray: 'rgba(30,39,51,0.33)', // background container color primary
-  brownGradiant: `linear-gradient(180deg, ${'#FFC05F'} 0%, ${'#FF7E51'} 100%)`, // background button color primary
+  brownGradiant: `linear-gradient(120deg, ${'rgba(233,146,243,0.5)'} 0%, ${'rgba(224,131,97,0.5)'} 100%)`, // background button color primary
   transparent: '#FFFFFF00', // transparent
   black: '#0e0d10', // black
   red: '#e75b92', // red

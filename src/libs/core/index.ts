@@ -7,4 +7,4 @@ export * from './PageBackground';
 export * from './PageHeader';
 export * from './Icons';
 export * from './PageTitle';
-export * from './InstallPWA';
+export * from './PWAInstallButton';

@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { theme, Theme } from '../../../libs/theme';
-import { Button, Icon } from '../../../libs/core';
+import { Button } from '../../../libs/core';
 import classnames from 'classnames';
 import { useVerificationWorkingCard, useWorkingCard } from '../../../libs/api/src';
 import { WorkingCardHistoryEnums } from '../../../libs/enums';
@@ -99,14 +99,38 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     color: theme.colors.red,
   },
   buttonContainer: {
+    marginTop: theme.marginBase * 2,
     display: 'flex',
     justifyContent: 'flex-end',
+    gap: theme.marginBase * 3,
   },
   button: {
-    background: `repeating-linear-gradient(120deg, ${'rgba(238,229,223,0.4)'} 0%, ${'rgba(232,217,206,0.3)'} 50%, ${'rgba(232,186,157,0.4)'} 100%)`,
+    background: `repeating-linear-gradient(120deg, ${'rgba(211,166,234,0.5)'} 0%, ${'rgba(117,119,183,0.5)'} 50%, ${'rgba(229,131,72,0.5)'} 100%)`,
     border: `1px solid ${'rgba(239,112,111,0.05)'}`,
     position: 'relative',
-    boxShadow: `0px 0px 10px 0px ${'rgba(202,176,238,0.15)'}`,
+    boxShadow: `0px 0px 10px 0px ${'rgba(189,112,220,0.75)'}`,
+  },
+  markAsLearn: {
+    ...theme.fonts.label,
+    fontWeight: 600,
+    fontSize: 12,
+    position: 'relative',
+    border: `1px solid ${'rgba(239,112,111,0)'}`,
+    background: `repeating-linear-gradient(120deg, ${'rgba(193,135,222,0.4)'} 0%, ${'rgba(106,147,187,0.4)'} 50%, ${'rgba(229,131,72,0.4)'} 100%)`,
+    textDecoration: 'none',
+    zIndex: 1,
+    fontStyle: 'italic',
+    '&::before': {
+      content: '""',
+      background: `rgba(13, 3, 38, 0.98)`,
+      position: 'absolute',
+      borderRadius: theme.borderRadius.std,
+      top: 1,
+      left: 1,
+      right: 1,
+      bottom: 1,
+      zIndex: -1,
+    },
   },
 }));
 
@@ -208,7 +232,8 @@ export const WorkCard = ({ workingCardId, onFinish }: Props) => {
               <p className={classes.indication}>{fieldTranslation?.information}</p>
             </div>
             <div className={classes.buttonContainer}>
-              <Button className={classes.button} text='Submit' icon={Icon.check} type='submit' />
+              <Button className={classes.markAsLearn} text='Mark as learn' line />
+              <Button className={classes.button} text='Submit' type='submit' />
             </div>
           </Form>
         )}

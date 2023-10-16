@@ -9,7 +9,7 @@ import Input from '../../libs/core/Input/Input';
 import * as Yup from 'yup';
 import { useChapters, useCreateChapter } from '../../libs/api/src';
 import { ChapterInformation } from './component/ChapterInformation';
-import PWAInstallButton from 'src/libs/core/InstallPWA';
+import PWAInstallButton from '../../libs/core/PWAInstallButton';
 
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
@@ -31,12 +31,20 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   },
   titleContainer: {
     ...theme.basicFlex,
-    gap: theme.marginBase * 3,
-    justifyContent: 'space-between',
+    gap: theme.marginBase,
+    alignItems: 'flex-end',
+    flexDirection: 'column',
     boxShadow: `0px 0px 50px -15px ${'rgba(30,1,30,0.75)'}`,
     padding: theme.marginBase,
     backdropFilter: 'blur(10px)',
     background: `-webkit-linear-gradient(180deg, ${'rgba(170,174,220,0.1)'} 0%, ${'rgba(79,105,171,0.1)'} 100%)`,
+  },
+  firstTitleContainer: {
+    ...theme.basicFlex,
+    width: '100%',
+    gap: theme.marginBase * 3,
+    justifyContent: 'space-between',
+    padding: theme.marginBase,
   },
   title: {
     ...theme.fonts.h1,
@@ -97,15 +105,17 @@ export const Home = () => {
   return (
     <div className={classes.globalContainer}>
       <div className={classes.titleContainer}>
-        <h1 className={classes.title}>Chapters</h1>
-        <Button className={classes.button} square onClick={() => {
-          setIsOpened(true);
-        }
-        }>
-          <Icons icon={Icon.addFolder} size={theme.icon.normal + 8} />
-        </Button>
+        <div className={classes.firstTitleContainer}>
+          <h1 className={classes.title}>Chapters</h1>
+          <Button className={classes.button} square onClick={() => {
+            setIsOpened(true);
+          }
+          }>
+            <Icons icon={Icon.addFolder} size={theme.icon.normal + 8} />
+          </Button>
+        </div>
+        <PWAInstallButton />
       </div>
-      <PWAInstallButton />
       <div className={classes.container}>
         {chapters?.map((chapter) => (
           <ChapterInformation chapter={chapter} key={chapter.id} />
