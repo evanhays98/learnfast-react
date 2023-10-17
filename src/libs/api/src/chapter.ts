@@ -24,6 +24,13 @@ export const useChapters = () => {
   );
 };
 
+export const useLastChapterWorked = () => {
+  return useQuery<Chapter, AxiosError>(
+    ['chapters', 'last-worked'],
+    queryGet('/chapters/last-worked'),
+  );
+};
+
 export const useChapter = (id?: string) => {
   return useQuery<Chapter, AxiosError>(
     ['chapters', id],
