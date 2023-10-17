@@ -20,6 +20,7 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   },
   firstTitleContainer: {
     ...theme.basicFlex,
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
     width: '100%',
   },
@@ -54,7 +55,7 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     flexDirection: 'column',
     alignItems: 'flex-start',
     boxShadow: `0px 0px 50px -15px ${'rgba(30,1,30,0.75)'}`,
-    padding: theme.marginBase,
+    padding: theme.marginBase * 2,
     backdropFilter: 'blur(10px)',
     background: `-webkit-linear-gradient(180deg, ${'rgba(170,174,220,0.1)'} 0%, ${'rgba(79,105,171,0.1)'} 100%)`,
     position: 'sticky',
@@ -62,6 +63,7 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   },
   title: {
     ...theme.fonts.h2,
+    flex: 1,
     background: `-webkit-linear-gradient(100deg, ${'#EF706F'} 0%, ${'#c27437'} 100%)`,
     WebkitBackgroundClip: 'text',
     color: 'transparent',

@@ -20,6 +20,8 @@ const useStyles = createUseStyles<string, { pin?: boolean }, any>((theme: Theme)
   headerContainer: {
     width: '100%',
     ...theme.basicFlex,
+    alignItems: 'flex-start',
+    flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: theme.marginBase / 2,
   },
@@ -27,6 +29,7 @@ const useStyles = createUseStyles<string, { pin?: boolean }, any>((theme: Theme)
     ...theme.fonts.h3,
     marginBottom: theme.marginBase,
     color: theme.colors.lightGray,
+    flex: 1,
   },
   description: {
     ...theme.fonts.caption,
