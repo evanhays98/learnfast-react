@@ -154,6 +154,7 @@ export const Work = () => {
 
       <div className={classes.container}>
         <WorkCard workingCardId={workingCards[number].id}
+                  lng={chapter.lng}
                   onFinish={onFinish}
         />
       </div>

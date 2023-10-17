@@ -3,7 +3,7 @@ import { createUseStyles } from 'react-jss';
 import { theme, Theme } from '../../../libs/theme';
 import { Button } from '../../../libs/core';
 import classnames from 'classnames';
-import { useVerificationWorkingCard, useWorkingCard } from '../../../libs/api/src';
+import { useValidateWorkingCard, useVerificationWorkingCard, useWorkingCard } from '../../../libs/api/src';
 import { WorkingCardHistoryEnums } from '../../../libs/enums';
 import { Points } from './Points';
 import { Form, Formik, FormikHelpers } from 'formik';
@@ -11,6 +11,7 @@ import { Form, Formik, FormikHelpers } from 'formik';
 interface Props {
   workingCardId?: string;
   onFinish: () => void;
+  lng: string;
 }
 
 interface CutSentence {
@@ -180,16 +181,17 @@ interface Values {
   answer: string;
 }
 
-export const WorkCard = ({ workingCardId, onFinish }: Props) => {
+export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
 
   const classes = useStyles({ theme });
   const ref = useRef<HTMLInputElement | null>(null);
   const reff = useRef<HTMLInputElement | null>(null);
   const { data: workingCard } = useWorkingCard(workingCardId);
+  const { mutateAsync: validateWorkingCard } = useValidateWorkingCard(workingCardId);
   const [reveal, setReveal] = useState(false);
   const [miss, setMiss] = useState(false);
   const fieldTranslation = workingCard?.card?.fieldTranslation;
-  const { mutateAsync: verificationWorkingCard } = useVerificationWorkingCard(workingCard?.id);
+  const { mutateAsync: verificationWorkingCard } = useVerificationWorkingCard(workingCardId);
   const synth = window.speechSynthesis;
   const [appear, setAppear] = useState(false);
   const [disappear, setDisappear] = useState(false);
@@ -225,10 +227,10 @@ export const WorkCard = ({ workingCardId, onFinish }: Props) => {
 
   const onVerification = async (values: Values, { resetForm }: FormikHelpers<Values>) => {
     focusInput2();
-    const answerWorkingCard = await verificationWorkingCard({ answer: values.answer });
+    let answerWorkingCard = await verificationWorkingCard({ answer: values.answer });
     const lastHistory = answerWorkingCard.history[answerWorkingCard.history.length - 1];
     const utterance = new SpeechSynthesisUtterance(fieldTranslation?.sentence.split('//').join(''));
-    utterance.lang = 'fr-FR';
+    utterance.lang = lng;
     if (lastHistory === WorkingCardHistoryEnums.MISS_ANSWER) {
       setMiss(true);
     }
@@ -244,6 +246,25 @@ export const WorkCard = ({ workingCardId, onFinish }: Props) => {
         onFinish();
       }, 500);
       resetForm();
+    };
+    return false;
+  };
+
+  const onValidate = async () => {
+    focusInput2();
+    await validateWorkingCard();
+    const utterance = new SpeechSynthesisUtterance(fieldTranslation?.sentence.split('//').join(''));
+    utterance.lang = 'fr-FR';
+    setReveal(true);
+    setTimeout(() => {
+      synth.speak(utterance);
+    }, 300);
+    utterance.onend = () => {
+      setDisappear(true);
+      setTimeout(() => {
+        setReveal(false);
+        onFinish();
+      }, 500);
     };
     return false;
   };
@@ -268,7 +289,7 @@ export const WorkCard = ({ workingCardId, onFinish }: Props) => {
     })}>
       <input style={{ opacity: 0, position: 'absolute', top: 0 }} ref={reff} type='text' />
       <Formik initialValues={{ answer: '' }} onSubmit={onVerification}>
-        {({ values: { answer }, setFieldValue }) => (
+        {({ values: { answer }, setFieldValue, resetForm }) => (
           <Form>
             {workingCard &&
               <div className={classes.content}>
@@ -306,7 +327,10 @@ export const WorkCard = ({ workingCardId, onFinish }: Props) => {
               <p className={classes.indication}>{fieldTranslation?.information}</p>
             </div>
             <div className={classes.buttonContainer}>
-              <Button className={classes.markAsLearn} text='Mark as learn' line />
+              <Button className={classes.markAsLearn} type='button' text='Mark as learn' line onClick={async () => {
+                await onValidate();
+                resetForm();
+              }} />
               <Button className={classes.button} text='Submit' type='submit' />
             </div>
           </Form>

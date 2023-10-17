@@ -24,6 +24,18 @@ export const useVerificationWorkingCard = (id?: string) => {
   );
 };
 
+export const useValidateWorkingCard = (id?: string) => {
+  const queryClient = useQueryClient();
+  return useMutation<WorkingCard, AxiosError>(
+    queryCreate(`/working-cards/${id}/validate`),
+    {
+      onSuccess: async (data) => {
+        queryClient.invalidateQueries(['working-cards', data.id]);
+      },
+    },
+  );
+};
+
 export const useWorkingCard = (id?: string) => {
   return useQuery<WorkingCard, AxiosError>(
     ['working-cards', id],
