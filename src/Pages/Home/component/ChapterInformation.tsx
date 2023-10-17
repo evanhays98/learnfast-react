@@ -79,7 +79,7 @@ export const ChapterInformation = ({ pin, chapter }: Props) => {
       </div>
       <p className={classes.description}>{chapter.description}</p>
       {!pin && <Button full className={classes.buttonGo} onClick={() => {
-        navigate(`/chapter/${chapter.id}`);
+        navigate(`/work/${chapter.id}`);
       }}>
         <div className={classes.buttonGoText}>Work on this chapter</div>
       </Button>}

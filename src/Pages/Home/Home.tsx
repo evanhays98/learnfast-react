@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { createUseStyles } from 'react-jss';
 import { Theme, theme } from 'src/libs/theme';
 import { Icon, Icons } from '../../libs/core';

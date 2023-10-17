@@ -11,4 +11,5 @@ export interface Chapter extends BaseEntity {
   title: string;
   description: string;
   cards?: Card[];
+  lng: string;
 }

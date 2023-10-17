@@ -18,15 +18,20 @@ export const useCreateChapter = () => {
 };
 
 export const useChapters = () => {
-  const queryClient = useQueryClient();
   return useQuery<Chapter[], AxiosError>(
     ['chapters'],
     queryGet('/chapters'),
   );
 };
 
+export const useLastChapterWorked = () => {
+  return useQuery<Chapter, AxiosError>(
+    ['chapters', 'last-worked'],
+    queryGet('/chapters/last-worked'),
+  );
+};
+
 export const useChapter = (id?: string) => {
-  const queryClient = useQueryClient();
   return useQuery<Chapter, AxiosError>(
     ['chapters', id],
     queryGet(`/chapters/${id}`),
