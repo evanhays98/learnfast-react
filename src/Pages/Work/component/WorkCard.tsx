@@ -19,7 +19,7 @@ interface CutSentence {
   hide: boolean;
 }
 
-const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
+const useStyles = createUseStyles<string, { width: number }, any>((theme: Theme) => ({
   contentSentence: {
     background: `repeating-linear-gradient(${120}deg, ${'rgba(209,206,250,0.12)'} 0%, ${'rgba(182,179,227,0.04)'} 50%, ${'rgba(165,160,236,0.14)'} 100%)`,
     borderRadius: theme.borderRadius.std,
@@ -31,6 +31,8 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     gap: theme.marginBase * 2,
     padding: theme.marginBase * 2,
     width: '100%',
+    maxWidth: theme.marginBase * 70,
+    margin: 'auto',
   },
   content1: {
     textAlign: 'justify',
@@ -150,11 +152,11 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   '@keyframes appear': {
     '0%': {
       opacity: 1,
-      transform: 'translateX(450px)',
+      transform: `translateX(100vw)`,
     },
     '100%': {
       opacity: 1,
-      transform: 'translateX(0)',
+      transform: `translateX(0)`,
     },
   },
 
@@ -165,7 +167,7 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     },
     '100%': {
       opacity: 1,
-      transform: 'translateX(-450px)',
+      transform: 'translateX(-100vw)',
     },
   },
   disappear: {
@@ -183,7 +185,7 @@ interface Values {
 
 export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
 
-  const classes = useStyles({ theme });
+  const classes = useStyles({ theme, width: 450 });
   const ref = useRef<HTMLInputElement | null>(null);
   const reff = useRef<HTMLInputElement | null>(null);
   const { data: workingCard } = useWorkingCard(workingCardId);
@@ -195,6 +197,7 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
   const synth = window.speechSynthesis;
   const [appear, setAppear] = useState(false);
   const [disappear, setDisappear] = useState(false);
+  const [disabled, setDisabled] = useState(false);
 
 
   const content: CutSentence[] = useMemo(() => {
@@ -221,11 +224,16 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
     setTimeout(() => {
       setAppear(false);
       focusInput();
+      setDisabled(false);
     }, 600);
   }, [content]);
 
 
   const onVerification = async (values: Values, { resetForm }: FormikHelpers<Values>) => {
+    if (disabled) {
+      return;
+    }
+    setDisabled(true);
     focusInput2();
     let answerWorkingCard = await verificationWorkingCard({ answer: values.answer });
     const lastHistory = answerWorkingCard.history[answerWorkingCard.history.length - 1];
@@ -251,10 +259,14 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
   };
 
   const onValidate = async () => {
+    if (disabled) {
+      return;
+    }
+    setDisabled(true);
     focusInput2();
     await validateWorkingCard();
     const utterance = new SpeechSynthesisUtterance(fieldTranslation?.sentence.split('//').join(''));
-    utterance.lang = 'fr-FR';
+    utterance.lang = lng;
     setReveal(true);
     setTimeout(() => {
       synth.speak(utterance);
@@ -283,10 +295,11 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
 
 
   return (
-    <div className={classnames(classes.contentSentence, classes.animatedBlock, {
-      [classes.disappear]: disappear,
-      [classes.appear]: appear,
-    })}>
+    <div
+      className={classnames(classes.contentSentence, classes.animatedBlock, {
+        [classes.disappear]: disappear,
+        [classes.appear]: appear,
+      })}>
       <input style={{ opacity: 0, position: 'absolute', top: 0 }} ref={reff} type='text' />
       <Formik initialValues={{ answer: '' }} onSubmit={onVerification}>
         {({ values: { answer }, setFieldValue, resetForm }) => (
@@ -327,11 +340,12 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
               <p className={classes.indication}>{fieldTranslation?.information}</p>
             </div>
             <div className={classes.buttonContainer}>
-              <Button className={classes.markAsLearn} type='button' text='Mark as learn' line onClick={async () => {
-                await onValidate();
-                resetForm();
-              }} />
-              <Button className={classes.button} text='Submit' type='submit' />
+              <Button disabled={disabled} className={classes.markAsLearn} type='button' text='Mark as learn' line
+                      onClick={async () => {
+                        await onValidate();
+                        resetForm();
+                      }} />
+              <Button disabled={disabled} className={classes.button} text='Submit' type='submit' />
             </div>
           </Form>
         )}

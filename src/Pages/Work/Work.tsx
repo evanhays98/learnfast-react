@@ -35,8 +35,6 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     paddingBottom: theme.marginBase * 6,
   },
   container: {
-    zIndex: 91,
-    background: `${theme.colors.black}AA`,
     backdropFilter: 'blur(10px)',
     borderRadius: [theme.borderRadius.large, theme.borderRadius.large, 0, 0],
     boxShadow: theme.boxShadow.std,
@@ -48,6 +46,11 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     minHeight: 400,
     height: 'fit-content',
     transition: 'all 0.3s ease-in-out',
+    '@media (min-width: 768px)': {
+      position: 'relative',
+      height: '100%',
+      marginTop: theme.marginBase * 5,
+    },
   },
   titleContainer: {
     ...theme.basicFlex,

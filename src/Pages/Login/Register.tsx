@@ -68,7 +68,6 @@ export const Register = () => {
     navigate('/');
   }
 
-  console.log(me, isLoading);
 
   return (
     <div className={classes.page}>

@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { queryCreate, queryGet } from './fetch';
 import { useCallback } from 'react';
 import { AxiosError } from 'axios';
-import { CreateUser, LoginUser, User } from '../../dtos';
+import { CreateUser, LoginUser, User, UserAccessToken } from '../../dtos';
 
 export const useLogout = () => {
   const queryClient = useQueryClient();
@@ -32,12 +32,6 @@ export const useMe = (allowAnonymous?: boolean) => {
       onSuccess: (data) => {
         queryClient.setQueryData(['users', data.id], data);
       },
-      retry: (count, error) => {
-        if (error.response && error.response.status === 401) {
-          return false;
-        }
-        return count < 2;
-      },
       onError: () => {
         if (!allowAnonymous) {
           logout();
@@ -49,12 +43,12 @@ export const useMe = (allowAnonymous?: boolean) => {
 
 export const useLogin = () => {
   const queryClient = useQueryClient();
-  return useMutation<User, undefined, LoginUser>(
+  return useMutation<UserAccessToken, undefined, LoginUser>(
     queryCreate(`/auth/login`),
     {
       onSuccess: (data) => {
-        queryClient.setQueryData(['users', data.id], data);
-        queryClient.setQueryData(['users', 'me'], data);
+        queryClient.setQueryData(['users', data.id], data.userInfo);
+        queryClient.setQueryData(['users', 'me'], data.userInfo);
       },
     },
   );
@@ -62,12 +56,12 @@ export const useLogin = () => {
 
 export const useRegister = () => {
   const queryClient = useQueryClient();
-  return useMutation<User, undefined, CreateUser>(
+  return useMutation<UserAccessToken, undefined, CreateUser>(
     queryCreate(`/auth/register`),
     {
       onSuccess: (data) => {
-        queryClient.setQueryData(['users', data.id], data);
-        queryClient.setQueryData(['users', 'me'], data);
+        queryClient.setQueryData(['users', data.id], data.userInfo);
+        queryClient.setQueryData(['users', 'me'], data.userInfo);
       },
     },
   );

@@ -6,6 +6,7 @@ import Input from '../../libs/core/Input/Input';
 import { Form, Formik } from 'formik';
 import { useLogin, useMe } from '../../libs/api/src';
 import { useNavigate } from 'react-router-dom';
+import * as Yup from 'yup';
 
 
 const useStyles = createUseStyles((theme: Theme) => ({
@@ -48,6 +49,11 @@ interface Values {
   password: string,
 }
 
+const validationSchema = Yup.object().shape({
+  identifier: Yup.string().required('Field is required'),
+  password: Yup.string().required('Field is required'),
+});
+
 export const Login = () => {
   const classes = useStyles({ theme });
   const { data: me, isLoading } = useMe(true);
@@ -61,6 +67,7 @@ export const Login = () => {
       navigate('/');
     } catch (e) {
       throw e;
+      console.log(e);
     }
   };
 
@@ -72,7 +79,7 @@ export const Login = () => {
   return (
     <div className={classes.page}>
       <PageTitle text={'Sign in'} />
-      <Formik initialValues={{ identifier: '', password: '' }} onSubmit={submit}>
+      <Formik initialValues={{ identifier: '', password: '' }} onSubmit={submit} validationSchema={validationSchema}>
         <Form>
           <div className={classes.container}>
             <Input title='Mail or Pseudo' name='identifier' />

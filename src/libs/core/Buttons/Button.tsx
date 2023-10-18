@@ -32,6 +32,9 @@ const useStyles = createUseStyles<string, { line: boolean, bgColor: Colors, colo
     minWidth: `${theme.marginBase * 5}px !important`,
     padding: 0,
   },
+  disabled: {
+    opacity: 0.5,
+  },
 }));
 
 
@@ -47,6 +50,9 @@ interface BaseButtonProps {
   line?: boolean;
   square?: boolean;
   sizeIcon?: number;
+  disabled?: boolean;
+  onClick?: () => void;
+  type?: 'button' | 'submit' | 'reset';
 }
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement>;
@@ -62,7 +68,12 @@ interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement> {
 type GenericButtonProps = ButtonProps | LinkProps | AProps;
 
 export const Button = (props: BaseButtonProps & GenericButtonProps) => {
-  const { full, line, icon, color, bgColor, square, className, ...rest } = props;
+  const {
+    full, line, icon, color,
+    bgColor, square, className, disabled,
+    onClick, type,
+    ...rest
+  } = props;
   const classes = useStyles({
     line: line || false,
     theme,
@@ -86,7 +97,11 @@ export const Button = (props: BaseButtonProps & GenericButtonProps) => {
         [classes.full]: full,
         [classes.line]: line,
         [classes.square]: square,
+        [classes.disabled]: disabled,
       }, className)}
+      onClick={disabled ? undefined : onClick}
+      onSubmit={disabled ? undefined : onClick}
+      type={disabled ? 'button' : type}
       {...rest}
     >
       {props.children}
