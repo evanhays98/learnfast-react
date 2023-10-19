@@ -8,6 +8,7 @@ import classnames from 'classnames';
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   container: {
     ...theme.basicFlex,
+    flexDirection: 'column',
     gap: theme.marginBase * 3,
     margin: theme.marginBase * 2,
   },
@@ -25,7 +26,7 @@ type FormikProps = FormikConfig<any>;
 
 interface Props {
   className?: string;
-  children?: React.ReactNode;
+  children: React.ReactNode | ((props: Partial<FormikProps>) => React.ReactNode);
 }
 
 type GenericProps = Props & FormikProps;
@@ -47,11 +48,15 @@ export const Formix = ({ className, children, ...rest }: GenericProps) => {
 
   return (
     <Formik {...rest}>
-      <Form>
-        <div className={classnames(classes.container, className)}>
-          {children}
-        </div>
-      </Form>
+      {(formikProps) => (
+        <Form>
+          <div className={classnames(classes.container, className)}>
+            {typeof children === 'function'
+              ? children(formikProps)
+              : children}
+          </div>
+        </Form>
+      )}
     </Formik>
   );
 };

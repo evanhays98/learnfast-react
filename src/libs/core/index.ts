@@ -9,3 +9,5 @@ export * from './Icons';
 export * from './PageTitle';
 export * from './PWAInstallButton';
 export * from './Formix';
+export * from './Toast';
+

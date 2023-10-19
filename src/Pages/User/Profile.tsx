@@ -2,10 +2,11 @@ import React, { useMemo } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Theme, theme } from 'src/libs/theme';
 import PWAInstallButton from '../../libs/core/PWAInstallButton';
-import { useLogout, useMe } from '../../libs/api/src';
-import { Form, Formik } from 'formik';
+import { useLogout, useMe, useUpdateUser } from '../../libs/api/src';
 import Input from '../../libs/core/Input/Input';
-import { Button } from '../../libs/core';
+import { Button, Formix, FormixError, useToast } from '../../libs/core';
+import { AxiosError } from 'axios';
+import { FormikHelpers } from 'formik';
 
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
@@ -83,6 +84,8 @@ export const Profile = () => {
     const classes = useStyles({ theme });
     const { data: me } = useMe();
     const { mutate: logout } = useLogout();
+    const { mutateAsync: updateProfile } = useUpdateUser();
+    const toast = useToast();
 
     const initialValues: Values | null = useMemo(() => {
       if (!me) {
@@ -101,8 +104,22 @@ export const Profile = () => {
       return initialValues.mail !== values.mail || initialValues.pseudo !== values.pseudo;
     };
 
-    const onSubmit = (values: Values) => {
-      console.log(values);
+    const onSubmit = async (values: Values, helpers: FormikHelpers<any>) => {
+      const valuesUpdated = valueUpdated(values);
+      try {
+        if (!valuesUpdated) {
+          return;
+        }
+        await updateProfile(values);
+        toast.info('Profile updated');
+      } catch (e) {
+        if (e instanceof AxiosError) {
+          helpers.setErrors({
+            error: e.response?.data?.message || 'Une erreur s\'est produite',
+          });
+        }
+        throw e;
+      }
     };
 
     if (!me || !initialValues || !initialValues.mail) {
@@ -118,17 +135,16 @@ export const Profile = () => {
         </div>
 
 
-        <Formik initialValues={initialValues} onSubmit={onSubmit}>
-          {({ values }) => (
-            <Form>
-              <div className={classes.content}>
-                <Input title='Mail' name='mail' />
-                <Input title='Pseudo' name='pseudo' />
-                {valueUpdated(values) && <Button className={classes.buttonUpdate} text='Update profile' type='submit' />}
-              </div>
-            </Form>
+        <Formix initialValues={initialValues} onSubmit={onSubmit}>
+          {({ values }: any) => (
+            <>
+              <Input title='Mail' name='mail' />
+              <Input title='Pseudo' name='pseudo' />
+              <FormixError />
+              {valueUpdated(values) && <Button className={classes.buttonUpdate} text='Update profile' type='submit' />}
+            </>
           )}
-        </Formik>
+        </Formix>
 
         <div className={classes.content2}>
           <Button className={classes.buttonLogOut} line text='Log out' onClick={() => logout()} />

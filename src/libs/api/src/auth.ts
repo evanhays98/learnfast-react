@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { queryCreate, queryGet } from './fetch';
+import { queryCreate, queryGet, queryUpdate } from './fetch';
 import { useCallback } from 'react';
 import { AxiosError } from 'axios';
-import { CreateUser, LoginUser, User, UserAccessToken } from '../../dtos';
+import { CreateUser, LoginUser, UpdateUserDto, User, UserAccessToken } from '../../dtos';
 
 export const useLogout = () => {
   const queryClient = useQueryClient();
@@ -50,6 +50,19 @@ export const useRegister = () => {
       onSuccess: (data) => {
         queryClient.setQueryData(['users', data.id], data.userInfo);
         queryClient.setQueryData(['users', 'me'], data.userInfo);
+      },
+    },
+  );
+};
+
+export const useUpdateUser = () => {
+  const queryClient = useQueryClient();
+  return useMutation<User, AxiosError, UpdateUserDto>(
+    queryUpdate(`/users/update`),
+    {
+      onSuccess: (data) => {
+        queryClient.setQueryData(['users', data.id], data);
+        queryClient.setQueryData(['users', 'me'], data);
       },
     },
   );

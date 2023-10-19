@@ -25,3 +25,9 @@ export interface LoginUser {
   identifier: string;
   password: string;
 }
+
+export class UpdateUserDto {
+  pseudo?: string;
+  mail?: string;
+}
+
