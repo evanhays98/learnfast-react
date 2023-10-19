@@ -1,10 +1,18 @@
-import { useMe } from '../api/src';
+import { useLogout, useMe } from '../api/src';
 import { NavBar } from './NavBar';
 import React from 'react';
 import { Outlet } from 'react-router-dom';
+import { CenteredLoader } from './CenteredLoader';
 
 export const Content = () => {
-  useMe();
+  const { data: me, isLoading } = useMe();
+  const { mutate: logout } = useLogout();
+  if (isLoading) {
+    return <CenteredLoader />;
+  }
+  if (!me && !isLoading) {
+    logout();
+  }
 
   return (
     <NavBar>

@@ -6,7 +6,6 @@ import { useChapter, useWorkingCards } from '../../libs/api/src';
 import { Button, CenteredLoader, Icon } from '../../libs/core';
 import { WorkCard } from './component/WorkCard';
 
-
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   globalContainer: {
     backdropFilter: 'blur(2px)',
@@ -35,8 +34,6 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     paddingBottom: theme.marginBase * 6,
   },
   container: {
-    zIndex: 91,
-    background: `${theme.colors.black}AA`,
     backdropFilter: 'blur(10px)',
     borderRadius: [theme.borderRadius.large, theme.borderRadius.large, 0, 0],
     boxShadow: theme.boxShadow.std,
@@ -48,6 +45,11 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     minHeight: 400,
     height: 'fit-content',
     transition: 'all 0.3s ease-in-out',
+    '@media (min-width: 768px)': {
+      position: 'relative',
+      height: '100%',
+      marginTop: theme.marginBase * 5,
+    },
   },
   titleContainer: {
     ...theme.basicFlex,
@@ -85,13 +87,16 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   },
 }));
 
-
 export const Work = () => {
   const classes = useStyles({ theme });
   const { id } = useParams();
   const navigate = useNavigate();
   const { data: chapter, isLoading: chapterLoading } = useChapter(id);
-  const { data: workingCards, isLoading: workingCardsLoading, refetch: resetWorkingCards } = useWorkingCards(id);
+  const {
+    data: workingCards,
+    isLoading: workingCardsLoading,
+    refetch: resetWorkingCards,
+  } = useWorkingCards(id);
   const [number, setNumber] = React.useState(0);
 
   useEffect(() => {
@@ -103,30 +108,42 @@ export const Work = () => {
   }
 
   if (!chapter) {
-    return <div className={classes.globalContainer}>
-      <div className={classes.titleContainer}>
-        <Button icon={Icon.close} square onClick={() => {
-          navigate('/');
-        }} />
+    return (
+      <div className={classes.globalContainer}>
+        <div className={classes.titleContainer}>
+          <Button
+            icon={Icon.close}
+            square
+            onClick={() => {
+              navigate('/');
+            }}
+          />
+        </div>
+        <div className={classes.errorContainer}>Chapter not found</div>
       </div>
-      <div className={classes.errorContainer}>Chapter not found</div>
-    </div>;
+    );
   }
 
   if (!workingCards || workingCards.length === 0) {
-    return <div className={classes.globalContainer}>
-      <div className={classes.titleContainer}>
-        <div className={classes.firstTitleContainer}>
-          <h1 className={classes.title}>{chapter.title}</h1>
-          <Button className={classes.button} square sizeIcon={theme.icon.large + 10} icon={Icon.close} onClick={() => {
-            navigate('/');
-          }
-          } />
+    return (
+      <div className={classes.globalContainer}>
+        <div className={classes.titleContainer}>
+          <div className={classes.firstTitleContainer}>
+            <h1 className={classes.title}>{chapter.title}</h1>
+            <Button
+              className={classes.button}
+              square
+              icon={Icon.close}
+              onClick={() => {
+                navigate('/');
+              }}
+            />
+          </div>
+          <p className={classes.description}>{chapter.description}</p>
         </div>
-        <p className={classes.description}>{chapter.description}</p>
+        <div className={classes.errorContainer}>Working cards not found</div>
       </div>
-      <div className={classes.errorContainer}>Working cards not found</div>
-    </div>;
+    );
   }
 
   const onFinish = async () => {
@@ -139,26 +156,29 @@ export const Work = () => {
   };
 
   return (
-
     <div className={classes.globalContainer}>
       <div className={classes.titleContainer}>
         <div className={classes.firstTitleContainer}>
           <h1 className={classes.title}>{chapter.title}</h1>
-          <Button className={classes.button} square sizeIcon={theme.icon.large + 10} icon={Icon.close} onClick={() => {
-            navigate('/');
-          }
-          } />
+          <Button
+            className={classes.button}
+            square
+            icon={Icon.close}
+            onClick={() => {
+              navigate('/');
+            }}
+          />
         </div>
         <p className={classes.description}>{chapter.description}</p>
       </div>
 
       <div className={classes.container}>
-        <WorkCard workingCardId={workingCards[number].id}
-                  lng={chapter.lng}
-                  onFinish={onFinish}
+        <WorkCard
+          workingCardId={workingCards[number].id}
+          lng={chapter.lng}
+          onFinish={onFinish}
         />
       </div>
     </div>
-
   );
 };

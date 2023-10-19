@@ -24,6 +24,7 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   container: {
     display: 'flex',
     justifyContent: 'flex-start',
+    alignItems: 'center',
     gap: theme.marginBase * 3,
     padding: theme.marginBase * 2,
     flexDirection: 'column',

@@ -16,6 +16,8 @@ const useStyles = createUseStyles<string, { pin?: boolean }, any>((theme: Theme)
     alignItems: 'flex-start',
     backdropFilter: 'blur(10px)',
     padding: theme.marginBase * 2,
+    maxWidth: theme.marginBase * 70,
+    width: '100%',
   }),
   headerContainer: {
     width: '100%',

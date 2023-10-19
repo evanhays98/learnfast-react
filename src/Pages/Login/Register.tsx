@@ -1,11 +1,13 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
 import { theme, Theme } from '../../libs/theme';
-import { Button, PageTitle } from '../../libs/core';
+import { Button, Formix, FormixError, PageTitle } from '../../libs/core';
 import Input from '../../libs/core/Input/Input';
-import { Form, Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { useMe, useRegister } from '../../libs/api/src';
+import * as Yup from 'yup';
+import { AxiosError } from 'axios';
+import { FormikHelpers } from 'formik';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   page: {
@@ -43,56 +45,99 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 interface Values {
-  mail: string,
-  password: string,
-  pseudo: string,
-  confirmPassword: string,
+  mail: string;
+  password: string;
+  pseudo: string;
+  confirmPassword: string;
 }
+
+const initialValues: Values = {
+  mail: '',
+  password: '',
+  pseudo: '',
+  confirmPassword: '',
+};
+
+const validationSchema = Yup.object().shape({
+  mail: Yup.string()
+    .required('Email is required')
+    .email('Invalid email format'),
+  password: Yup.string()
+    .required('Password is required')
+    .min(8, 'Password must be at least 8 characters long')
+    .matches(
+      /^(?=.*[A-Z])/,
+      'Password must contain at least one uppercase letter',
+    )
+    .matches(
+      /^(?=.*[a-z])/,
+      'Password must contain at least one lowercase letter',
+    )
+    .matches(/^(?=.*[0-9])/, 'Password must contain at least one number'),
+  pseudo: Yup.string()
+    .required('Pseudo is required')
+    .min(3, 'Pseudo must be at least 3 characters long')
+    .max(20, 'Pseudo must be at most 20 characters long'),
+  confirmPassword: Yup.string()
+    .required('Confirm Password is required')
+    .oneOf([Yup.ref('password'), null], 'Passwords must match'),
+});
 
 export const Register = () => {
   const classes = useStyles({ theme });
-  const { data: me, isLoading } = useMe(true);
+  const { data: me, isLoading } = useMe();
   const { mutateAsync: register } = useRegister();
   const navigate = useNavigate();
 
-  const submit = async (values: Values) => {
-    await register({
-      mail: values.mail,
-      password: values.password,
-      pseudo: values.pseudo,
-    });
-    navigate('/');
+  const submit = async (values: Values, helpers: FormikHelpers<any>) => {
+    try {
+      await register({
+        mail: values.mail,
+        password: values.password,
+        pseudo: values.pseudo,
+      });
+      navigate('/');
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        helpers.setErrors({
+          error: e.response?.data?.message || "Une erreur s'est produite",
+        });
+      }
+      throw e;
+    }
   };
 
   if (me && !isLoading) {
     navigate('/');
   }
 
-  console.log(me, isLoading);
-
   return (
     <div className={classes.page}>
       <PageTitle text={'Sign up'} />
 
-      <Formik initialValues={{ mail: '', password: '', pseudo: '', confirmPassword: '' }} onSubmit={submit}>
-        <Form>
-          <div className={classes.container}>
-            <Input title='Email' name='mail' />
-            <Input title='Pseudo' name='pseudo' />
-            <Input title='Password' name='password' type='password' eye />
-            <Input title='Confirm Password' name='confirmPassword' type='password' eye />
-            <Button className={classes.button} type='submit' full>
-              <div className={classes.buttonText}>Register</div>
-            </Button>
-            <Button line onClick={() => {
-              navigate('/login');
-            }}>
-              <div className={classes.createAccount}>Already have an account</div>
-            </Button>
-          </div>
-        </Form>
-      </Formik>
-
+      <Formix initialValues={initialValues} onSubmit={submit}>
+        <Input title="Email" name="mail" />
+        <Input title="Pseudo" name="pseudo" />
+        <Input title="Password" name="password" type="password" eye />
+        <Input
+          title="Confirm Password"
+          name="confirmPassword"
+          type="password"
+          eye
+        />
+        <FormixError />
+        <Button className={classes.button} type="submit" full>
+          <div className={classes.buttonText}>Register</div>
+        </Button>
+        <Button
+          line
+          onClick={() => {
+            navigate('/login');
+          }}
+        >
+          <div className={classes.createAccount}>Already have an account</div>
+        </Button>
+      </Formix>
     </div>
   );
 };

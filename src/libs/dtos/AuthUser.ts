@@ -10,6 +10,11 @@ export interface User extends BaseEntity {
   mail: string;
 }
 
+export interface UserAccessToken extends BaseEntity {
+  accessToken: string;
+  userInfo: User;
+}
+
 export interface CreateUser {
   pseudo: string;
   mail: string;
@@ -20,3 +25,9 @@ export interface LoginUser {
   identifier: string;
   password: string;
 }
+
+export class UpdateUserDto {
+  pseudo?: string;
+  mail?: string;
+}
+
