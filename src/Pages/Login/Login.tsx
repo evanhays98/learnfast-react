@@ -3,11 +3,12 @@ import { createUseStyles } from 'react-jss';
 import { theme, Theme } from '../../libs/theme';
 import { Button, PageTitle } from '../../libs/core';
 import Input from '../../libs/core/Input/Input';
-import { Form, Formik } from 'formik';
 import { useLogin, useMe } from '../../libs/api/src';
 import { useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
-
+import { Formix, FormixError } from '../../libs/core/Formix';
+import { FormikHelpers } from 'formik';
+import { AxiosError } from 'axios';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   page: {
@@ -45,29 +46,35 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 interface Values {
-  identifier: string,
-  password: string,
+  identifier: string;
+  password: string;
+  error?: string;
 }
 
 const validationSchema = Yup.object().shape({
-  identifier: Yup.string().required('Field is required'),
+  identifier: Yup.string()
+    .required('Field is required')
+    .min(3, 'Identifier must be at least 3 characters long'),
   password: Yup.string().required('Field is required'),
 });
 
 export const Login = () => {
   const classes = useStyles({ theme });
-  const { data: me, isLoading } = useMe(true);
+  const { data: me, isLoading } = useMe();
   const { mutateAsync: login } = useLogin();
   const navigate = useNavigate();
 
-
-  const submit = async (values: Values) => {
+  const submit = async (values: Values, helpers: FormikHelpers<Values>) => {
     try {
       await login(values);
       navigate('/');
     } catch (e) {
+      if (e instanceof AxiosError) {
+        helpers.setErrors({
+          error: e.response?.data?.message || "Une erreur s'est produite",
+        });
+      }
       throw e;
-      console.log(e);
     }
   };
 
@@ -75,26 +82,29 @@ export const Login = () => {
     navigate('/');
   }
 
-
   return (
     <div className={classes.page}>
       <PageTitle text={'Sign in'} />
-      <Formik initialValues={{ identifier: '', password: '' }} onSubmit={submit} validationSchema={validationSchema}>
-        <Form>
-          <div className={classes.container}>
-            <Input title='Mail or Pseudo' name='identifier' />
-            <Input title='Password' name='password' type='password' eye />
-            <Button className={classes.button} type='submit' full>
-              <div className={classes.buttonText}>Connect</div>
-            </Button>
-            <Button line onClick={() => {
-              navigate('/register');
-            }}>
-              <div className={classes.createAccount}>Don't have an account</div>
-            </Button>
-          </div>
-        </Form>
-      </Formik>
+      <Formix
+        initialValues={{ identifier: '', password: '' }}
+        onSubmit={submit}
+        validationSchema={validationSchema}
+      >
+        <Input title="Mail or Pseudo" name="identifier" />
+        <Input title="Password" name="password" type="password" eye />
+        <FormixError />
+        <Button className={classes.button} type="submit" full>
+          <div className={classes.buttonText}>Connect</div>
+        </Button>
+        <Button
+          line
+          onClick={() => {
+            navigate('/register');
+          }}
+        >
+          <div className={classes.createAccount}>Don't have an account</div>
+        </Button>
+      </Formix>
     </div>
   );
 };

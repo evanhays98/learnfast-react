@@ -15,7 +15,7 @@ const useStyles = createUseStyles((theme: Theme) => ({
     left: 0,
     right: 0,
     padding: theme.marginBase * 2,
-    backgroundColor: `${theme.colors.black}40`, /* Dark background */
+    backgroundColor: `${theme.colors.black}40` /* Dark background */,
     boxShadow: `0 0 20px ${theme.colors.black}50`,
     backdropFilter: 'blur(10px)',
     zIndex: 10,
@@ -27,8 +27,8 @@ const useStyles = createUseStyles((theme: Theme) => ({
 }));
 
 interface Props {
-  children?: React.ReactNode,
-  title?: string,
+  children?: React.ReactNode;
+  title?: string;
 }
 
 export const PageHeader = ({ title }: Props) => {
@@ -37,7 +37,7 @@ export const PageHeader = ({ title }: Props) => {
   return (
     <div className={classes.container}>
       <h1 className={classes.title}>{title && title}</h1>
-      <Button color={ColorsTest.lightGray} square={true} icon={Icon.close}
-              sizeIcon={theme.marginBase * 5} />
-    </div>);
+      <Button color={ColorsTest.lightGray} square icon={Icon.close} />
+    </div>
+  );
 };

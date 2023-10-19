@@ -3,7 +3,6 @@ import { queryCreate, queryGet } from './fetch';
 import { Chapter, CreateChapter } from '../../dtos';
 import { AxiosError } from 'axios';
 
-
 export const useCreateChapter = () => {
   const queryClient = useQueryClient();
   return useMutation<Chapter, undefined, CreateChapter>(
@@ -18,22 +17,30 @@ export const useCreateChapter = () => {
 };
 
 export const useChapters = () => {
-  return useQuery<Chapter[], AxiosError>(
-    ['chapters'],
-    queryGet('/chapters'),
-  );
+  const queryClient = useQueryClient();
+  return useQuery<Chapter[], AxiosError>(['chapters'], queryGet('/chapters'), {
+    enabled: !!queryClient.getQueryData(['users', 'me']),
+  });
 };
 
 export const useLastChapterWorked = () => {
+  const queryClient = useQueryClient();
   return useQuery<Chapter, AxiosError>(
     ['chapters', 'last-worked'],
     queryGet('/chapters/last-worked'),
+    {
+      enabled: !!queryClient.getQueryData(['users', 'me']),
+    },
   );
 };
 
 export const useChapter = (id?: string) => {
+  const queryClient = useQueryClient();
   return useQuery<Chapter, AxiosError>(
     ['chapters', id],
     queryGet(`/chapters/${id}`),
+    {
+      enabled: !!queryClient.getQueryData(['users', 'me']) && !!id,
+    },
   );
 };

@@ -14,36 +14,24 @@ export const useLogout = () => {
     window.location.replace('/#/login');
   }, [queryClient]);
 
-  return useMutation<void, AxiosError, void>(queryCreate(`/v2/auth/logout`), {
-    onSuccess: onLogout,
-    onError: onLogout,
-  });
+  return { mutate: onLogout };
 };
 
-export const useMe = (allowAnonymous?: boolean) => {
+export const useMe = () => {
   const queryClient = useQueryClient();
-  const { mutate: logout } = useLogout();
 
-  return useQuery<User, AxiosError>(
-    ['users', 'me'],
-    queryGet('/users/me'),
-    {
-      staleTime: 1000 * 60, // 1 min
-      onSuccess: (data) => {
-        queryClient.setQueryData(['users', data.id], data);
-      },
-      onError: () => {
-        if (!allowAnonymous) {
-          logout();
-        }
-      },
+  return useQuery<User, AxiosError>(['users', 'me'], queryGet('/users/me'), {
+    staleTime: 100000 * 60, // 100 minutes
+    enabled: !!localStorage.getItem('userToken'),
+    onSuccess: (data) => {
+      queryClient.setQueryData(['users', data.id], data);
     },
-  );
+  });
 };
 
 export const useLogin = () => {
   const queryClient = useQueryClient();
-  return useMutation<UserAccessToken, undefined, LoginUser>(
+  return useMutation<UserAccessToken, AxiosError, LoginUser>(
     queryCreate(`/auth/login`),
     {
       onSuccess: (data) => {

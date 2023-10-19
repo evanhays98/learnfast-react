@@ -4,10 +4,11 @@ import { AxiosError } from 'axios';
 import { queryCreate, queryGet } from './fetch';
 
 export const useWorkingCards = (id?: string) => {
+  const queryClient = useQueryClient();
   return useQuery<WorkingCard[], AxiosError>(
     ['working-cards', 'chapters', id],
     queryGet(`/working-cards/chapters/${id}`, {
-      enabled: !!id,
+      enabled: !!queryClient.getQueryData(['users', 'me']) && !!id,
     }),
   );
 };
@@ -18,7 +19,7 @@ export const useVerificationWorkingCard = (id?: string) => {
     queryCreate(`/working-cards/verification/${id}`),
     {
       onSuccess: async (data) => {
-        queryClient.invalidateQueries(['working-cards', data.id]);
+        await queryClient.invalidateQueries(['working-cards', data.id]);
       },
     },
   );
@@ -30,17 +31,18 @@ export const useValidateWorkingCard = (id?: string) => {
     queryCreate(`/working-cards/${id}/validate`),
     {
       onSuccess: async (data) => {
-        queryClient.invalidateQueries(['working-cards', data.id]);
+        await queryClient.invalidateQueries(['working-cards', data.id]);
       },
     },
   );
 };
 
 export const useWorkingCard = (id?: string) => {
+  const queryClient = useQueryClient();
   return useQuery<WorkingCard, AxiosError>(
     ['working-cards', id],
     queryGet(`/working-cards/${id}`, {
-      enabled: !!id,
+      enabled: !!id && !!queryClient.getQueryData(['users', 'me']),
     }),
   );
 };

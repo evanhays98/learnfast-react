@@ -34,7 +34,6 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     color: theme.colors.lightGray,
   },
   input: {
-
     resize: 'none',
     outline: 'none',
     borderRadius: [theme.borderRadius.std, theme.borderRadius.std, 0, 0],
@@ -52,7 +51,6 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
       transition: 'all ease-in-out 0.2s',
       paddingLeft: '1%',
     },
-
   },
   label: {
     position: 'absolute',
@@ -74,72 +72,83 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   },
   error: {
     ...theme.fonts.caption,
-    fontSize: theme.fonts.caption.fontSize - 2,
-    paddingLeft: theme.marginBase + 2,
+    fontSize: theme.fonts.caption.fontSize - 1,
+    marginLeft: '2%',
+    paddingLeft: theme.marginBase / 2,
     paddingTop: theme.marginBase / 2,
     fontWeight: 500,
-    color: theme.colors.red,
+    color: '#de507b',
   },
   container: {
     width: '100%',
   },
-
 }));
 
 interface Input1Props {
-  title: string,
-  type?: string,
-  name: string,
-  value?: string
-  maxLength?: number
-  eye?: boolean
+  title: string;
+  type?: string;
+  name: string;
+  value?: string;
+  maxLength?: number;
+  eye?: boolean;
 }
 
-export const Input = ({ title, type = 'text', name, value, maxLength = 100, eye }: Input1Props) => {
+export const Input = ({
+  title,
+  type = 'text',
+  name,
+  value,
+  maxLength = 100,
+  eye,
+}: Input1Props) => {
+  const formik = useFormikContext<any>();
+  const [val, setVal] = useState(formik.values[name] || value || '');
+  const classes = useStyles({ theme });
+  const [_type, setType] = useState(type);
 
-    const formik = useFormikContext<any>();
-    const [val, setVal] = useState(formik.values[name] || value || '');
-    const classes = useStyles({ theme });
-    const [_type, setType] = useState(type);
+  const handleValue = (e: any) => {
+    setVal(e.value);
+    formik.setFieldValue(name, e.value);
+    if (e.value) e.classList.add('has-value');
+    else e.classList.remove('has-value');
+  };
 
-    const handleValue = (e: any) => {
-      setVal(e.value);
-      formik.setFieldValue(
-        name,
-        e.value,
-      );
-      if (e.value)
-        e.classList.add('has-value');
-      else
-        e.classList.remove('has-value');
-    };
-
-    return (
-      <div className={classes.container}>
-        <div className={classes.inputContainer}>
-          <input className={classnames(classes.input)} type={_type} name={name} maxLength={maxLength}
-                 value={val}
-                 onChange={(e) => {
-                   handleValue(e.target);
-                 }} />
-          <label className={classnames(classes.label, {
+  return (
+    <div className={classes.container}>
+      <div className={classes.inputContainer}>
+        <input
+          className={classnames(classes.input)}
+          type={_type}
+          name={name}
+          maxLength={maxLength}
+          value={val}
+          onChange={(e) => {
+            handleValue(e.target);
+          }}
+        />
+        <label
+          className={classnames(classes.label, {
             [classes.hasValue]: val,
-          })}>{title}</label>
-          {eye &&
-            <div className={classes.eyeContainer} onClick={() => {
+          })}
+        >
+          {title}
+        </label>
+        {eye && (
+          <div
+            className={classes.eyeContainer}
+            onClick={() => {
               _type === 'password' ? setType('text') : setType('password');
-            }}>
-              <AiOutlineEye className={classes.eye} />
-            </div>
-          }
-        </div>
-        {formik.touched[name] && formik.errors[name] ? (
-          <div className={classes.error}>{formik.errors[name]?.toString()}</div>
-        ) : null}
-
+            }}
+          >
+            <AiOutlineEye className={classes.eye} />
+          </div>
+        )}
       </div>
-    );
-  }
-;
+      {formik.touched[name] && formik.errors[name] ? (
+        <div className={classes.error}>{formik.errors[name]?.toString()}</div>
+      ) : null}
+    </div>
+  );
+};
 
 export default Input;

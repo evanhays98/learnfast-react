@@ -5,9 +5,15 @@ import { Colors, theme, Theme } from '../../theme';
 import { Link } from 'react-router-dom';
 import { Icon, Icons } from '../Icons';
 
-const useStyles = createUseStyles<string, { line: boolean, bgColor: Colors, color: Colors }, any>((theme: Theme) => ({
-  blockColor: props => ({
-    background: `${props.line ? theme.colors.transparent : theme.colors[props.bgColor]}`,
+const useStyles = createUseStyles<
+  string,
+  { line: boolean; bgColor: Colors; color: Colors },
+  any
+>((theme: Theme) => ({
+  blockColor: (props) => ({
+    background: `${
+      props.line ? theme.colors.transparent : theme.colors[props.bgColor]
+    }`,
     minWidth: !props.line && theme.marginBase * 10,
     borderRadius: theme.borderRadius.std,
     ...theme.fonts.label,
@@ -19,7 +25,9 @@ const useStyles = createUseStyles<string, { line: boolean, bgColor: Colors, colo
     alignItems: 'center',
     alignContent: 'center',
     justifyContent: 'center',
-    padding: !props.line ? theme.marginBase : [theme.marginBase / 4, theme.marginBase],
+    padding: !props.line
+      ? theme.marginBase
+      : [theme.marginBase / 4, theme.marginBase],
     gap: !props.line ? theme.marginBase * 2 : theme.marginBase,
     backdropFilter: props.line ? 'none' : 'blur(10px)',
   }),
@@ -37,7 +45,6 @@ const useStyles = createUseStyles<string, { line: boolean, bgColor: Colors, colo
   },
 }));
 
-
 interface BaseButtonProps {
   className?: string;
   bgColor?: Colors; // Change to your Colors type
@@ -49,7 +56,6 @@ interface BaseButtonProps {
   icon?: Icon; // Change to your Icon type
   line?: boolean;
   square?: boolean;
-  sizeIcon?: number;
   disabled?: boolean;
   onClick?: () => void;
   type?: 'button' | 'submit' | 'reset';
@@ -69,9 +75,16 @@ type GenericButtonProps = ButtonProps | LinkProps | AProps;
 
 export const Button = (props: BaseButtonProps & GenericButtonProps) => {
   const {
-    full, line, icon, color,
-    bgColor, square, className, disabled,
-    onClick, type,
+    full,
+    line,
+    icon,
+    color,
+    bgColor,
+    square,
+    className,
+    disabled,
+    onClick,
+    type,
     ...rest
   } = props;
   const classes = useStyles({
@@ -93,12 +106,16 @@ export const Button = (props: BaseButtonProps & GenericButtonProps) => {
 
   return (
     <ButtonComp
-      className={classnames(classes.blockColor, {
-        [classes.full]: full,
-        [classes.line]: line,
-        [classes.square]: square,
-        [classes.disabled]: disabled,
-      }, className)}
+      className={classnames(
+        classes.blockColor,
+        {
+          [classes.full]: full,
+          [classes.line]: line,
+          [classes.square]: square,
+          [classes.disabled]: disabled,
+        },
+        className,
+      )}
       onClick={disabled ? undefined : onClick}
       onSubmit={disabled ? undefined : onClick}
       type={disabled ? 'button' : type}
