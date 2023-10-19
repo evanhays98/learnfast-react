@@ -204,6 +204,9 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
   const [appear, setAppear] = useState(false);
   const [disappear, setDisappear] = useState(false);
   const [disabled, setDisabled] = useState(false);
+  const synthLang = synth.getVoices().reduce((acc, voice) => {
+    return acc.concat(voice.lang);
+  }, [] as string[]);
 
   const content: CutSentence[] = useMemo(() => {
     const cutSentence = fieldTranslation?.sentence?.split('//');
@@ -232,6 +235,38 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
     }, 600);
   }, [content]);
 
+  const commonFunction = async (utterance: SpeechSynthesisUtterance) => {
+    if (disabled) {
+      return;
+    }
+    setDisabled(true);
+    focusInput2();
+    setReveal(true);
+
+    if (!synthLang.includes(lng)) {
+      setTimeout(() => {
+        setDisappear(true);
+        setTimeout(() => {
+          setReveal(false);
+          setMiss(false);
+          onFinish();
+        }, 500);
+      }, (fieldTranslation?.sentence?.split(' ').length || 0) * 320 + 800);
+    } else {
+      setTimeout(() => {
+        synth.speak(utterance);
+      }, 300);
+      utterance.onend = () => {
+        setDisappear(true);
+        setTimeout(() => {
+          setReveal(false);
+          setMiss(false);
+          onFinish();
+        }, 500);
+      };
+    }
+  };
+
   const onVerification = async (
     values: Values,
     { resetForm }: FormikHelpers<Values>,
@@ -239,7 +274,6 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
     if (disabled) {
       return;
     }
-    setDisabled(true);
     focusInput2();
     let answerWorkingCard = await verificationWorkingCard({
       answer: values.answer,
@@ -253,45 +287,17 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
     if (lastHistory === WorkingCardHistoryEnums.MISS_ANSWER) {
       setMiss(true);
     }
-    setReveal(true);
-    setTimeout(() => {
-      synth.speak(utterance);
-    }, 300);
-    utterance.onend = () => {
-      setDisappear(true);
-      setTimeout(() => {
-        setReveal(false);
-        setMiss(false);
-        onFinish();
-      }, 500);
-      resetForm();
-    };
-    return false;
+    await commonFunction(utterance);
+    resetForm();
   };
 
   const onValidate = async () => {
-    if (disabled) {
-      return;
-    }
-    setDisabled(true);
-    focusInput2();
     await validateWorkingCard();
     const utterance = new SpeechSynthesisUtterance(
       fieldTranslation?.sentence.split('//').join(''),
     );
     utterance.lang = lng;
-    setReveal(true);
-    setTimeout(() => {
-      synth.speak(utterance);
-    }, 300);
-    utterance.onend = () => {
-      setDisappear(true);
-      setTimeout(() => {
-        setReveal(false);
-        onFinish();
-      }, 500);
-    };
-    return false;
+    await commonFunction(utterance);
   };
 
   const focusInput = () => {

@@ -8,7 +8,6 @@ import { Button, Formix, FormixError, useToast } from '../../libs/core';
 import { AxiosError } from 'axios';
 import { FormikHelpers } from 'formik';
 
-
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   globalContainer: {
     minHeight: '100%',
@@ -70,7 +69,6 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     background: `-webkit-linear-gradient(60deg, ${'#ea2828'} 0%, ${'rgba(213,48,141,1)'} 100%)`,
     WebkitBackgroundClip: 'text',
     color: 'transparent',
-
   },
 }));
 
@@ -79,80 +77,87 @@ interface Values {
   pseudo: string;
 }
 
-
 export const Profile = () => {
-    const classes = useStyles({ theme });
-    const { data: me } = useMe();
-    const { mutate: logout } = useLogout();
-    const { mutateAsync: updateProfile } = useUpdateUser();
-    const toast = useToast();
+  const classes = useStyles({ theme });
+  const { data: me } = useMe();
+  const { mutate: logout } = useLogout();
+  const { mutateAsync: updateProfile } = useUpdateUser();
+  const toast = useToast();
 
-    const initialValues: Values | null = useMemo(() => {
-      if (!me) {
-        return null;
-      }
-      return {
-        mail: me.mail,
-        pseudo: me.pseudo,
-      };
-    }, [me]);
-
-    const valueUpdated = (values: Values) => {
-      if (!initialValues) {
-        return false;
-      }
-      return initialValues.mail !== values.mail || initialValues.pseudo !== values.pseudo;
-    };
-
-    const onSubmit = async (values: Values, helpers: FormikHelpers<any>) => {
-      const valuesUpdated = valueUpdated(values);
-      try {
-        if (!valuesUpdated) {
-          return;
-        }
-        await updateProfile(values);
-        toast.info('Profile updated');
-      } catch (e) {
-        if (e instanceof AxiosError) {
-          helpers.setErrors({
-            error: e.response?.data?.message || 'Une erreur s\'est produite',
-          });
-        }
-        throw e;
-      }
-    };
-
-    if (!me || !initialValues || !initialValues.mail) {
+  const initialValues: Values | null = useMemo(() => {
+    if (!me) {
       return null;
     }
+    return {
+      mail: me.mail,
+      pseudo: me.pseudo,
+    };
+  }, [me]);
 
-
+  const valueUpdated = (values: Values) => {
+    if (!initialValues) {
+      return false;
+    }
     return (
-      <div className={classes.globalContainer}>
-        <div className={classes.titleContainer}>
-          <h1 className={classes.title}>Profile</h1>
-          <PWAInstallButton />
-        </div>
+      initialValues.mail !== values.mail ||
+      initialValues.pseudo !== values.pseudo
+    );
+  };
 
+  const onSubmit = async (values: Values, helpers: FormikHelpers<any>) => {
+    const valuesUpdated = valueUpdated(values);
+    try {
+      if (!valuesUpdated) {
+        return;
+      }
+      await updateProfile(values);
+      toast.saved('Profile updated');
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        helpers.setErrors({
+          error: e.response?.data?.message || "Une erreur s'est produite",
+        });
+      }
+      throw e;
+    }
+  };
 
-        <Formix initialValues={initialValues} onSubmit={onSubmit}>
-          {({ values }: any) => (
-            <>
-              <Input title='Mail' name='mail' />
-              <Input title='Pseudo' name='pseudo' />
-              <FormixError />
-              {valueUpdated(values) && <Button className={classes.buttonUpdate} text='Update profile' type='submit' />}
-            </>
-          )}
-        </Formix>
+  if (!me || !initialValues || !initialValues.mail) {
+    return null;
+  }
 
-        <div className={classes.content2}>
-          <Button className={classes.buttonLogOut} line text='Log out' onClick={() => logout()} />
-        </div>
-
-
+  return (
+    <div className={classes.globalContainer}>
+      <div className={classes.titleContainer}>
+        <h1 className={classes.title}>Profile</h1>
+        <PWAInstallButton />
       </div>
 
-    );
-  }
-;
+      <Formix initialValues={initialValues} onSubmit={onSubmit}>
+        {({ values }: any) => (
+          <>
+            <Input title="Mail" name="mail" />
+            <Input title="Pseudo" name="pseudo" />
+            <FormixError />
+            {valueUpdated(values) && (
+              <Button
+                className={classes.buttonUpdate}
+                text="Update profile"
+                type="submit"
+              />
+            )}
+          </>
+        )}
+      </Formix>
+
+      <div className={classes.content2}>
+        <Button
+          className={classes.buttonLogOut}
+          line
+          text="Log out"
+          onClick={() => logout()}
+        />
+      </div>
+    </div>
+  );
+};
