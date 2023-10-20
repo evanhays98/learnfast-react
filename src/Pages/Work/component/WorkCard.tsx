@@ -244,7 +244,6 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
     focusInput2();
     setReveal(true);
 
-
     if (!synthLang.includes(lng)) {
       setTimeout(() => {
         setDisappear(true);
@@ -313,6 +312,7 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
       reff.current.focus();
     }
   };
+
 
   return (
     <div
