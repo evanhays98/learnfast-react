@@ -3,7 +3,7 @@ import { createUseStyles } from 'react-jss';
 import { theme, Theme } from '../../libs/theme';
 import { Button, Formix, FormixError, PageTitle } from '../../libs/core';
 import Input from '../../libs/core/Input/Input';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useMe, useRegister } from '../../libs/api/src';
 import * as Yup from 'yup';
 import { AxiosError } from 'axios';
@@ -100,7 +100,7 @@ export const Register = () => {
     } catch (e) {
       if (e instanceof AxiosError) {
         helpers.setErrors({
-          error: e.response?.data?.message || "Une erreur s'est produite",
+          error: e.response?.data?.message || 'Une erreur s\'est produite',
         });
       }
       throw e;
@@ -108,25 +108,25 @@ export const Register = () => {
   };
 
   if (me && !isLoading) {
-    navigate('/');
+    return <Navigate to='/' />;
   }
 
   return (
     <div className={classes.page}>
       <PageTitle text={'Sign up'} />
 
-      <Formix initialValues={initialValues} onSubmit={submit}>
-        <Input title="Email" name="mail" />
-        <Input title="Pseudo" name="pseudo" />
-        <Input title="Password" name="password" type="password" eye />
+      <Formix initialValues={initialValues} onSubmit={submit} validationSchema={validationSchema}>
+        <Input title='Email' name='mail' />
+        <Input title='Pseudo' name='pseudo' />
+        <Input title='Password' name='password' type='password' eye />
         <Input
-          title="Confirm Password"
-          name="confirmPassword"
-          type="password"
+          title='Confirm Password'
+          name='confirmPassword'
+          type='password'
           eye
         />
         <FormixError />
-        <Button className={classes.button} type="submit" full>
+        <Button className={classes.button} type='submit' full>
           <div className={classes.buttonText}>Register</div>
         </Button>
         <Button

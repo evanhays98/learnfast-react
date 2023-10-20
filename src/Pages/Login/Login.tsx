@@ -4,7 +4,7 @@ import { theme, Theme } from '../../libs/theme';
 import { Button, PageTitle } from '../../libs/core';
 import Input from '../../libs/core/Input/Input';
 import { useLogin, useMe } from '../../libs/api/src';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { Formix, FormixError } from '../../libs/core/Formix';
 import { FormikHelpers } from 'formik';
@@ -71,7 +71,7 @@ export const Login = () => {
     } catch (e) {
       if (e instanceof AxiosError) {
         helpers.setErrors({
-          error: e.response?.data?.message || "Une erreur s'est produite",
+          error: e.response?.data?.message || 'Une erreur s\'est produite',
         });
       }
       throw e;
@@ -79,7 +79,7 @@ export const Login = () => {
   };
 
   if (me && !isLoading) {
-    navigate('/');
+    return <Navigate to='/' />;
   }
 
   return (
@@ -90,10 +90,10 @@ export const Login = () => {
         onSubmit={submit}
         validationSchema={validationSchema}
       >
-        <Input title="Mail or Pseudo" name="identifier" />
-        <Input title="Password" name="password" type="password" eye />
+        <Input title='Mail or Pseudo' name='identifier' />
+        <Input title='Password' name='password' type='password' eye />
         <FormixError />
-        <Button className={classes.button} type="submit" full>
+        <Button className={classes.button} type='submit' full>
           <div className={classes.buttonText}>Connect</div>
         </Button>
         <Button

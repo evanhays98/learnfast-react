@@ -3,11 +3,7 @@ import { createUseStyles } from 'react-jss';
 import { theme, Theme } from '../../../libs/theme';
 import { Button } from '../../../libs/core';
 import classnames from 'classnames';
-import {
-  useValidateWorkingCard,
-  useVerificationWorkingCard,
-  useWorkingCard,
-} from '../../../libs/api/src';
+import { useValidateWorkingCard, useVerificationWorkingCard, useWorkingCard } from '../../../libs/api/src';
 import { WorkingCardHistoryEnums } from '../../../libs/enums';
 import { Points } from './Points';
 import { Form, Formik, FormikHelpers } from 'formik';
@@ -37,7 +33,12 @@ const useStyles = createUseStyles<string, { width: number }, any>(
       padding: theme.marginBase * 2,
       width: '100%',
       maxWidth: theme.marginBase * 70,
-      margin: 'auto',
+      height: 'fit-content',
+      position: 'relative',
+      marginBottom: theme.marginBase * 8,
+      '@media (min-width: 768px)': {
+        margin: 'auto',
+      },
     },
     content1: {
       textAlign: 'justify',
@@ -243,6 +244,7 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
     focusInput2();
     setReveal(true);
 
+
     if (!synthLang.includes(lng)) {
       setTimeout(() => {
         setDisappear(true);
@@ -320,9 +322,10 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
       })}
     >
       <input
-        style={{ opacity: 0, position: 'absolute', top: 0 }}
+        style={{ opacity: 0, position: 'absolute', top: 0, width: 0, height: 0 }}
         ref={reff}
-        type="text"
+        type='text'
+        id='input'
       />
       <Formik initialValues={{ answer: '' }} onSubmit={onVerification}>
         {({ values: { answer }, setFieldValue, resetForm }) => (
@@ -353,11 +356,11 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
                       <input
                         ref={ref}
                         style={{ opacity: `${reveal ? 0 : 1}` }}
-                        id="input"
+                        id='input'
                         className={classnames(classes.input, {
                           [classes.revealInput]: reveal,
                         })}
-                        type="text"
+                        type='text'
                         value={reveal ? 'true' : answer}
                         onChange={async (e) => {
                           await setFieldValue('answer', e.target.value);
@@ -385,8 +388,8 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
               <Button
                 disabled={disabled}
                 className={classes.markAsLearn}
-                type="button"
-                text="Mark as learn"
+                type='button'
+                text='Mark as learn'
                 line
                 onClick={async () => {
                   await onValidate();
@@ -396,8 +399,8 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
               <Button
                 disabled={disabled}
                 className={classes.button}
-                text="Submit"
-                type="submit"
+                text='Submit'
+                type='submit'
               />
             </div>
           </Form>

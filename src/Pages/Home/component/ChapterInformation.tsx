@@ -4,6 +4,7 @@ import { ColorsTest, theme, Theme } from '../../../libs/theme';
 import { Button, Icon, Icons } from '../../../libs/core';
 import { Chapter } from '../../../libs/dtos';
 import { useNavigate } from 'react-router-dom';
+import { useMe } from '../../../libs/api/src';
 
 const useStyles = createUseStyles<string, { pin?: boolean }, any>((theme: Theme) => ({
   container: props => ({
@@ -62,28 +63,29 @@ const useStyles = createUseStyles<string, { pin?: boolean }, any>((theme: Theme)
 
 
 interface Props {
-  pin?: boolean,
   chapter: Chapter,
 }
 
-export const ChapterInformation = ({ pin, chapter }: Props) => {
-  const classes = useStyles({ theme, pin });
+export const ChapterInformation = ({ chapter }: Props) => {
+  const { data: me } = useMe();
+  const classes = useStyles({ theme });
   const navigate = useNavigate();
 
   return (
     <div className={classes.container}>
       <div className={classes.headerContainer}>
         <h2 className={classes.title}>{chapter.title}</h2>
-        <Button className={classes.button} square>
-          <Icons icon={Icon.edit} color={ColorsTest.black} size={theme.icon.normal + 2}></Icons>
-        </Button>
-        {pin && <Icons icon={Icon.pin} color={ColorsTest.orange} size={theme.icon.normal} />}
+        {me?.id === chapter.ownerId &&
+          <Button className={classes.button} square>
+            <Icons icon={Icon.edit} color={ColorsTest.black} size={theme.icon.normal + 2} />
+          </Button>
+        }
       </div>
       <p className={classes.description}>{chapter.description}</p>
-      {!pin && <Button full className={classes.buttonGo} onClick={() => {
+      <Button full className={classes.buttonGo} onClick={() => {
         navigate(`/work/${chapter.id}`);
       }}>
         <div className={classes.buttonGoText}>Work on this chapter</div>
-      </Button>}
+      </Button>
     </div>);
 };

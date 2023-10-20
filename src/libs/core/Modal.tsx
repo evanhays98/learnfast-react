@@ -131,7 +131,7 @@ export const Modal = ({ children, isOpen, setIsOpen, title }: Props) => {
         setIsClosing(false);
       }, 500);
     }
-  }, [isOpen]);
+  }, [firstRender, isClosing, isOpen]);
 
   if (!isOpen && !isClosing) {
     return null;
