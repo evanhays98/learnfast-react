@@ -99,6 +99,7 @@ export const Work = () => {
     data: workingCards,
     isLoading: workingCardsLoading,
     refetch: resetWorkingCards,
+    isRefetching: resetWorkingCardsLoading,
   } = useWorkingCards(id);
   const [number, setNumber] = React.useState(0);
 
@@ -106,7 +107,7 @@ export const Work = () => {
     setNumber(0);
   }, [workingCards]);
 
-  if (chapterLoading || workingCardsLoading) {
+  if (chapterLoading || workingCardsLoading || resetWorkingCardsLoading) {
     return <CenteredLoader />;
   }
 
@@ -152,7 +153,6 @@ export const Work = () => {
   const onFinish = async () => {
     if (number === workingCards.length - 1) {
       await resetWorkingCards();
-      setNumber(0);
       return;
     }
     setNumber(number + 1);
