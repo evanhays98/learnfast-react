@@ -27,10 +27,8 @@ jobs:
       - name: add CNAME
         run: echo 'boardzgames.com' > build/CNAME
 
-      - name: Deploy to GitHub Pages
-        run: npx gh-pages -d build
-
-      - name: Clean up
-        run: |
-          rm -rf node_modules
-          rm -rf build
+      - name: Deploying to gh-pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
