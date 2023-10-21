@@ -18,13 +18,19 @@ jobs:
         with:
           node-version: '19.x'
 
-      - name: Set Git identity
-        run: |
-          git config user.email "evan.hays@epita.fr"
-          git config user.name "Evan deploy"
-
       - name: Install dependencies
         run: npm install
 
-      - name: Run deploy
-        run: npm run deploy
+      - name: Build the app
+        run: npm run build
+
+      - name: add CNAME
+        run: echo 'boardzgames.com' > build/CNAME
+
+      - name: Deploy to GitHub Pages
+        run: npx gh-pages -d build
+
+      - name: Clean up
+        run: |
+          rm -rf node_modules
+          rm -rf build
