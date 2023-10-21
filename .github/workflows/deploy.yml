@@ -18,6 +18,11 @@ jobs:
         with:
           node-version: '19.x'
 
+      - name: Set Git identity
+        run: |
+          git config user.email "evan.hays@epita.fr"
+          git config user.name "Evan deploy"
+
       - name: Install dependencies
         run: npm install
 
