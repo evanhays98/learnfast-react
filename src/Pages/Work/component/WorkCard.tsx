@@ -272,7 +272,6 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
     }
     focusInput2();
     setDisabled(true);
-    setReveal(true);
   };
 
   const afterCheck = async () => {
@@ -317,6 +316,7 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
     if (lastHistory === WorkingCardHistoryEnums.MISS_ANSWER) {
       setMiss(true);
     }
+    setReveal(true);
     await afterCheck();
     resetForm();
   };
@@ -324,6 +324,7 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
   const onValidate = async () => {
     beforeCheck();
     await validateWorkingCard();
+    setReveal(true);
     await afterCheck();
   };
 
@@ -404,7 +405,6 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
                     className={classes.text}
                     ref={(ref) => {
                       if (index === content.length - 1 && ref?.textContent) {
-                        console.log(ref.textContent);
                         if (!isRender) {
                           setIsRender(true);
                         }
