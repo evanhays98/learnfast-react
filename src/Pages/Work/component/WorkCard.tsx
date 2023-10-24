@@ -25,7 +25,7 @@ interface CutSentence {
 
 const useStyles = createUseStyles<string, { width: number }, any>(
   (theme: Theme) => ({
-    contentSentence: {
+    workCard: {
       background: `repeating-linear-gradient(${120}deg, ${'rgba(209,206,250,0.12)'} 0%, ${'rgba(182,179,227,0.04)'} 50%, ${'rgba(165,160,236,0.14)'} 100%)`,
       borderRadius: theme.borderRadius.std,
       boxShadow: `0px 0px 30px 0px ${'rgba(215,154,239,0.4)'}`,
@@ -195,24 +195,44 @@ interface Values {
 
 export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
   const classes = useStyles({ theme, width: 450 });
+
   const ref = useRef<HTMLInputElement | null>(null);
   const reff = useRef<HTMLInputElement | null>(null);
-  const { data: workingCard } = useWorkingCard(workingCardId);
-  const { mutateAsync: validateWorkingCard } =
-    useValidateWorkingCard(workingCardId);
+
   const [reveal, setReveal] = useState(false);
   const [miss, setMiss] = useState(false);
-  const fieldTranslation = workingCard?.card?.fieldTranslation;
-  const { mutateAsync: verificationWorkingCard } =
-    useVerificationWorkingCard(workingCardId);
-  const synth = window.speechSynthesis;
   const [appear, setAppear] = useState(false);
   const [disappear, setDisappear] = useState(false);
   const [disabled, setDisabled] = useState(false);
-  const synthLang = synth.getVoices().reduce((acc, voice) => {
-    return acc.concat(voice.lang);
-  }, [] as string[]);
-  const [isComponentRendered, setIsComponentRendered] = useState(false);
+  const [isRender, setIsRender] = useState(false);
+
+  const { data: workingCard } = useWorkingCard(workingCardId);
+  const { fieldTranslation } = workingCard?.card || {};
+  const { mutateAsync: validateWorkingCard } =
+    useValidateWorkingCard(workingCardId);
+  const { mutateAsync: verificationWorkingCard } =
+    useVerificationWorkingCard(workingCardId);
+
+  const synth = window.speechSynthesis;
+
+  const synthLang = useMemo(
+    () => (synth ? synth.getVoices().map((voice) => voice.lang) : []),
+    [synth],
+  );
+  const lang = useMemo(() => {
+    const lng2 = lng.replace('-', '_');
+    if (synthLang.includes(lng)) {
+      return lng;
+    }
+    if (synthLang.includes(lng2)) {
+      return lng2;
+    }
+    const lng3 = lng.replace('_', '-');
+    if (synthLang.includes(lng3)) {
+      return lng3;
+    }
+    return null;
+  }, [lng, synthLang]);
 
   const content: CutSentence[] = useMemo(() => {
     const cutSentence = fieldTranslation?.sentence?.split('//');
@@ -230,11 +250,11 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
   }, [fieldTranslation]);
 
   useEffect(() => {
-    setIsComponentRendered(true);
+    setIsRender(false);
   }, [content]);
 
   useEffect(() => {
-    if (!isComponentRendered) {
+    if (!isRender) {
       return;
     }
     setDisappear(false);
@@ -244,18 +264,19 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
       focusInput();
       setDisabled(false);
     }, 550);
-    setIsComponentRendered(false);
-  }, [isComponentRendered]);
+  }, [isRender]);
 
-  const commonFunction = async (utterance: SpeechSynthesisUtterance) => {
+  const beforeCheck = () => {
     if (disabled) {
       return;
     }
-    setDisabled(true);
     focusInput2();
+    setDisabled(true);
     setReveal(true);
+  };
 
-    if (!synthLang.includes(lng)) {
+  const afterCheck = async () => {
+    if (!lang) {
       setTimeout(() => {
         setDisappear(true);
         setTimeout(() => {
@@ -265,6 +286,10 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
         }, 500);
       }, (fieldTranslation?.sentence?.split(' ').length || 0) * 320 + 800);
     } else {
+      const utterance = new SpeechSynthesisUtterance(
+        fieldTranslation?.sentence.split('//').join(''),
+      );
+      utterance.lang = lang;
       setTimeout(() => {
         synth.speak(utterance);
       }, 300);
@@ -283,33 +308,23 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
     values: Values,
     { resetForm }: FormikHelpers<Values>,
   ) => {
-    if (disabled) {
-      return;
-    }
-    focusInput2();
+    beforeCheck();
     let answerWorkingCard = await verificationWorkingCard({
       answer: values.answer,
     });
     const lastHistory =
       answerWorkingCard.history[answerWorkingCard.history.length - 1];
-    const utterance = new SpeechSynthesisUtterance(
-      fieldTranslation?.sentence.split('//').join(''),
-    );
-    utterance.lang = lng;
     if (lastHistory === WorkingCardHistoryEnums.MISS_ANSWER) {
       setMiss(true);
     }
-    await commonFunction(utterance);
+    await afterCheck();
     resetForm();
   };
 
   const onValidate = async () => {
+    beforeCheck();
     await validateWorkingCard();
-    const utterance = new SpeechSynthesisUtterance(
-      fieldTranslation?.sentence.split('//').join(''),
-    );
-    utterance.lang = lng;
-    await commonFunction(utterance);
+    await afterCheck();
   };
 
   const focusInput = () => {
@@ -326,7 +341,7 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
 
   return (
     <div
-      className={classnames(classes.contentSentence, classes.animatedBlock, {
+      className={classnames(classes.workCard, classes.animatedBlock, {
         [classes.disappear]: disappear,
         [classes.appear]: appear,
       })}
@@ -341,7 +356,6 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
         }}
         ref={reff}
         type="text"
-        id="input"
       />
       <Formik initialValues={{ answer: '' }} onSubmit={onVerification}>
         {({ values: { answer }, setFieldValue, resetForm }) => (
@@ -372,7 +386,6 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
                       <input
                         ref={ref}
                         style={{ opacity: `${reveal ? 0 : 1}` }}
-                        id="input"
                         className={classnames(classes.input, {
                           [classes.revealInput]: reveal,
                         })}
@@ -386,7 +399,18 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
                   );
                 }
                 return (
-                  <p key={item.sentence} className={classes.text}>
+                  <p
+                    key={item.sentence}
+                    className={classes.text}
+                    ref={(ref) => {
+                      if (index === content.length - 1 && ref?.textContent) {
+                        console.log(ref.textContent);
+                        if (!isRender) {
+                          setIsRender(true);
+                        }
+                      }
+                    }}
+                  >
                     {item.sentence}
                   </p>
                 );
