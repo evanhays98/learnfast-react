@@ -4,7 +4,7 @@ import { theme, Theme } from '../../libs/theme';
 import { Button, Formix, FormixError, PageTitle } from '../../libs/core';
 import Input from '../../libs/core/Input/Input';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { useMe, useRegister } from '../../libs/api/src';
+import { useMe, useRegister } from '../../libs/api';
 import * as Yup from 'yup';
 import { AxiosError } from 'axios';
 import { FormikHelpers } from 'formik';

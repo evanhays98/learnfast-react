@@ -94,13 +94,13 @@ interface Input1Props {
 }
 
 export const Input = ({
-  title,
-  type = 'text',
-  name,
-  value,
-  maxLength = 100,
-  eye,
-}: Input1Props) => {
+                        title,
+                        type = 'text',
+                        name,
+                        value,
+                        maxLength = 100,
+                        eye,
+                      }: Input1Props) => {
   const formik = useFormikContext<any>();
   const [val, setVal] = useState(formik.values[name] || value || '');
   const classes = useStyles({ theme });
@@ -109,8 +109,6 @@ export const Input = ({
   const handleValue = (e: any) => {
     setVal(e.value);
     formik.setFieldValue(name, e.value);
-    if (e.value) e.classList.add('has-value');
-    else e.classList.remove('has-value');
   };
 
   return (

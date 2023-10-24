@@ -22,6 +22,7 @@ const useStyles = createUseStyles<
     fontWeight: 'bold',
     display: 'flex',
     border: 0,
+    cursor: 'pointer',
     alignItems: 'center',
     alignContent: 'center',
     justifyContent: 'center',
@@ -30,6 +31,7 @@ const useStyles = createUseStyles<
       : [theme.marginBase / 4, theme.marginBase],
     gap: !props.line ? theme.marginBase * 2 : theme.marginBase,
     backdropFilter: props.line ? 'none' : 'blur(10px)',
+    transition: 'all 0.3s ease-in-out',
   }),
   full: {
     width: '100%',

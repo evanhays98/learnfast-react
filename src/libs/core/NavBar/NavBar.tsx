@@ -3,7 +3,7 @@ import { createUseStyles } from 'react-jss';
 import { theme, Theme } from '../../theme/Theme';
 import { NavBarLink } from './NavBarLink';
 import { Icon } from '../Icons';
-import { useLastChapterWorked } from '../../api/src';
+import { useLastChapterWorked } from '../../api';
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   page: {
@@ -36,10 +36,10 @@ interface Props {
 
 export const NavBar = ({ children }: Props) => {
   const classes = useStyles({ theme });
-  const {data: lastChapter} = useLastChapterWorked();
+  const { data: lastChapter } = useLastChapterWorked();
   return (
     <div className={classes.page}>
-      <div className={classes.pageContainer}>
+      <div className={classes.pageContainer} id='main-container'>
         {children}
       </div>
       <div className={classes.navBar}>

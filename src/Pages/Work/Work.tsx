@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Theme, theme } from 'src/libs/theme';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useChapter, useWorkingCards } from '../../libs/api/src';
+import { useChapter, useWorkingCards } from '../../libs/api';
 import { Button, CenteredLoader, Icon } from '../../libs/core';
 import { WorkCard } from './component/WorkCard';
 
