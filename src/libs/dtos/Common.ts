@@ -58,9 +58,10 @@ export interface PaginatedResults<T> {
 
 export interface PaginatedQueryParams {
   limit: number;
+  search?: string;
 }
 
 export const computePaginationParams = (pageParams: PaginatedQueryParams) => {
-  const { limit } = pageParams;
-  return `&limit=${limit}`;
+  const { limit, search } = pageParams;
+  return `&limit=${limit}${search ? '&search=' + search : ''}`;
 };

@@ -1,10 +1,9 @@
 import React from 'react';
-import { AiOutlineEye } from 'react-icons/ai';
 import { createUseStyles } from 'react-jss';
 import { theme, Theme } from 'src/libs/theme';
 import classnames from 'classnames';
 import { Formix } from '../Formix';
-import * as Yup from 'yup';
+import { Icon, Icons } from '../Icons';
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   inputContainer: {
@@ -21,15 +20,19 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
       borderTop: `2px solid ${theme.colors.lightGray}`,
       borderBottom: `2px solid ${theme.colors.lightGray}`,
     },
+    overflow: 'hidden',
   },
   eyeContainer: {
     padding: theme.marginBase / 2,
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'absolute',
     right: 0,
-    bottom: 6,
-    marginRight: 10,
+    bottom: 0,
+    top: 0,
+    paddingBottom: -1,
+    boxShadow: `0px 0px 50px 0px ${'rgba(62,143,131,0.75)'}`,
   },
   eye: {
     fontSize: theme.icon.normal,
@@ -58,6 +61,11 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     width: '100%',
     margin: 0,
   },
+  button: {
+    background: 'transparent',
+    border: 'none',
+    outline: 'none',
+  },
 }));
 
 interface Props {
@@ -68,32 +76,38 @@ const initialValues = {
   search: '',
 };
 
-const validationSchema = Yup.object().shape({
-  search: Yup.string().required('Required'),
-});
 
 export const SearchInput = ({ onSearch }: Props) => {
   const classes = useStyles({ theme });
+
+  const submit = (values: any) => {
+    onSearch(values.search);
+  };
 
   return (
     <Formix
       className={classes.container}
       initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={(values) => {
-        onSearch(values.search);
-      }}
+      onSubmit={submit}
     >
-      <div className={classes.inputContainer}>
-        <input
-          className={classnames(classes.input)}
-          placeholder="Search"
-          name="search"
-        />
-        <div className={classes.eyeContainer} onClick={() => {}}>
-          <AiOutlineEye className={classes.eye} />
+      {({ setFieldValue }: any) => (
+        <div className={classes.inputContainer}>
+          <input
+            className={classnames(classes.input)}
+            placeholder='Search'
+            name='search'
+            onChange={(e) => {
+              setFieldValue('search', e.target.value);
+            }}
+          />
+          <div className={classes.eyeContainer} onClick={() => {
+          }}>
+            <button className={classes.button} type='submit'>
+              <Icons icon={Icon.search} />
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </Formix>
   );
 };
