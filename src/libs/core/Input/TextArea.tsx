@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormikContext } from 'formik';
 import { createUseStyles } from 'react-jss';
 import { theme, Theme } from 'src/libs/theme';
@@ -39,18 +39,18 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     backgroundColor: 'transparent',
     flex: 1,
     margin: 'auto',
-    ...theme.fonts.label,
+    ...theme.fonts.caption,
     padding: theme.marginBase,
+    height: 'fit-content',
     border: 'none',
     '&:focus + label': {
       top: -theme.marginBase * 3,
       left: 0,
       fontWeight: 700,
-      color: '#c5b1ec',
+      color: '#a3d8db',
       transition: 'all ease-in-out 0.2s',
       paddingLeft: '1%',
     },
-
   },
   label: {
     position: 'absolute',
@@ -64,46 +64,91 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   },
   hasValue: {
     fontWeight: 700,
-    color: '#c5b1ec',
+    color: '#a3d8db',
     top: -theme.marginBase * 3,
     left: 0,
     transition: 'all ease-in-out 0.2s',
     paddingLeft: '1%',
   },
-
+  error: {
+    ...theme.fonts.caption,
+    fontSize: theme.fonts.caption.fontSize - 1,
+    marginLeft: '2%',
+    paddingLeft: theme.marginBase / 2,
+    paddingTop: theme.marginBase / 2,
+    fontWeight: 500,
+    color: '#de507b',
+  },
 }));
 
 interface Props {
-  title: string,
-  name: string,
-  value?: string
-  maxLength?: number
+  title?: string;
+  name: string;
+  value?: string;
+  maxLength?: number;
+  className?: string;
+  rows?: number;
 }
 
-export const TextArea = ({ title, name, value, maxLength = 200 }: Props) => {
-    const formik = useFormikContext<any>();
-    const [val, setVal] = useState(formik.values[name] || value || '');
-    const classes = useStyles({ theme });
+const useAutosizeTextArea = (
+  textAreaRef: HTMLTextAreaElement | null,
+  value: string,
+) => {
+  useEffect(() => {
+    if (textAreaRef) {
+      // We need to reset the height momentarily to get the correct scrollHeight for the textarea
+      textAreaRef.style.height = '0px';
+      const scrollHeight = textAreaRef.scrollHeight;
 
-    const handleValue = (e: any) => {
-      setVal(e.value);
-      formik.setFieldValue(
-        name,
-        e.value,
-      );
-    };
+      // We then set the height directly, outside of the render loop
+      // Trying to set this with state or a ref will product an incorrect value.
+      textAreaRef.style.height = scrollHeight + 'px';
+    }
+  }, [textAreaRef, value]);
+};
 
-    return (
-      <div className={classes.inputContainer}>
-        <textarea rows={3} className={classnames(classes.input)} name={name} maxLength={maxLength}
-                  value={val}
-                  onChange={(e) => {
-                    handleValue(e.target);
-                  }} />
-        <label className={classnames(classes.label, {
-          [classes.hasValue]: val,
-        })}>{title}</label>
-      </div>
-    );
-  }
-;
+export const TextArea = ({
+  title,
+  className,
+  name,
+  value,
+  rows = 1,
+  maxLength = 200,
+}: Props) => {
+  const formik = useFormikContext<any>();
+  const [val, setVal] = useState(formik.values[name] || value || '');
+  const classes = useStyles({ theme });
+  const ref = React.useRef<HTMLTextAreaElement>(null);
+
+  useAutosizeTextArea(ref.current, val);
+
+  const handleValue = (e: any) => {
+    setVal(e.value);
+    formik.setFieldValue(name, e.value);
+  };
+
+  return (
+    <div className={classes.inputContainer}>
+      <textarea
+        ref={ref}
+        rows={rows}
+        className={classnames(classnames(classes.input, className))}
+        name={name}
+        maxLength={maxLength}
+        value={val}
+        onChange={(e) => {
+          handleValue(e.target);
+        }}
+      />
+      {title && (
+        <label
+          className={classnames(classes.label, {
+            [classes.hasValue]: val,
+          })}
+        >
+          {title}
+        </label>
+      )}
+    </div>
+  );
+};

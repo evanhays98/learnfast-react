@@ -26,7 +26,9 @@ type FormikProps = FormikConfig<any>;
 
 interface Props {
   className?: string;
-  children: React.ReactNode | ((props: Partial<FormikProps>) => React.ReactNode);
+  children:
+    | React.ReactNode
+    | ((props: Partial<FormikProps>) => React.ReactNode);
 }
 
 type GenericProps = Props & FormikProps;
@@ -49,11 +51,9 @@ export const Formix = ({ className, children, ...rest }: GenericProps) => {
   return (
     <Formik {...rest}>
       {(formikProps) => (
-        <Form>
+        <Form style={{ width: '100%' }}>
           <div className={classnames(classes.container, className)}>
-            {typeof children === 'function'
-              ? children(formikProps)
-              : children}
+            {typeof children === 'function' ? children(formikProps) : children}
           </div>
         </Form>
       )}

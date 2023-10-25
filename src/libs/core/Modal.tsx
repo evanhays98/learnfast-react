@@ -48,6 +48,7 @@ const useStyles = createUseStyles<string, { height: number }, any>(
       width: '100%',
       padding: theme.marginBase * 2,
       minHeight: 400,
+      marginBottom: theme.marginBase * 7,
       height: 'fit-content',
     },
     animationContainer: {
