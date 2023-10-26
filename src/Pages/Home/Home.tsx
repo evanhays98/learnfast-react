@@ -7,7 +7,7 @@ import { Modal } from '../../libs/core/Modal';
 import { Form, Formik } from 'formik';
 import Input from '../../libs/core/Input/Input';
 import * as Yup from 'yup';
-import { useChapters, useCreateChapter } from '../../libs/api/src';
+import { useChapters, useCreateChapter } from '../../libs/api';
 import { ChapterInformation } from './component/ChapterInformation';
 import PWAInstallButton from '../../libs/core/PWAInstallButton';
 

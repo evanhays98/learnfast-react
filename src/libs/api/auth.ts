@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { queryCreate, queryGet, queryUpdate } from './fetch';
 import { useCallback } from 'react';
 import { AxiosError } from 'axios';
-import { CreateUser, LoginUser, UpdateUserDto, User, UserAccessToken } from '../../dtos';
+import { CreateUser, LoginUser, Role, UpdateUserDto, User, UserAccessToken } from '../dtos';
 
 export const useLogout = () => {
   const queryClient = useQueryClient();
@@ -66,4 +66,19 @@ export const useUpdateUser = () => {
       },
     },
   );
+};
+
+export const useIsAdmin = () => {
+  const { data: user } = useMe();
+  return user && user.role.includes(Role.ADMIN);
+};
+
+export const useIsBeta = () => {
+  const { data: user } = useMe();
+  return user && user.role.includes(Role.BETA);
+};
+
+export const useIsAnonymous = () => {
+  const { data: user } = useMe();
+  return user && user.role.includes(Role.ANONYMOUS);
 };

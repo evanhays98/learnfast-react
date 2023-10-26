@@ -1,4 +1,4 @@
-import { useLogout, useMe } from '../api/src';
+import { useLogout, useMe } from '../api';
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { CenteredLoader } from './CenteredLoader';

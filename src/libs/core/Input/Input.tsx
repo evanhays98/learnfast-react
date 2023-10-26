@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormikContext } from 'formik';
 import { AiOutlineEye } from 'react-icons/ai';
 import { createUseStyles } from 'react-jss';
@@ -20,6 +20,27 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
       borderBottom: `2px solid ${theme.colors.lightGray}`,
     },
   },
+  textAreaContainer: {
+    borderRadius: theme.borderRadius.std,
+    width: '100%',
+    position: 'relative',
+    marginTop: theme.marginBase * 2,
+    overflow: 'hidden',
+    border: '0px solid transparent',
+    ...theme.basicFlex,
+  },
+  textAreaHolder: {
+    height: 0,
+    width: 0,
+    borderTop: `20px solid ${'#fff'}`,
+    borderLeft: `20px solid transparent`,
+    borderRight: `20px solid transparent`,
+    position: 'absolute',
+    bottom: -4,
+    transform: 'rotate(-45deg)',
+    right: -15,
+    pointerEvents: 'none',
+  },
   eyeContainer: {
     padding: theme.marginBase / 2,
     display: 'flex',
@@ -40,14 +61,38 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     backgroundColor: 'transparent',
     flex: 1,
     margin: 'auto',
-    ...theme.fonts.label,
+    ...theme.fonts.caption,
     padding: theme.marginBase,
     border: 'none',
     '&:focus + label': {
       top: -theme.marginBase * 3,
       left: 0,
       fontWeight: 700,
-      color: '#c5b1ec',
+      color: '#a3d8db',
+      transition: 'all ease-in-out 0.2s',
+      paddingLeft: '1%',
+    },
+  },
+  textarea: {
+    resize: 'block',
+    outline: 'none',
+    borderRadius: [theme.borderRadius.std, theme.borderRadius.std, 0, 0],
+    backgroundColor: 'transparent',
+    flex: 1,
+    margin: 'auto',
+    ...theme.fonts.caption,
+    padding: theme.marginBase,
+    height: 'fit-content',
+    border: 'none',
+    '&::-webkit-resizer': {
+      display: 'none',
+      zIndex: 2,
+    },
+    '&:focus + label': {
+      top: -theme.marginBase * 3,
+      left: 0,
+      fontWeight: 700,
+      color: '#a3d8db',
       transition: 'all ease-in-out 0.2s',
       paddingLeft: '1%',
     },
@@ -64,7 +109,7 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   },
   hasValue: {
     fontWeight: 700,
-    color: '#c5b1ec',
+    color: '#a3d8db',
     top: -theme.marginBase * 3,
     left: 0,
     transition: 'all ease-in-out 0.2s',
@@ -91,41 +136,81 @@ interface Input1Props {
   value?: string;
   maxLength?: number;
   eye?: boolean;
+  textarea?: boolean;
+  className?: string;
+  rows?: number;
+  autoSize?: boolean;
 }
 
+const useAutosizeTextArea = (
+  textAreaRef: HTMLTextAreaElement | null,
+  value: string,
+  textarea: boolean,
+  disable: boolean,
+) => {
+  useEffect(() => {
+    if (textAreaRef && textarea && !disable) {
+      textAreaRef.style.height = '0px';
+      const scrollHeight = textAreaRef.scrollHeight;
+      textAreaRef.style.height = scrollHeight + 'px';
+    }
+  }, [textAreaRef, value, textarea, disable]);
+};
+
 export const Input = ({
-  title,
-  type = 'text',
-  name,
-  value,
-  maxLength = 100,
-  eye,
-}: Input1Props) => {
+                        title,
+                        type = 'text',
+                        name,
+                        value,
+                        maxLength = 100,
+                        eye,
+                        textarea,
+                        className,
+                        autoSize,
+                        rows = autoSize ? 1 : 3,
+                      }: Input1Props) => {
   const formik = useFormikContext<any>();
   const [val, setVal] = useState(formik.values[name] || value || '');
   const classes = useStyles({ theme });
   const [_type, setType] = useState(type);
+  const ref = React.useRef<HTMLTextAreaElement>(null);
+  useAutosizeTextArea(ref.current, val, !!textarea, !autoSize);
 
   const handleValue = (e: any) => {
     setVal(e.value);
     formik.setFieldValue(name, e.value);
-    if (e.value) e.classList.add('has-value');
-    else e.classList.remove('has-value');
   };
 
   return (
     <div className={classes.container}>
       <div className={classes.inputContainer}>
-        <input
-          className={classnames(classes.input)}
-          type={_type}
-          name={name}
-          maxLength={maxLength}
-          value={val}
-          onChange={(e) => {
-            handleValue(e.target);
-          }}
-        />
+        {textarea ? (
+          <div className={classes.textAreaContainer}>
+            <div className={classes.textAreaHolder} />
+            <textarea
+              ref={ref}
+              rows={rows}
+              className={classnames(classnames(classes.textarea, className))}
+              name={name}
+              maxLength={maxLength}
+              value={val}
+              onChange={(e) => {
+                handleValue(e.target);
+              }}
+            />
+          </div>
+        ) : (
+          <input
+            className={classnames(classes.input)}
+            type={_type}
+            name={name}
+            maxLength={maxLength}
+            value={val}
+            onChange={(e) => {
+              handleValue(e.target);
+            }}
+          />
+        )}
         <label
           className={classnames(classes.label, {
             [classes.hasValue]: val,

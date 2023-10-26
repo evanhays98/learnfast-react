@@ -22,14 +22,16 @@ const useStyles = createUseStyles<
     fontWeight: 'bold',
     display: 'flex',
     border: 0,
+    cursor: 'pointer',
     alignItems: 'center',
     alignContent: 'center',
     justifyContent: 'center',
     padding: !props.line
-      ? theme.marginBase
+      ? [theme.marginBase, theme.marginBase * 2]
       : [theme.marginBase / 4, theme.marginBase],
     gap: !props.line ? theme.marginBase * 2 : theme.marginBase,
     backdropFilter: props.line ? 'none' : 'blur(10px)',
+    transition: 'all 0.3s ease',
   }),
   full: {
     width: '100%',
@@ -38,7 +40,7 @@ const useStyles = createUseStyles<
     width: theme.marginBase * 5,
     height: theme.marginBase * 5,
     minWidth: `${theme.marginBase * 5}px !important`,
-    padding: 0,
+    padding: '0px !important',
   },
   disabled: {
     opacity: 0.5,

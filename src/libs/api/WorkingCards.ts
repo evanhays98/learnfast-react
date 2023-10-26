@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { AnswerWorkingCard, WorkingCard } from '../../dtos';
+import { AnswerWorkingCard, WorkingCard } from '../dtos';
 import { AxiosError } from 'axios';
 import { queryCreate, queryGet } from './fetch';
 

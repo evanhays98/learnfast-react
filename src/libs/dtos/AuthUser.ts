@@ -5,9 +5,16 @@ export interface BaseEntity {
   updatedAt: Date;
 }
 
+export enum Role {
+  ANONYMOUS = 'ANONYMOUS',
+  BETA = 'BETA',
+  ADMIN = 'ADMIN',
+}
+
 export interface User extends BaseEntity {
   pseudo: string;
   mail: string;
+  role: Role[];
 }
 
 export interface UserAccessToken extends BaseEntity {

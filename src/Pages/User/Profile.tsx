@@ -2,11 +2,12 @@ import React, { useMemo } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Theme, theme } from 'src/libs/theme';
 import PWAInstallButton from '../../libs/core/PWAInstallButton';
-import { useLogout, useMe, useUpdateUser } from '../../libs/api/src';
+import { useLogout, useMe, useUpdateUser } from '../../libs/api';
 import Input from '../../libs/core/Input/Input';
 import { Button, Formix, FormixError, useToast } from '../../libs/core';
 import { AxiosError } from 'axios';
 import { FormikHelpers } from 'formik';
+import * as Yup from 'yup';
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   globalContainer: {
@@ -77,6 +78,14 @@ interface Values {
   pseudo: string;
 }
 
+const validationSchema = Yup.object().shape({
+  mail: Yup.string()
+    .required('Email is required')
+    .email('Invalid email format'),
+  pseudo: Yup.string().required('Pseudo is required')
+    .min(3, 'Pseudo must be at least 3 characters long'),
+});
+
 export const Profile = () => {
   const classes = useStyles({ theme });
   const { data: me } = useMe();
@@ -115,7 +124,7 @@ export const Profile = () => {
     } catch (e) {
       if (e instanceof AxiosError) {
         helpers.setErrors({
-          error: e.response?.data?.message || "Une erreur s'est produite",
+          error: e.response?.data?.message || 'Une erreur s\'est produite',
         });
       }
       throw e;
@@ -133,17 +142,17 @@ export const Profile = () => {
         <PWAInstallButton />
       </div>
 
-      <Formix initialValues={initialValues} onSubmit={onSubmit}>
+      <Formix validationSchema={validationSchema} initialValues={initialValues} onSubmit={onSubmit}>
         {({ values }: any) => (
           <>
-            <Input title="Mail" name="mail" />
-            <Input title="Pseudo" name="pseudo" />
+            <Input title='Mail' name='mail' />
+            <Input title='Pseudo' name='pseudo' />
             <FormixError />
             {valueUpdated(values) && (
               <Button
                 className={classes.buttonUpdate}
-                text="Update profile"
-                type="submit"
+                text='Update profile'
+                type='submit'
               />
             )}
           </>
@@ -154,7 +163,7 @@ export const Profile = () => {
         <Button
           className={classes.buttonLogOut}
           line
-          text="Log out"
+          text='Log out'
           onClick={() => logout()}
         />
       </div>

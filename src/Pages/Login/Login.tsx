@@ -3,7 +3,7 @@ import { createUseStyles } from 'react-jss';
 import { theme, Theme } from '../../libs/theme';
 import { Button, PageTitle } from '../../libs/core';
 import Input from '../../libs/core/Input/Input';
-import { useLogin, useMe } from '../../libs/api/src';
+import { useLogin, useMe } from '../../libs/api';
 import { Navigate, useNavigate } from 'react-router-dom';
 import * as Yup from 'yup';
 import { Formix, FormixError } from '../../libs/core/Formix';

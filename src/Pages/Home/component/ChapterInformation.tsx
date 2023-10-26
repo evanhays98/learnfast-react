@@ -4,7 +4,7 @@ import { ColorsTest, theme, Theme } from '../../../libs/theme';
 import { Button, Icon, Icons } from '../../../libs/core';
 import { Chapter } from '../../../libs/dtos';
 import { useNavigate } from 'react-router-dom';
-import { useMe } from '../../../libs/api/src';
+import { useIsAdmin, useMe } from '../../../libs/api';
 
 const useStyles = createUseStyles<string, { pin?: boolean }, any>((theme: Theme) => ({
   container: props => ({
@@ -70,13 +70,16 @@ export const ChapterInformation = ({ chapter }: Props) => {
   const { data: me } = useMe();
   const classes = useStyles({ theme });
   const navigate = useNavigate();
+  const isAdmin = useIsAdmin();
 
   return (
     <div className={classes.container}>
       <div className={classes.headerContainer}>
         <h2 className={classes.title}>{chapter.title}</h2>
-        {me?.id === chapter.ownerId &&
-          <Button className={classes.button} square>
+        {(me?.id === chapter.ownerId || isAdmin) &&
+          <Button className={classes.button} square onClick={() => {
+            navigate(`/chapter/${chapter.id}`);
+          }}>
             <Icons icon={Icon.edit} color={ColorsTest.black} size={theme.icon.normal + 2} />
           </Button>
         }

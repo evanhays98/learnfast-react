@@ -6,6 +6,11 @@ export interface CreateChapter {
   description: string;
 }
 
+export class UpdateChapter {
+  title?: string;
+  description?: string;
+}
+
 export interface Chapter extends BaseEntity {
   ownerId: string;
   title: string;

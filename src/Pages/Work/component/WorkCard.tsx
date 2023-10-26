@@ -3,11 +3,7 @@ import { createUseStyles } from 'react-jss';
 import { theme, Theme } from '../../../libs/theme';
 import { Button } from '../../../libs/core';
 import classnames from 'classnames';
-import {
-  useValidateWorkingCard,
-  useVerificationWorkingCard,
-  useWorkingCard,
-} from '../../../libs/api/src';
+import { useValidateWorkingCard, useVerificationWorkingCard, useWorkingCard } from '../../../libs/api';
 import { WorkingCardHistoryEnums } from '../../../libs/enums';
 import { Points } from './Points';
 import { Form, Formik, FormikHelpers } from 'formik';
@@ -356,7 +352,7 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
           height: 0,
         }}
         ref={reff}
-        type="text"
+        type='text'
       />
       <Formik initialValues={{ answer: '' }} onSubmit={onVerification}>
         {({ values: { answer }, setFieldValue, resetForm }) => (
@@ -390,7 +386,7 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
                         className={classnames(classes.input, {
                           [classes.revealInput]: reveal,
                         })}
-                        type="text"
+                        type='text'
                         value={reveal ? 'true' : answer}
                         onChange={async (e) => {
                           await setFieldValue('answer', e.target.value);
@@ -428,8 +424,8 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
               <Button
                 disabled={disabled}
                 className={classes.markAsLearn}
-                type="button"
-                text="Mark as learn"
+                type='button'
+                text='Mark as learn'
                 line
                 onClick={async () => {
                   await onValidate();
@@ -439,8 +435,8 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
               <Button
                 disabled={disabled}
                 className={classes.button}
-                text="Submit"
-                type="submit"
+                text='Submit'
+                type='submit'
               />
             </div>
           </Form>
