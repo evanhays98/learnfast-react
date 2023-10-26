@@ -1,10 +1,19 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { createUseStyles } from 'react-jss';
-import { theme, Theme } from 'src/libs/theme';
+import { ColorsTest, theme, Theme } from 'src/libs/theme';
 import { Icon, Icons } from './Icons';
 import classnames from 'classnames';
+import { FilterAndSortConfig } from '../config';
+import { SearchInput } from './Input';
+import { PaginatedQueryParams } from '../dtos';
+import { Formix } from './Formix';
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
+  globalContainer: {
+    display: 'flex',
+    flexDirection: 'column',
+    width: '100%',
+  },
   mainContainer: {
     display: 'flex',
     alignItems: 'center',
@@ -64,23 +73,69 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
       textTransform: 'uppercase',
     },
   },
+  filterContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    flexDirection: 'column',
+    borderBottomLeftRadius: theme.borderRadius.std,
+    borderBottomRightRadius: theme.borderRadius.std,
+    background: `linear-gradient(100deg, ${'rgba(236,230,239,0.01)'} 0%, ${'rgba(236,241,243,0.01)'} 100%)`,
+    borderBottom: `2px solid ${'rgba(209,209,224,0.8)'}`,
+    padding: theme.marginBase * 2,
+    gap: theme.marginBase * 2,
+  },
+  buttonSortContainer: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: theme.marginBase * 2,
+  },
+  buttonSort: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    flex: 1,
+    padding: theme.marginBase,
+    borderRadius: theme.borderRadius.std,
+    background: 'rgba(238,245,245,1)',
+  },
+  deActiveFilter: {
+    opacity: 0.5,
+  },
+  activeFilter: {
+    border: `2px solid ${'rgba(209,209,224,0.8)'}`,
+  },
 }));
 
 interface Props {
-  columnsNames: { value: string, name: string }[];
+  columnsNames: FilterAndSortConfig[];
 }
 
+const initialValues: PaginatedQueryParams = {
+  limit: 20,
+};
 
 export const FilterHeader = ({ columnsNames }: Props) => {
   const classes = useStyles({ theme });
   const refContainer = useRef<HTMLDivElement>(null);
-  const [scrollInterval, setScrollInterval] = useState<string | number | NodeJS.Timeout | null | undefined>(null);
+  const [scrollInterval, setScrollInterval] = useState<
+    string | number | NodeJS.Timeout | null | undefined
+  >(null);
   const [atRight, setAtRight] = useState<boolean>(false);
   const [atLeft, setAtLeft] = useState<boolean>(false);
+  const [filterIndex, setFilterIndex] = useState<number | null>(null);
+  const [paginateQuery, setPaginateQuery] = useState<PaginatedQueryParams>({
+    limit: 20,
+  });
 
   const handleScroll = useCallback(() => {
     if (refContainer.current) {
-      setAtRight(refContainer.current.offsetWidth + refContainer.current.scrollLeft > refContainer.current.scrollWidth - 10);
+      setAtRight(
+        refContainer.current.offsetWidth + refContainer.current.scrollLeft >
+          refContainer.current.scrollWidth - 10,
+      );
       setAtLeft(refContainer.current.scrollLeft < 10);
     }
   }, [refContainer]);
@@ -97,15 +152,20 @@ export const FilterHeader = ({ columnsNames }: Props) => {
     };
   }, [refContainer, handleScroll]);
 
-
   const startScroll = (direction: number) => {
     const scrollStep = 100;
     if (refContainer.current) {
-      refContainer.current.scrollBy({ behavior: 'smooth', left: scrollStep * direction });
+      refContainer.current.scrollBy({
+        behavior: 'smooth',
+        left: scrollStep * direction,
+      });
     }
     const interval = setInterval(() => {
       if (refContainer.current) {
-        refContainer.current.scrollBy({ behavior: 'smooth', left: scrollStep * direction });
+        refContainer.current.scrollBy({
+          behavior: 'smooth',
+          left: scrollStep * direction,
+        });
       }
     }, 300);
     setScrollInterval(interval);
@@ -118,37 +178,91 @@ export const FilterHeader = ({ columnsNames }: Props) => {
     }
   };
 
+  const submit = (values: PaginatedQueryParams) => {
+    setPaginateQuery(values);
+  };
+
   return (
-    <div className={classes.mainContainer}>
-      <div
-        className={classnames(classes.scrollButtonContainer, classes.scrollButtonContainerLeft, {
-          [classes.scrollButtonRight]: atLeft,
-        })}
-        onMouseDown={() => startScroll(-1)}
-        onMouseUp={stopScroll}
-        onMouseLeave={stopScroll}
-      >
-        <Icons icon={Icon.arrowLeft} size={theme.icon.normal} />
-      </div>
-      <div ref={refContainer} className={classes.container}>
-        {columnsNames.map(({ name, value }) => (
-          <div className={classes.columnContainer}>
-            <p className={classes.text}>{name}</p>
-            <Icons icon={Icon.dotsVertical} size={theme.icon.normal} />
+    <Formix initialValues={initialValues} onSubmit={submit}>
+      <SearchInput name={'search'} nameValue={'fjeiso'} />
+      <div className={classes.globalContainer}>
+        <div className={classes.mainContainer}>
+          <div
+            className={classnames(
+              classes.scrollButtonContainer,
+              classes.scrollButtonContainerLeft,
+              {
+                [classes.scrollButtonRight]: atLeft,
+              },
+            )}
+            onMouseDown={() => startScroll(-1)}
+            onMouseUp={stopScroll}
+            onMouseLeave={stopScroll}
+          >
+            <Icons icon={Icon.arrowLeft} size={theme.icon.normal} />
           </div>
-        ))
-        }
+          <div ref={refContainer} className={classes.container}>
+            {columnsNames.map(({ name, value }, index) => (
+              <div
+                className={classnames(classes.columnContainer, {
+                  [classes.deActiveFilter]:
+                    filterIndex !== null && Number(filterIndex) !== index,
+                  [classes.activeFilter]:
+                    filterIndex !== null && Number(filterIndex) === index,
+                })}
+                onClick={() => {
+                  if (filterIndex === index) {
+                    setFilterIndex(null);
+                    return;
+                  }
+                  setFilterIndex(index);
+                }}
+              >
+                <p className={classes.text}>{name}</p>
+                <Icons icon={Icon.dotsVertical} size={theme.icon.normal} />
+              </div>
+            ))}
+          </div>
+          <div
+            className={classnames(
+              classes.scrollButtonContainer,
+              classes.scrollButtonContainerRight,
+              {
+                [classes.scrollButtonLeft]: atRight,
+              },
+            )}
+            onMouseDown={() => startScroll(1)}
+            onMouseUp={stopScroll}
+            onMouseLeave={stopScroll}
+          >
+            <Icons icon={Icon.arrowRight} size={theme.icon.normal} />
+          </div>
+        </div>
+        {filterIndex !== null && (
+          <div className={classnames(classes.filterContainer)}>
+            <SearchInput
+              name={columnsNames[filterIndex].value}
+              nameValue={columnsNames[filterIndex].value}
+            />
+            <div className={classes.buttonSortContainer}>
+              <div className={classes.buttonSort}>
+                <Icons
+                  icon={Icon.sortAsc}
+                  size={theme.icon.large}
+                  color={ColorsTest.black}
+                />
+              </div>
+              <div className={classes.buttonSort}>
+                <Icons
+                  icon={Icon.sortDesc}
+                  size={theme.icon.large}
+                  color={ColorsTest.black}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-      <div
-        className={classnames(classes.scrollButtonContainer, classes.scrollButtonContainerRight, {
-          [classes.scrollButtonLeft]: atRight,
-        })}
-        onMouseDown={() => startScroll(1)}
-        onMouseUp={stopScroll}
-        onMouseLeave={stopScroll}
-      >
-        <Icons icon={Icon.arrowRight} size={theme.icon.normal} />
-      </div>
-    </div>
+    </Formix>
   );
 };

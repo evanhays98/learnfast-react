@@ -2,8 +2,8 @@ import React from 'react';
 import { createUseStyles } from 'react-jss';
 import { theme, Theme } from 'src/libs/theme';
 import classnames from 'classnames';
-import { Formix } from '../Formix';
 import { Icon, Icons } from '../Icons';
+import { FormikValues, useFormikContext } from 'formik';
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   inputContainer: {
@@ -69,45 +69,36 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
 }));
 
 interface Props {
-  onSearch: (value: string) => void;
+  name: string;
+  nameValue?: string;
 }
 
-const initialValues = {
-  search: '',
-};
-
-
-export const SearchInput = ({ onSearch }: Props) => {
+export const SearchInput = ({ name, nameValue }: Props) => {
   const classes = useStyles({ theme });
-
-  const submit = (values: any) => {
-    onSearch(values.search);
-  };
+  const { setFieldValue, values } = useFormikContext<FormikValues>();
 
   return (
-    <Formix
-      className={classes.container}
-      initialValues={initialValues}
-      onSubmit={submit}
-    >
-      {({ setFieldValue }: any) => (
-        <div className={classes.inputContainer}>
-          <input
-            className={classnames(classes.input)}
-            placeholder='Search'
-            name='search'
-            onChange={(e) => {
-              setFieldValue('search', e.target.value);
-            }}
-          />
-          <div className={classes.eyeContainer} onClick={() => {
-          }}>
-            <button className={classes.button} type='submit'>
-              <Icons icon={Icon.search} />
-            </button>
-          </div>
-        </div>
-      )}
-    </Formix>
+    <div className={classes.inputContainer}>
+      <input
+        className={classnames(classes.input)}
+        placeholder="Search"
+        name={name}
+        onChange={(e) => {
+          if (Array.isArray(values[name] && nameValue)) {
+            const value = values[name];
+            const valueNameFormik = values.find(
+              (v: any) => v.name === nameValue,
+            );
+            setFieldValue(name, [e.target.value]);
+          }
+          setFieldValue(name, e.target.value);
+        }}
+      />
+      <div className={classes.eyeContainer} onClick={() => {}}>
+        <button className={classes.button} type="submit">
+          <Icons icon={Icon.search} />
+        </button>
+      </div>
+    </div>
   );
 };

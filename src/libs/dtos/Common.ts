@@ -14,20 +14,20 @@ type UnwrapPromise<T> = T extends Promise<infer U> ? UnwrapPromise<U> : T;
 export type Column<T, D extends number = 2> = [D] extends [never]
   ? never
   : T extends Record<string, any>
-    ? {
+  ? {
       [K in keyof T]-?: K extends string
         ? T[K] extends Date
           ? `${K}`
           : T[K] extends Array<infer U>
-            ? `${K}` | Join<K, Column<UnwrapArray<U>, Prev[D]>>
-            : T[K] extends Promise<infer U>
-              ? U extends Array<infer V>
-                ? `${K}` | Join<K, Column<UnwrapArray<V>, Prev[D]>>
-                : `${K}` | Join<K, Column<UnwrapPromise<U>, Prev[D]>>
-              : `${K}` | Join<K, Column<T[K], Prev[D]>>
+          ? `${K}` | Join<K, Column<UnwrapArray<U>, Prev[D]>>
+          : T[K] extends Promise<infer U>
+          ? U extends Array<infer V>
+            ? `${K}` | Join<K, Column<UnwrapArray<V>, Prev[D]>>
+            : `${K}` | Join<K, Column<UnwrapPromise<U>, Prev[D]>>
+          : `${K}` | Join<K, Column<T[K], Prev[D]>>
         : never;
     }[keyof T]
-    : '';
+  : '';
 
 export type Order<T> = [Column<T>, 'ASC' | 'DESC'];
 export type SortBy<T> = Order<T>[];
@@ -59,6 +59,8 @@ export interface PaginatedResults<T> {
 export interface PaginatedQueryParams {
   limit: number;
   search?: string;
+  searchBy?: Column<any>[];
+  sortBy?: SortBy<any>;
 }
 
 export const computePaginationParams = (pageParams: PaginatedQueryParams) => {
