@@ -64,7 +64,5 @@ export interface PaginatedQueryParams {
 
 export const computePaginationParams = (pageParams: PaginatedQueryParams) => {
   const { limit, search, sortBy } = pageParams;
-  console.log(sortBy);
-  console.log(sortBy.length ? '&sortBy=' + sortBy.map(([column, order]) => `${column}:${order}`).join(',') : '');
   return `&limit=${limit}${search ? '&search=' + search : ''}${sortBy.length ? '&sortBy=' + sortBy.map(([column, order]) => `${column}:${order}`).join(',') : ''}`;
 };

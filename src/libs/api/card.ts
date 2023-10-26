@@ -1,12 +1,38 @@
-import { useInfiniteQuery } from 'react-query';
-import { Card, computePaginationParams, PaginatedQueryParams, PaginatedResults } from '../dtos';
+import { useInfiniteQuery, useMutation, useQueryClient } from 'react-query';
+import { Card, computePaginationParams, CreateCard, PaginatedQueryParams, PaginatedResults, UpdateCard } from '../dtos';
 import { AxiosError } from 'axios';
-import { queryGet } from './fetch';
+import { queryCreate, queryGet } from './fetch';
 
 interface PaginatedParams {
   queryParams: PaginatedQueryParams;
   nextPageUrl: string;
 }
+
+export const useCreateCard = () => {
+  const queryClient = useQueryClient();
+  return useMutation<Card, undefined, CreateCard>(
+    queryCreate(`/cards`),
+    {
+      onSuccess: async (data) => {
+        queryClient.setQueryData(['cards', data.id], data);
+        queryClient.invalidateQueries(['chapters', data.chapterId, 'cards']);
+      },
+    },
+  );
+};
+
+export const useUpdateCard = (id: string) => {
+  const queryClient = useQueryClient();
+  return useMutation<Card, undefined, UpdateCard>(
+    queryCreate(`/cards/${id}`),
+    {
+      onSuccess: async (data) => {
+        queryClient.setQueryData(['cards', id], data);
+        queryClient.invalidateQueries(['chapters', data.chapterId, 'cards']);
+      },
+    },
+  );
+};
 
 export const useCards = (id?: string, pageParamsSelect: PaginatedQueryParams = {
   limit: 20,

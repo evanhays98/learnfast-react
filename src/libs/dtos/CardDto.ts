@@ -1,12 +1,25 @@
 import { CardType } from '../enums';
 import { BaseEntity } from './AuthUser';
-import { FieldTranslation } from './FieldTranslationDto';
 import { Chapter } from './ChapterDto';
 import { WorkingCard } from './WorkingCardDto';
 
+export interface FieldTranslation {
+  sentence: string;
+  translation: string;
+  information?: string;
+}
+
+
 export interface CreateCard {
   type: CardType;
-  fieldRef: string;
+  chapterId: string;
+  field: FieldTranslation;
+}
+
+export interface UpdateCard {
+  type?: CardType;
+
+  field?: FieldTranslation;
 }
 
 export interface Card extends BaseEntity {

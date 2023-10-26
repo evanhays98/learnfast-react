@@ -2,13 +2,14 @@ import React, { useMemo } from 'react';
 import { createUseStyles } from 'react-jss';
 import { theme, Theme } from '../../../libs/theme';
 import { Button, Formix, Input, useToast } from '../../../libs/core';
-import { FieldTranslation } from '../../../libs/dtos';
+import { Card } from '../../../libs/dtos';
 import * as Yup from 'yup';
-import { useUpdateFieldTranslation } from '../../../libs/api';
 import classnames from 'classnames';
+import { useUpdateCard } from '../../../libs/api';
+import { CardType } from '../../../libs/enums';
 
 interface Props {
-  fieldTranslation: FieldTranslation;
+  card: Card;
   chapterId: string;
 }
 
@@ -77,35 +78,35 @@ const validationSchema = Yup.object().shape({
 });
 
 export const UpdateFieldTranslation = ({
-                                         fieldTranslation,
+                                         card,
                                          chapterId,
                                        }: Props) => {
   const classes = useStyles({ theme });
-  const { mutateAsync: updateFieldTranslation } = useUpdateFieldTranslation(
-    fieldTranslation.id,
+  const { mutateAsync: updateCard } = useUpdateCard(
+    card.id,
   );
   const toast = useToast();
 
   const initialValues = useMemo(
     () => ({
-      sentence: fieldTranslation.sentence,
-      translation: fieldTranslation.translation,
-      information: fieldTranslation.information,
+      sentence: card.fieldTranslation?.sentence,
+      translation: card.fieldTranslation?.translation,
+      information: card.fieldTranslation?.information,
     }),
-    [fieldTranslation],
+    [card],
   );
 
   const valuesChanged = (values: Values) => {
     return (
-      values.sentence !== fieldTranslation.sentence ||
-      values.translation !== fieldTranslation.translation ||
-      values.information !== fieldTranslation.information
+      values.sentence !== card.fieldTranslation?.sentence ||
+      values.translation !== card.fieldTranslation?.translation ||
+      values.information !== card.fieldTranslation?.information
     );
   };
 
   const submit = async (values: Values) => {
     try {
-      await updateFieldTranslation({ ...values, chapterId });
+      await updateCard({ field: values, type: CardType.TRANSLATION });
       toast.saved('Card updated');
     } catch (e) {
       toast.error('Can\'t update card');

@@ -198,7 +198,7 @@ export const Chapter = () => {
             return (
               <UpdateFieldTranslation
                 key={card.id}
-                fieldTranslation={card.fieldTranslation}
+                card={card}
                 chapterId={id}
               />
             );
