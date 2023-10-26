@@ -23,6 +23,16 @@ export const cardConfig: ColumnConfig<Card> = {
     filterable: true,
     name: 'Type',
   },
+  createdAt: {
+    sortable: true,
+    filterable: true,
+    name: 'Created At',
+  },
+  updatedAt: {
+    sortable: true,
+    filterable: true,
+    name: 'Updated At',
+  },
   fieldTranslation: {
     sentence: {
       sortable: true,
@@ -66,7 +76,7 @@ export const getFilterAndSortConfig = <T>(
     } else {
       const childResult = getFilterAndSortConfig(
         value as ColumnConfig<T>,
-        defaultValue + '.' + key,
+        defaultValue === '' ? key : defaultValue + '.' + key,
       );
       result.push(...childResult);
     }

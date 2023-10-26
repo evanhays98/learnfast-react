@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { ColorsTest, theme, Theme } from 'src/libs/theme';
 import { Icon, Icons } from './Icons';
@@ -7,12 +7,18 @@ import { FilterAndSortConfig } from '../config';
 import { SearchInput } from './Input';
 import { PaginatedQueryParams } from '../dtos';
 import { Formix } from './Formix';
+import { FormikButton } from './FormikButton';
+import { Button } from './Buttons';
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
+  formik: {
+    margin: 0,
+  },
   globalContainer: {
     display: 'flex',
     flexDirection: 'column',
     width: '100%',
+    zIndex: 1,
   },
   mainContainer: {
     display: 'flex',
@@ -69,6 +75,7 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   },
   text: {
     ...theme.fonts.label,
+    whiteSpace: 'nowrap',
     '&:first-letter': {
       textTransform: 'uppercase',
     },
@@ -107,17 +114,20 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   activeFilter: {
     border: `2px solid ${'rgba(209,209,224,0.8)'}`,
   },
+  submitButton: {
+    marginTop: theme.marginBase * 2,
+    background: `-webkit-linear-gradient(100deg, ${'rgba(194,141,220,0.5)'} 0%, ${'rgba(79,105,171,0.5)'} 100%)`,
+
+  },
 }));
 
 interface Props {
   columnsNames: FilterAndSortConfig[];
+  paginateQuery: PaginatedQueryParams;
+  onFilter?: (values: PaginatedQueryParams) => void;
 }
 
-const initialValues: PaginatedQueryParams = {
-  limit: 20,
-};
-
-export const FilterHeader = ({ columnsNames }: Props) => {
+export const FilterHeader = ({ columnsNames, paginateQuery, onFilter }: Props) => {
   const classes = useStyles({ theme });
   const refContainer = useRef<HTMLDivElement>(null);
   const [scrollInterval, setScrollInterval] = useState<
@@ -126,15 +136,19 @@ export const FilterHeader = ({ columnsNames }: Props) => {
   const [atRight, setAtRight] = useState<boolean>(false);
   const [atLeft, setAtLeft] = useState<boolean>(false);
   const [filterIndex, setFilterIndex] = useState<number | null>(null);
-  const [paginateQuery, setPaginateQuery] = useState<PaginatedQueryParams>({
-    limit: 20,
-  });
+  const refFilter = useRef<HTMLDivElement>(null);
+
+  const initialValues: PaginatedQueryParams = useMemo(() => paginateQuery, [paginateQuery]);
+
+  const valuesChanged = (values: PaginatedQueryParams) => {
+    return JSON.stringify(values) !== JSON.stringify(initialValues);
+  };
 
   const handleScroll = useCallback(() => {
     if (refContainer.current) {
       setAtRight(
         refContainer.current.offsetWidth + refContainer.current.scrollLeft >
-          refContainer.current.scrollWidth - 10,
+        refContainer.current.scrollWidth - 10,
       );
       setAtLeft(refContainer.current.scrollLeft < 10);
     }
@@ -144,6 +158,14 @@ export const FilterHeader = ({ columnsNames }: Props) => {
     if (!refContainer.current) {
       return;
     }
+    document.addEventListener('click', (e) => {
+      if (
+        refFilter.current &&
+        !refFilter.current.contains(e.target as Node)
+      ) {
+        setFilterIndex(null);
+      }
+    });
     refContainer.current.addEventListener('scroll', handleScroll);
     return () => {
       if (refContainer.current) {
@@ -179,90 +201,97 @@ export const FilterHeader = ({ columnsNames }: Props) => {
   };
 
   const submit = (values: PaginatedQueryParams) => {
-    setPaginateQuery(values);
+    if (!onFilter) {
+      return;
+    }
+    setFilterIndex(null);
+    onFilter(values);
   };
 
   return (
-    <Formix initialValues={initialValues} onSubmit={submit}>
-      <SearchInput name={'search'} nameValue={'fjeiso'} />
-      <div className={classes.globalContainer}>
-        <div className={classes.mainContainer}>
-          <div
-            className={classnames(
-              classes.scrollButtonContainer,
-              classes.scrollButtonContainerLeft,
-              {
-                [classes.scrollButtonRight]: atLeft,
-              },
-            )}
-            onMouseDown={() => startScroll(-1)}
-            onMouseUp={stopScroll}
-            onMouseLeave={stopScroll}
-          >
-            <Icons icon={Icon.arrowLeft} size={theme.icon.normal} />
-          </div>
-          <div ref={refContainer} className={classes.container}>
-            {columnsNames.map(({ name, value }, index) => (
+    <Formix initialValues={initialValues} onSubmit={submit} className={classes.formik}>
+      {({ values }: any) => (
+        <>
+          <SearchInput name='search' placeholder='Search from all value' />
+          <div ref={refFilter} className={classes.globalContainer}>
+            <div className={classes.mainContainer}>
               <div
-                className={classnames(classes.columnContainer, {
-                  [classes.deActiveFilter]:
-                    filterIndex !== null && Number(filterIndex) !== index,
-                  [classes.activeFilter]:
-                    filterIndex !== null && Number(filterIndex) === index,
-                })}
-                onClick={() => {
-                  if (filterIndex === index) {
-                    setFilterIndex(null);
-                    return;
-                  }
-                  setFilterIndex(index);
-                }}
+                className={classnames(
+                  classes.scrollButtonContainer,
+                  classes.scrollButtonContainerLeft,
+                  {
+                    [classes.scrollButtonRight]: atLeft,
+                  },
+                )}
+                onMouseDown={() => startScroll(-1)}
+                onMouseUp={stopScroll}
+                onMouseLeave={stopScroll}
               >
-                <p className={classes.text}>{name}</p>
-                <Icons icon={Icon.dotsVertical} size={theme.icon.normal} />
+                <Icons icon={Icon.arrowLeft} size={theme.icon.normal} />
               </div>
-            ))}
-          </div>
-          <div
-            className={classnames(
-              classes.scrollButtonContainer,
-              classes.scrollButtonContainerRight,
-              {
-                [classes.scrollButtonLeft]: atRight,
-              },
-            )}
-            onMouseDown={() => startScroll(1)}
-            onMouseUp={stopScroll}
-            onMouseLeave={stopScroll}
-          >
-            <Icons icon={Icon.arrowRight} size={theme.icon.normal} />
-          </div>
-        </div>
-        {filterIndex !== null && (
-          <div className={classnames(classes.filterContainer)}>
-            <SearchInput
-              name={columnsNames[filterIndex].value}
-              nameValue={columnsNames[filterIndex].value}
-            />
-            <div className={classes.buttonSortContainer}>
-              <div className={classes.buttonSort}>
-                <Icons
-                  icon={Icon.sortAsc}
-                  size={theme.icon.large}
-                  color={ColorsTest.black}
-                />
+              <div ref={refContainer} className={classes.container}>
+                {columnsNames.map(({ name, value }, index) => (
+                  <div
+                    className={classnames(classes.columnContainer, {
+                      [classes.deActiveFilter]:
+                      filterIndex !== null && Number(filterIndex) !== index,
+                      [classes.activeFilter]:
+                      filterIndex !== null && Number(filterIndex) === index,
+                    })}
+                    onClick={() => {
+                      if (filterIndex === index) {
+                        setFilterIndex(null);
+                        return;
+                      }
+                      setFilterIndex(index);
+                    }}
+                  >
+                    <p className={classes.text}>{name}</p>
+                    <Icons icon={Icon.dotsVertical} size={theme.icon.normal} />
+                  </div>
+                ))}
               </div>
-              <div className={classes.buttonSort}>
-                <Icons
-                  icon={Icon.sortDesc}
-                  size={theme.icon.large}
-                  color={ColorsTest.black}
-                />
+              <div
+                className={classnames(
+                  classes.scrollButtonContainer,
+                  classes.scrollButtonContainerRight,
+                  {
+                    [classes.scrollButtonLeft]: atRight,
+                  },
+                )}
+                onMouseDown={() => startScroll(1)}
+                onMouseUp={stopScroll}
+                onMouseLeave={stopScroll}
+              >
+                <Icons icon={Icon.arrowRight} size={theme.icon.normal} />
               </div>
             </div>
+            {filterIndex !== null && (
+              <div className={classnames(classes.filterContainer)}>
+                <div className={classes.buttonSortContainer}>
+                  <FormikButton name='sortBy' value='ASC' nameValue={columnsNames[filterIndex].value}
+                                className={classes.buttonSort}>
+                    <Icons
+                      icon={Icon.sortAsc}
+                      size={theme.icon.large}
+                      color={ColorsTest.black}
+                    />
+                  </FormikButton>
+                  <FormikButton name='sortBy' value='DESC' nameValue={columnsNames[filterIndex].value}
+                                className={classes.buttonSort}>
+                    <Icons
+                      icon={Icon.sortDesc}
+                      size={theme.icon.large}
+                      color={ColorsTest.black}
+                    />
+                  </FormikButton>
+                </div>
+              </div>
+            )}
+            {valuesChanged(values) && <Button className={classes.submitButton} text='Apply filter' type='submit' />}
           </div>
-        )}
-      </div>
+        </>
+      )}
     </Formix>
   );
 };

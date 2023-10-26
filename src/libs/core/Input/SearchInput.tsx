@@ -48,14 +48,6 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     ...theme.fonts.caption,
     padding: theme.marginBase,
     border: 'none',
-    '&:focus + label': {
-      top: -theme.marginBase * 3,
-      left: 0,
-      fontWeight: 700,
-      color: '#a3d8db',
-      transition: 'all ease-in-out 0.2s',
-      paddingLeft: '1%',
-    },
   },
   container: {
     width: '100%',
@@ -65,39 +57,34 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     background: 'transparent',
     border: 'none',
     outline: 'none',
+    padding: theme.marginBase / 2,
   },
 }));
 
 interface Props {
   name: string;
-  nameValue?: string;
+  placeholder?: string;
 }
 
-export const SearchInput = ({ name, nameValue }: Props) => {
+export const SearchInput = ({ name, placeholder = 'Search' }: Props) => {
   const classes = useStyles({ theme });
-  const { setFieldValue, values } = useFormikContext<FormikValues>();
+  const { setFieldValue } = useFormikContext<FormikValues>();
 
   return (
     <div className={classes.inputContainer}>
       <input
         className={classnames(classes.input)}
-        placeholder="Search"
+        placeholder={placeholder}
         name={name}
         onChange={(e) => {
-          if (Array.isArray(values[name] && nameValue)) {
-            const value = values[name];
-            const valueNameFormik = values.find(
-              (v: any) => v.name === nameValue,
-            );
-            setFieldValue(name, [e.target.value]);
-          }
           setFieldValue(name, e.target.value);
         }}
       />
-      <div className={classes.eyeContainer} onClick={() => {}}>
-        <button className={classes.button} type="submit">
+      <div className={classes.eyeContainer} onClick={() => {
+      }}>
+        <div className={classes.button}>
           <Icons icon={Icon.search} />
-        </button>
+        </div>
       </div>
     </div>
   );

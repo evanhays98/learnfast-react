@@ -20,6 +20,27 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
       borderBottom: `2px solid ${theme.colors.lightGray}`,
     },
   },
+  textAreaContainer: {
+    borderRadius: theme.borderRadius.std,
+    width: '100%',
+    position: 'relative',
+    marginTop: theme.marginBase * 2,
+    overflow: 'hidden',
+    border: '0px solid transparent',
+    ...theme.basicFlex,
+  },
+  textAreaHolder: {
+    height: 0,
+    width: 0,
+    borderTop: `20px solid ${'#fff'}`,
+    borderLeft: `20px solid transparent`,
+    borderRight: `20px solid transparent`,
+    position: 'absolute',
+    bottom: -4,
+    transform: 'rotate(-45deg)',
+    right: -15,
+    pointerEvents: 'none',
+  },
   eyeContainer: {
     padding: theme.marginBase / 2,
     display: 'flex',
@@ -53,7 +74,7 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     },
   },
   textarea: {
-    resize: 'none',
+    resize: 'block',
     outline: 'none',
     borderRadius: [theme.borderRadius.std, theme.borderRadius.std, 0, 0],
     backgroundColor: 'transparent',
@@ -63,6 +84,10 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     padding: theme.marginBase,
     height: 'fit-content',
     border: 'none',
+    '&::-webkit-resizer': {
+      display: 'none',
+      zIndex: 2,
+    },
     '&:focus + label': {
       top: -theme.marginBase * 3,
       left: 0,
@@ -114,39 +139,42 @@ interface Input1Props {
   textarea?: boolean;
   className?: string;
   rows?: number;
+  autoSize?: boolean;
 }
 
 const useAutosizeTextArea = (
   textAreaRef: HTMLTextAreaElement | null,
   value: string,
   textarea: boolean,
+  disable: boolean,
 ) => {
   useEffect(() => {
-    if (textAreaRef && textarea) {
+    if (textAreaRef && textarea && !disable) {
       textAreaRef.style.height = '0px';
       const scrollHeight = textAreaRef.scrollHeight;
       textAreaRef.style.height = scrollHeight + 'px';
     }
-  }, [textAreaRef, value, textarea]);
+  }, [textAreaRef, value, textarea, disable]);
 };
 
 export const Input = ({
-  title,
-  type = 'text',
-  name,
-  value,
-  maxLength = 100,
-  eye,
-  textarea,
-  className,
-  rows = 1,
-}: Input1Props) => {
+                        title,
+                        type = 'text',
+                        name,
+                        value,
+                        maxLength = 100,
+                        eye,
+                        textarea,
+                        className,
+                        autoSize,
+                        rows = autoSize ? 1 : 3,
+                      }: Input1Props) => {
   const formik = useFormikContext<any>();
   const [val, setVal] = useState(formik.values[name] || value || '');
   const classes = useStyles({ theme });
   const [_type, setType] = useState(type);
   const ref = React.useRef<HTMLTextAreaElement>(null);
-  useAutosizeTextArea(ref.current, val, !!textarea);
+  useAutosizeTextArea(ref.current, val, !!textarea, !autoSize);
 
   const handleValue = (e: any) => {
     setVal(e.value);
@@ -157,17 +185,20 @@ export const Input = ({
     <div className={classes.container}>
       <div className={classes.inputContainer}>
         {textarea ? (
-          <textarea
-            ref={ref}
-            rows={rows}
-            className={classnames(classnames(classes.textarea, className))}
-            name={name}
-            maxLength={maxLength}
-            value={val}
-            onChange={(e) => {
-              handleValue(e.target);
-            }}
-          />
+          <div className={classes.textAreaContainer}>
+            <div className={classes.textAreaHolder} />
+            <textarea
+              ref={ref}
+              rows={rows}
+              className={classnames(classnames(classes.textarea, className))}
+              name={name}
+              maxLength={maxLength}
+              value={val}
+              onChange={(e) => {
+                handleValue(e.target);
+              }}
+            />
+          </div>
         ) : (
           <input
             className={classnames(classes.input)}

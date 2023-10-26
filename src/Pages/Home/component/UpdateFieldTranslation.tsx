@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { createUseStyles } from 'react-jss';
 import { theme, Theme } from '../../../libs/theme';
-import { Button, Formix, TextArea, useToast } from '../../../libs/core';
+import { Button, Formix, Input, useToast } from '../../../libs/core';
 import { FieldTranslation } from '../../../libs/dtos';
 import * as Yup from 'yup';
 import { useUpdateFieldTranslation } from '../../../libs/api';
@@ -72,14 +72,14 @@ const validationSchema = Yup.object().shape({
         return value?.split('//').length === 3;
       },
     ),
-  translation: Yup.string().required('Required').min(3, 'Too short'),
-  information: Yup.string().required('Required').min(3, 'Too short'),
+  translation: Yup.string().required('Required'),
+  information: Yup.string().required('Required'),
 });
 
 export const UpdateFieldTranslation = ({
-  fieldTranslation,
-  chapterId,
-}: Props) => {
+                                         fieldTranslation,
+                                         chapterId,
+                                       }: Props) => {
   const classes = useStyles({ theme });
   const { mutateAsync: updateFieldTranslation } = useUpdateFieldTranslation(
     fieldTranslation.id,
@@ -108,7 +108,7 @@ export const UpdateFieldTranslation = ({
       await updateFieldTranslation({ ...values, chapterId });
       toast.saved('Card updated');
     } catch (e) {
-      toast.error("Can't update card");
+      toast.error('Can\'t update card');
     }
   };
 
@@ -121,22 +121,22 @@ export const UpdateFieldTranslation = ({
     >
       {({ values }: any) => (
         <>
-          <TextArea title="Sentence" name="sentence" />
-          <TextArea
+          <Input title='Sentence' name='sentence' textarea />
+          <Input
             className={classes.translation}
-            title="Translation"
-            name="translation"
+            title='Translation'
+            name='translation'
           />
-          <TextArea
+          <Input
             className={classes.indication}
-            title="Indication"
-            name="information"
+            title='Indication'
+            name='information'
           />
           {valuesChanged(values) && (
             <div className={classes.submitButtonContainer}>
               <Button
-                type="submit"
-                text="Update card"
+                type='submit'
+                text='Update card'
                 className={classnames(classes.button)}
               />
             </div>

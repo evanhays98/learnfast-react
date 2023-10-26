@@ -8,7 +8,11 @@ interface PaginatedParams {
   nextPageUrl: string;
 }
 
-export const useCards = (id?: string, pageParamsSelect: PaginatedQueryParams = { limit: 20 }) => {
+export const useCards = (id?: string, pageParamsSelect: PaginatedQueryParams = {
+  limit: 20,
+  search: '',
+  sortBy: [],
+}) => {
   const params = Object.entries(pageParamsSelect).reduce((acc, [key, value]) => {
     if (key === 'page') {
       return acc;

@@ -92,7 +92,9 @@ const useStyles = createUseStyles<string, { atTop: boolean }, any>(
 export const Chapter = () => {
   const [atTop, setAtTop] = useState<boolean>(true);
   const [paginateQuery, setPaginateQuery] = useState<PaginatedQueryParams>({
-    limit: 20,
+    limit: 50,
+    search: '',
+    sortBy: [],
   });
   const classes = useStyles({ theme, atTop });
   const { id } = useParams();
@@ -123,7 +125,7 @@ export const Chapter = () => {
       container?.scrollTop &&
       container?.scrollHeight &&
       container.offsetHeight + container.scrollTop >=
-        container.scrollHeight - 10
+      container.scrollHeight - 10
     ) {
       setAtBottom(true);
     }
@@ -157,7 +159,7 @@ export const Chapter = () => {
   }
 
   if (!chapter || !id) {
-    return <Navigate to="/home" />;
+    return <Navigate to='/home' />;
   }
 
   return (
@@ -179,14 +181,16 @@ export const Chapter = () => {
       <div className={classes.buttonCreateContainer}>
         <Button
           className={classes.buttonCreateCard}
-          text="Create card"
+          text='Create card'
           full
           icon={Icon.addCard}
           onClick={() => {
             setModalCreateIsOpened(true);
           }}
         />
-        <FilterHeader columnsNames={cardFilterAndSortConfig} />
+        <FilterHeader columnsNames={cardFilterAndSortConfig} paginateQuery={paginateQuery} onFilter={(values) => {
+          setPaginateQuery(values);
+        }} />
       </div>
       <div className={classes.contentContainer}>
         {cards.map((card) => {
