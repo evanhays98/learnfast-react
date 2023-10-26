@@ -31,3 +31,4 @@ export interface Card extends BaseEntity {
   fieldId: string;
   workingCards: WorkingCard[];
 }
+
