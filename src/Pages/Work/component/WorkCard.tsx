@@ -357,6 +357,7 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
       <Formik initialValues={{ answer: '' }} onSubmit={onVerification}>
         {({ values: { answer }, setFieldValue, resetForm }) => (
           <Form>
+            {workingCard?.card?.chapterId}
             {workingCard && (
               <div className={classes.content}>
                 <Points workingCard={workingCard} />

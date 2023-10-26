@@ -9,6 +9,7 @@ export interface CreateChapter {
 export class UpdateChapter {
   title?: string;
   description?: string;
+  lng?: string;
 }
 
 export interface Chapter extends BaseEntity {
