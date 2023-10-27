@@ -10,7 +10,6 @@ import { Modal } from '../../../libs/core/Modal';
 import { FormixError, Input, useToast } from '../../../libs/core';
 import { AxiosError } from 'axios';
 
-
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   modalContainer: {
     ...theme.basicFlex,
@@ -19,9 +18,9 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
 }));
 
 interface Values {
-  title: string,
-  description: string,
-  lng: string,
+  title: string;
+  description: string;
+  lng: string;
 }
 
 const validationSchema = Yup.object().shape({
@@ -31,27 +30,37 @@ const validationSchema = Yup.object().shape({
 });
 
 interface Props {
-  setIsOpened: (value: boolean) => void,
-  isOpened: boolean,
-  chapter: Chapter,
+  setIsOpened: (value: boolean) => void;
+  isOpened: boolean;
+  chapter: Chapter;
+  onSuccess?: () => void;
 }
 
-
-export const ModalUpdateChapter = ({ setIsOpened, isOpened, chapter }: Props) => {
+export const ModalUpdateChapter = ({
+  setIsOpened,
+  isOpened,
+  chapter,
+  onSuccess,
+}: Props) => {
   const classes = useStyles({ theme });
   const { mutateAsync: updateChapter } = useUpdateChapter(chapter.id);
   const toast = useToast();
 
-  const initialValues = useMemo(() => (
-    {
+  const initialValues = useMemo(
+    () => ({
       title: chapter.title,
       description: chapter.description,
       lng: chapter.lng,
-    }
-  ), [chapter]);
+    }),
+    [chapter],
+  );
 
   const valueChanged = (values: Values) => {
-    return values.title !== chapter.title || values.description !== chapter.description || values.lng !== chapter.lng;
+    return (
+      values.title !== chapter.title ||
+      values.description !== chapter.description ||
+      values.lng !== chapter.lng
+    );
   };
 
   const submit = async (values: Values, helpers: FormikHelpers<any>) => {
@@ -59,32 +68,43 @@ export const ModalUpdateChapter = ({ setIsOpened, isOpened, chapter }: Props) =>
       await updateChapter(values);
       setIsOpened(false);
       toast.saved('Chapter updated');
+      if (onSuccess) {
+        onSuccess();
+      }
     } catch (e) {
       if (e instanceof AxiosError && e?.code === '403') {
-        helpers.setErrors({ error: e.response?.data?.message || 'Une erreur s\'est produite' });
+        helpers.setErrors({
+          error: e.response?.data?.message || "Une erreur s'est produite",
+        });
       }
       throw e;
     }
   };
 
   return (
-
-    <Modal isOpen={isOpened} setIsOpen={setIsOpened} title='Update chapter'>
-      <Formik initialValues={initialValues} onSubmit={submit}
-              validationSchema={validationSchema}>
+    <Modal isOpen={isOpened} setIsOpen={setIsOpened} title="Update chapter">
+      <Formik
+        initialValues={initialValues}
+        onSubmit={submit}
+        validationSchema={validationSchema}
+      >
         {({ values }) => (
           <Form>
             <div className={classes.modalContainer}>
-              <Input title='title' name='title' />
-              <Input title='description' name='description' textarea autoSize />
-              <Input title='Lang' name='lng' />
+              <Input title="title" name="title" />
+              <Input title="description" name="description" textarea autoSize />
+              <Input title="Lang" name="lng" />
               <FormixError />
-              <Button text='submit' type='submit' full disabled={!valueChanged(values)} />
+              <Button
+                text="submit"
+                type="submit"
+                full
+                disabled={!valueChanged(values)}
+              />
             </div>
           </Form>
         )}
       </Formik>
     </Modal>
-
   );
 };

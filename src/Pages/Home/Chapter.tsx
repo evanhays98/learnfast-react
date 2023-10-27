@@ -5,12 +5,12 @@ import { CenteredLoader, FilterHeader, Icon, Icons } from '../../libs/core';
 import { Button } from 'src/libs/core/Buttons';
 import { useCards, useChapter } from '../../libs/api';
 import { Navigate, useParams } from 'react-router-dom';
-import { ModalUpdateChapter } from './component/ModalUpdateChapter';
 import { Card, PaginatedQueryParams } from '../../libs/dtos';
 import { UpdateFieldTranslation } from './component/UpdateFieldTranslation';
 import { CardType } from '../../libs/enums';
 import { ModalCreateCard } from './component/ModalCreateCard';
 import { useCardConfig } from '../../libs/config';
+import { ModalEditChapter } from './component/ModalEditChapter';
 
 const useStyles = createUseStyles<string, { atTop: boolean }, any>(
   (theme: Theme) => ({
@@ -98,7 +98,6 @@ export const Chapter = () => {
   });
   const classes = useStyles({ theme, atTop });
   const { id } = useParams();
-  const [modalIsOpened, setModalIsOpened] = useState<boolean>(false);
   const [modalCreateIsOpened, setModalCreateIsOpened] =
     useState<boolean>(false);
   const {
@@ -111,6 +110,7 @@ export const Chapter = () => {
   const container = useMemo(() => {
     return document.getElementById('main-container');
   }, []);
+  const [modalSideBar, setModalSideBar] = useState<boolean>(false);
 
   const { cardFilterAndSortConfig } = useCardConfig();
 
@@ -125,7 +125,7 @@ export const Chapter = () => {
       container?.scrollTop &&
       container?.scrollHeight &&
       container.offsetHeight + container.scrollTop >=
-      container.scrollHeight - 10
+        container.scrollHeight - 10
     ) {
       setAtBottom(true);
     }
@@ -148,10 +148,12 @@ export const Chapter = () => {
   }, [container, handleScroll]);
 
   useEffect(() => {
-    if (atBottom && hasNextPage) {
-      fetchNextPage();
-      setAtBottom(false);
-    }
+    (async () => {
+      if (atBottom && hasNextPage) {
+        await fetchNextPage();
+        setAtBottom(false);
+      }
+    })();
   }, [atBottom, fetchNextPage, hasNextPage]);
 
   if (isLoading) {
@@ -159,20 +161,25 @@ export const Chapter = () => {
   }
 
   if (!chapter || !id) {
-    return <Navigate to='/home' />;
+    return <Navigate to="/home" />;
   }
 
   return (
     <div className={classes.globalContainer}>
+      <ModalEditChapter
+        isOpen={modalSideBar}
+        setIsOpen={setModalSideBar}
+        chapter={chapter}
+      />
       <div className={classes.titleContainer}>
         <div className={classes.firstTitleContainer}>
           <h1 className={classes.title}>{chapter.title}</h1>
           <Button
             className={classes.button}
             square
-            icon={Icon.edit}
+            icon={Icon.dotsVertical}
             onClick={() => {
-              setModalIsOpened(true);
+              setModalSideBar(true);
             }}
           />
         </div>
@@ -181,16 +188,20 @@ export const Chapter = () => {
       <div className={classes.buttonCreateContainer}>
         <Button
           className={classes.buttonCreateCard}
-          text='Create card'
+          text="Create card"
           full
           icon={Icon.addCard}
           onClick={() => {
             setModalCreateIsOpened(true);
           }}
         />
-        <FilterHeader columnsNames={cardFilterAndSortConfig} paginateQuery={paginateQuery} onFilter={(values) => {
-          setPaginateQuery(values);
-        }} />
+        <FilterHeader
+          columnsNames={cardFilterAndSortConfig}
+          paginateQuery={paginateQuery}
+          onFilter={(values) => {
+            setPaginateQuery(values);
+          }}
+        />
       </div>
       <div className={classes.contentContainer}>
         {cards.map((card) => {
@@ -206,11 +217,6 @@ export const Chapter = () => {
           return null;
         })}
       </div>
-      <ModalUpdateChapter
-        chapter={chapter}
-        isOpened={modalIsOpened}
-        setIsOpened={setModalIsOpened}
-      />
       <ModalCreateCard
         isOpened={modalCreateIsOpened}
         setIsOpened={setModalCreateIsOpened}

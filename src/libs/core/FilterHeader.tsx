@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { createUseStyles } from 'react-jss';
 import { ColorsTest, theme, Theme } from 'src/libs/theme';
 import { Icon, Icons } from './Icons';
@@ -117,7 +123,6 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   submitButton: {
     marginTop: theme.marginBase * 2,
     background: `-webkit-linear-gradient(100deg, ${'rgba(194,141,220,0.5)'} 0%, ${'rgba(79,105,171,0.5)'} 100%)`,
-
   },
 }));
 
@@ -127,7 +132,11 @@ interface Props {
   onFilter?: (values: PaginatedQueryParams) => void;
 }
 
-export const FilterHeader = ({ columnsNames, paginateQuery, onFilter }: Props) => {
+export const FilterHeader = ({
+  columnsNames,
+  paginateQuery,
+  onFilter,
+}: Props) => {
   const classes = useStyles({ theme });
   const refContainer = useRef<HTMLDivElement>(null);
   const [scrollInterval, setScrollInterval] = useState<
@@ -138,7 +147,10 @@ export const FilterHeader = ({ columnsNames, paginateQuery, onFilter }: Props) =
   const [filterIndex, setFilterIndex] = useState<number | null>(null);
   const refFilter = useRef<HTMLDivElement>(null);
 
-  const initialValues: PaginatedQueryParams = useMemo(() => paginateQuery, [paginateQuery]);
+  const initialValues: PaginatedQueryParams = useMemo(
+    () => paginateQuery,
+    [paginateQuery],
+  );
 
   const valuesChanged = (values: PaginatedQueryParams) => {
     return JSON.stringify(values) !== JSON.stringify(initialValues);
@@ -148,31 +160,35 @@ export const FilterHeader = ({ columnsNames, paginateQuery, onFilter }: Props) =
     if (refContainer.current) {
       setAtRight(
         refContainer.current.offsetWidth + refContainer.current.scrollLeft >
-        refContainer.current.scrollWidth - 10,
+          refContainer.current.scrollWidth - 10,
       );
       setAtLeft(refContainer.current.scrollLeft < 10);
     }
   }, [refContainer]);
 
+  const handleClick = useCallback(
+    (e: MouseEvent) => {
+      if (refFilter.current && !refFilter.current.contains(e.target as Node)) {
+        setFilterIndex(null);
+      }
+    },
+    [refFilter],
+  );
+
   useEffect(() => {
     if (!refContainer.current) {
       return;
     }
-    document.addEventListener('click', (e) => {
-      if (
-        refFilter.current &&
-        !refFilter.current.contains(e.target as Node)
-      ) {
-        setFilterIndex(null);
-      }
-    });
-    refContainer.current.addEventListener('scroll', handleScroll);
+    const container = refContainer.current;
+    document.addEventListener('click', handleClick);
+    container.addEventListener('scroll', handleScroll);
     return () => {
-      if (refContainer.current) {
-        refContainer.current.removeEventListener('scroll', handleScroll);
+      if (container) {
+        container.removeEventListener('scroll', handleScroll);
       }
+      document.removeEventListener('click', handleClick);
     };
-  }, [refContainer, handleScroll]);
+  }, [refContainer, handleScroll, handleClick]);
 
   const startScroll = (direction: number) => {
     const scrollStep = 100;
@@ -209,10 +225,14 @@ export const FilterHeader = ({ columnsNames, paginateQuery, onFilter }: Props) =
   };
 
   return (
-    <Formix initialValues={initialValues} onSubmit={submit} className={classes.formik}>
+    <Formix
+      initialValues={initialValues}
+      onSubmit={submit}
+      className={classes.formik}
+    >
       {({ values }: any) => (
         <>
-          <SearchInput name='search' placeholder='Search from all value' />
+          <SearchInput name="search" placeholder="Search from all value" />
           <div ref={refFilter} className={classes.globalContainer}>
             <div className={classes.mainContainer}>
               <div
@@ -234,9 +254,9 @@ export const FilterHeader = ({ columnsNames, paginateQuery, onFilter }: Props) =
                   <div
                     className={classnames(classes.columnContainer, {
                       [classes.deActiveFilter]:
-                      filterIndex !== null && Number(filterIndex) !== index,
+                        filterIndex !== null && Number(filterIndex) !== index,
                       [classes.activeFilter]:
-                      filterIndex !== null && Number(filterIndex) === index,
+                        filterIndex !== null && Number(filterIndex) === index,
                     })}
                     onClick={() => {
                       if (filterIndex === index) {
@@ -269,16 +289,24 @@ export const FilterHeader = ({ columnsNames, paginateQuery, onFilter }: Props) =
             {filterIndex !== null && (
               <div className={classnames(classes.filterContainer)}>
                 <div className={classes.buttonSortContainer}>
-                  <FormikButton name='sortBy' value='ASC' nameValue={columnsNames[filterIndex].value}
-                                className={classes.buttonSort}>
+                  <FormikButton
+                    name="sortBy"
+                    value="ASC"
+                    nameValue={columnsNames[filterIndex].value}
+                    className={classes.buttonSort}
+                  >
                     <Icons
                       icon={Icon.sortAsc}
                       size={theme.icon.large}
                       color={ColorsTest.black}
                     />
                   </FormikButton>
-                  <FormikButton name='sortBy' value='DESC' nameValue={columnsNames[filterIndex].value}
-                                className={classes.buttonSort}>
+                  <FormikButton
+                    name="sortBy"
+                    value="DESC"
+                    nameValue={columnsNames[filterIndex].value}
+                    className={classes.buttonSort}
+                  >
                     <Icons
                       icon={Icon.sortDesc}
                       size={theme.icon.large}
@@ -288,7 +316,13 @@ export const FilterHeader = ({ columnsNames, paginateQuery, onFilter }: Props) =
                 </div>
               </div>
             )}
-            {valuesChanged(values) && <Button className={classes.submitButton} text='Apply filter' type='submit' />}
+            {valuesChanged(values) && (
+              <Button
+                className={classes.submitButton}
+                text="Apply filter"
+                type="submit"
+              />
+            )}
           </div>
         </>
       )}
