@@ -3,7 +3,6 @@ import { createUseStyles } from 'react-jss';
 import { Theme, theme } from 'src/libs/theme';
 import { Button } from 'src/libs/core/Buttons';
 import { FormikHelpers } from 'formik';
-import { Chapter } from '../../../libs/dtos';
 import { Modal } from '../../../libs/core/Modal';
 import {
   FormikButton,
@@ -12,7 +11,6 @@ import {
   useToast,
 } from '../../../libs/core';
 import { AxiosError } from 'axios';
-import { useDeleteChapter } from '../../../libs/api';
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   modalContainer: {
@@ -43,25 +41,32 @@ interface Values {
 }
 
 interface Props {
-  setIsOpened: (value: boolean) => void;
+  title?: string;
+  onRequestClose: () => void;
   isOpened: boolean;
-  chapter: Chapter;
+  onDelete: () => Promise<void>;
   onSuccess?: () => void;
+  toastSuccess?: string;
+  toastWarning?: string;
+  message: string;
 }
 
 const initialValues: Values = {
   validate: undefined,
 };
 
-export const ModalDeleteChapter = ({
-  setIsOpened,
+export const ModalDelete = ({
+  title,
+  onRequestClose,
   isOpened,
-  chapter,
+  onDelete,
   onSuccess,
+  toastWarning,
+  toastSuccess,
+  message,
 }: Props) => {
   const classes = useStyles({ theme });
   const toast = useToast();
-  const { mutateAsync: deleteChapter } = useDeleteChapter(chapter.id);
 
   const submit = async (values: Values, helpers: FormikHelpers<any>) => {
     try {
@@ -72,14 +77,14 @@ export const ModalDeleteChapter = ({
         return;
       }
       if (!values.validate) {
-        toast.warning('Chapter was not deleted');
-        setIsOpened(false);
+        if (toastWarning) toast.warning(toastWarning);
+        onRequestClose();
         helpers.resetForm();
         return;
       } else {
-        await deleteChapter();
-        toast.saved('Chapter was deleted');
-        setIsOpened(false);
+        await onDelete();
+        if (toastSuccess) toast.saved(toastSuccess);
+        onRequestClose();
         if (onSuccess) onSuccess();
       }
     } catch (e) {
@@ -93,17 +98,19 @@ export const ModalDeleteChapter = ({
   };
 
   return (
-    <Modal isOpen={isOpened} setIsOpen={setIsOpened} title="Delete chapter">
+    <Modal
+      isOpen={isOpened}
+      onRequestClose={() => {
+        onRequestClose();
+      }}
+      title={title}
+    >
       <Formix
         initialValues={initialValues}
         onSubmit={submit}
         className={classes.modalContainer}
       >
-        <p className={classes.text}>
-          Are you sure you want to confirm the deletion of this chapter ?<br />{' '}
-          It will delete all created cards and person will not be able to work
-          on this chapter.
-        </p>
+        <p className={classes.text}>{message}</p>
         <div className={classes.buttonContainer}>
           <FormikButton name="validate" value={true} className={classes.button}>
             Yes

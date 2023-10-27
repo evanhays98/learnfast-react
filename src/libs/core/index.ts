@@ -13,4 +13,4 @@ export * from './Toast';
 export * from './WorkContent';
 export * from './FilterHeader';
 export * from './FormikButton';
-export * from './ModaleSide';
+export * from './Modal';

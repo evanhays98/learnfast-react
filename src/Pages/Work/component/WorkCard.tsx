@@ -16,6 +16,7 @@ interface Props {
   workingCardId?: string;
   onFinish: () => void;
   lng: string;
+  removeStartAnimation?: boolean;
 }
 
 interface CutSentence {
@@ -193,7 +194,12 @@ interface Values {
   answer: string;
 }
 
-export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
+export const WorkCard = ({
+  workingCardId,
+  onFinish,
+  lng,
+  removeStartAnimation,
+}: Props) => {
   const classes = useStyles({ theme, width: 450 });
 
   const ref = useRef<HTMLInputElement | null>(null);
@@ -276,14 +282,17 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
 
   const afterCheck = async () => {
     if (!lang) {
-      setTimeout(() => {
-        setDisappear(true);
-        setTimeout(() => {
-          setReveal(false);
-          setMiss(false);
-          onFinish();
-        }, 500);
-      }, (fieldTranslation?.sentence?.split(' ').length || 0) * 320 + 800);
+      setTimeout(
+        () => {
+          setDisappear(true);
+          setTimeout(() => {
+            setReveal(false);
+            setMiss(false);
+            onFinish();
+          }, 500);
+        },
+        (fieldTranslation?.sentence?.split(' ').length || 0) * 320 + 800,
+      );
     } else {
       const utterance = new SpeechSynthesisUtterance(
         fieldTranslation?.sentence.split('//').join(''),
@@ -344,7 +353,7 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
     <div
       className={classnames(classes.workCard, classes.animatedBlock, {
         [classes.disappear]: disappear,
-        [classes.appear]: appear,
+        [classes.appear]: appear && !removeStartAnimation,
       })}
     >
       <input

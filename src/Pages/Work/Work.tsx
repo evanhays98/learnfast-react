@@ -94,6 +94,7 @@ export const Work = () => {
   const classes = useStyles({ theme });
   const { id } = useParams();
   const navigate = useNavigate();
+  const [removeAnimation, setRemoveAnimation] = React.useState(true);
   const { data: chapter, isLoading: chapterLoading } = useChapter(id);
   const {
     data: workingCards,
@@ -151,6 +152,7 @@ export const Work = () => {
   }
 
   const onFinish = async () => {
+    setRemoveAnimation(false);
     if (number === workingCards.length - 1) {
       await resetWorkingCards();
       return;
@@ -180,6 +182,7 @@ export const Work = () => {
           workingCardId={workingCards[number].id}
           lng={chapter.lng}
           onFinish={onFinish}
+          removeStartAnimation={removeAnimation}
         />
       </div>
     </div>

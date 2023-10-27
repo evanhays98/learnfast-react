@@ -2,11 +2,19 @@ import classnames from 'classnames';
 import React from 'react';
 import { createUseStyles } from 'react-jss';
 import { Colors, ColorsTest, theme, Theme } from '../../libs/theme';
-import { Button, Icon, Input, PageHeader, PageTitle, QuestionTranslationCard, TextArea } from 'src/libs/core';
+import {
+  Button,
+  Icon,
+  Input,
+  PageHeader,
+  PageTitle,
+  QuestionTranslationCard,
+  TextArea,
+} from 'src/libs/core';
 import mapValues from 'lodash/mapValues';
 import { CheckBox } from 'src/libs/core/Input/CheckBox';
 import { SentenceInformation } from '../../libs/core/SentenceInformation';
-import { Modal } from '../../libs/core/Modal';
+import { Modal } from '../../libs/core/Modal/Modal';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   page: {
@@ -63,7 +71,6 @@ const useColorStyle = createUseStyles((theme: Theme) => {
   }));
 });
 
-
 interface Values {
   color: Colors;
 }
@@ -82,10 +89,9 @@ export const PageComponents = () => {
   const testPolice = 'Je suis un test';
   const [isOpened, setIsOpened] = React.useState(true);
 
-
   return (
     <>
-      <PageHeader title='Anglais -> Francais' />
+      <PageHeader title="Anglais -> Francais" />
       <div className={classes.page}>
         <PageTitle text={'Components'} />
         <div className={classes.blockColorContainer}>
@@ -104,25 +110,41 @@ export const PageComponents = () => {
         </div>
         <div className={classes.blockColorContainer}>
           <Button>hello</Button>
-          <Button icon={Icon.profile} onClick={() => setIsOpened(true)}>hello</Button>
+          <Button icon={Icon.profile} onClick={() => setIsOpened(true)}>
+            hello
+          </Button>
           <Button full={true}>hello</Button>
-          <Button full={true} line={true} bgColor='transparent' color={ColorsTest.orange}>Send again</Button>
+          <Button
+            full={true}
+            line={true}
+            bgColor="transparent"
+            color={ColorsTest.orange}
+          >
+            Send again
+          </Button>
         </div>
         <div className={classes.blockColorContainer}>
           <div className={classes.boxContainer}>
             <h1 className={classes.h3}>INPUT</h1>
-            <Input title={'Email'} name='email' />
-            <TextArea title={'Description'} name='description' />
-            <CheckBox title='test' name='test' />
+            <Input title={'Email'} name="email" />
+            <TextArea title={'Description'} name="description" />
+            <CheckBox title="test" name="test" />
           </div>
         </div>
         <div className={classes.blockColorContainer}>
-          <QuestionTranslationCard translation='abreuvoir' points={2}
-                                   sentence='The pigs were eating out of a {/{trough}\}.' help='nom m' />
-          <SentenceInformation title='je ne sais pas quoi mettre fkeos fkoesp kfpoe skop' />
+          <QuestionTranslationCard
+            translation="abreuvoir"
+            points={2}
+            sentence="The pigs were eating out of a {/{trough}\}."
+            help="nom m"
+          />
+          <SentenceInformation title="je ne sais pas quoi mettre fkeos fkoesp kfpoe skop" />
         </div>
-        <Modal isOpen={isOpened} setIsOpen={setIsOpened} title='Update Chapter' />
-
+        <Modal
+          isOpen={isOpened}
+          onRequestClose={() => setIsOpened(false)}
+          title="Update Chapter"
+        />
       </div>
     </>
   );

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Theme, theme } from 'src/libs/theme';
-import { Button, Icon, ModalSide } from '../../../libs/core';
+import { Button, Icon, ModalDelete, ModalSide } from '../../../libs/core';
 import classnames from 'classnames';
 import { ModalUpdateChapter } from './ModalUpdateChapter';
 import { Chapter } from '../../../libs/dtos';
-import { ModalDeleteChapter } from './ModaleDeleteChapter';
 import { useNavigate } from 'react-router-dom';
+import { useDeleteChapter } from '../../../libs/api';
 
 const colorEdit = (alpha = 1) => `rgb(113, 180, 201, ${alpha})`;
 const colorDelete = (alpha = 1) => `rgb(204, 114, 154, ${alpha})`;
@@ -55,6 +55,7 @@ export const ModalEditChapter = ({ isOpen, setIsOpen, chapter }: Props) => {
   const classes = useStyles({ theme });
   const [openEditChapter, setOpenEditChapter] = useState(false);
   const [openDeleteChapter, setOpenDeleteChapter] = useState(false);
+  const { mutateAsync: deleteChapter } = useDeleteChapter(chapter.id);
   const navigate = useNavigate();
 
   return (
@@ -84,15 +85,25 @@ export const ModalEditChapter = ({ isOpen, setIsOpen, chapter }: Props) => {
       <ModalUpdateChapter
         chapter={chapter}
         isOpened={openEditChapter}
-        setIsOpened={setOpenEditChapter}
+        onRequestClose={() => {
+          setOpenEditChapter(false);
+        }}
         onSuccess={() => {
           setIsOpen(false);
         }}
       />
-      <ModalDeleteChapter
-        chapter={chapter}
+      <ModalDelete
+        title="Delete chapter"
+        onDelete={async () => {
+          await deleteChapter();
+        }}
         isOpened={openDeleteChapter}
-        setIsOpened={setOpenDeleteChapter}
+        onRequestClose={() => setOpenDeleteChapter(false)}
+        toastWarning="Chapter was not deleted"
+        toastSuccess="Chapter was deleted"
+        message="Are you sure you want to confirm the deletion of this chapter ?
+          It will delete all created cards and person will not be able to work
+          on this chapter."
         onSuccess={() => {
           setIsOpen(false);
           navigate('/');

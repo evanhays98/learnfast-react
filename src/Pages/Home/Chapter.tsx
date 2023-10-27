@@ -3,7 +3,7 @@ import { createUseStyles } from 'react-jss';
 import { Theme, theme } from 'src/libs/theme';
 import { CenteredLoader, FilterHeader, Icon, Icons } from '../../libs/core';
 import { Button } from 'src/libs/core/Buttons';
-import { useCards, useChapter } from '../../libs/api';
+import { useCards, useChapter, useCountCards } from '../../libs/api';
 import { Navigate, useParams } from 'react-router-dom';
 import { Card, PaginatedQueryParams } from '../../libs/dtos';
 import { UpdateFieldTranslation } from './component/UpdateFieldTranslation';
@@ -55,6 +55,12 @@ const useStyles = createUseStyles<string, { atTop: boolean }, any>(
     description: {
       ...theme.fonts.label,
     },
+    information: {
+      ...theme.fonts.caption,
+      fontSize: 16,
+      fontWeight: 500,
+      color: '#8ec4c3',
+    },
     buttonCreateContainer: {
       width: '100%',
       ...theme.basicFlex,
@@ -86,6 +92,28 @@ const useStyles = createUseStyles<string, { atTop: boolean }, any>(
       justifyContent: 'center',
       backdropFilter: 'blur(10px)',
     },
+    followerContainer: {
+      display: 'flex',
+      alignItems: 'baseline',
+      justifyContent: 'flex-end',
+      flexDirection: 'row',
+      gap: theme.marginBase,
+    },
+    iconFollower: {
+      color: '#8ec4c3',
+    },
+    iconCard: {
+      color: '#8ec4c3',
+      top: 4,
+    },
+    informationContainer: {
+      paddingTop: theme.marginBase,
+      width: '100%',
+      display: 'flex',
+      justifyContent: 'space-between',
+      flexDirection: 'row',
+      gap: theme.marginBase,
+    },
   }),
 );
 
@@ -106,6 +134,7 @@ export const Chapter = () => {
     hasNextPage,
   } = useCards(id, paginateQuery);
   const { data: chapter, isLoading } = useChapter(id);
+  const { data: cardsCount } = useCountCards(id);
   const [atBottom, setAtBottom] = useState<boolean>(false);
   const container = useMemo(() => {
     return document.getElementById('main-container');
@@ -184,6 +213,16 @@ export const Chapter = () => {
           />
         </div>
         <p className={classes.description}>{chapter.description}</p>
+        <div className={classes.informationContainer}>
+          <div className={classes.followerContainer}>
+            <p className={classes.information}>{cardsCount}</p>
+            <Icons icon={Icon.card} className={classes.iconCard} />
+          </div>
+          <div className={classes.followerContainer}>
+            <p className={classes.information}>100</p>
+            <Icons icon={Icon.follower} className={classes.iconFollower} />
+          </div>
+        </div>
       </div>
       <div className={classes.buttonCreateContainer}>
         <Button
@@ -206,13 +245,7 @@ export const Chapter = () => {
       <div className={classes.contentContainer}>
         {cards.map((card) => {
           if (card.type === CardType.TRANSLATION && card.fieldTranslation) {
-            return (
-              <UpdateFieldTranslation
-                key={card.id}
-                card={card}
-                chapterId={id}
-              />
-            );
+            return <UpdateFieldTranslation key={card.id} card={card} />;
           }
           return null;
         })}

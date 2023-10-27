@@ -6,8 +6,7 @@ import { Form, Formik, FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { useUpdateChapter } from '../../../libs/api';
 import { Chapter } from '../../../libs/dtos';
-import { Modal } from '../../../libs/core/Modal';
-import { FormixError, Input, useToast } from '../../../libs/core';
+import { FormixError, Input, Modal, useToast } from '../../../libs/core';
 import { AxiosError } from 'axios';
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
@@ -30,14 +29,14 @@ const validationSchema = Yup.object().shape({
 });
 
 interface Props {
-  setIsOpened: (value: boolean) => void;
+  onRequestClose: () => void;
   isOpened: boolean;
   chapter: Chapter;
   onSuccess?: () => void;
 }
 
 export const ModalUpdateChapter = ({
-  setIsOpened,
+  onRequestClose,
   isOpened,
   chapter,
   onSuccess,
@@ -66,7 +65,7 @@ export const ModalUpdateChapter = ({
   const submit = async (values: Values, helpers: FormikHelpers<any>) => {
     try {
       await updateChapter(values);
-      setIsOpened(false);
+      onRequestClose();
       toast.saved('Chapter updated');
       if (onSuccess) {
         onSuccess();
@@ -82,7 +81,11 @@ export const ModalUpdateChapter = ({
   };
 
   return (
-    <Modal isOpen={isOpened} setIsOpen={setIsOpened} title="Update chapter">
+    <Modal
+      isOpen={isOpened}
+      onRequestClose={onRequestClose}
+      title="Update chapter"
+    >
       <Formik
         initialValues={initialValues}
         onSubmit={submit}

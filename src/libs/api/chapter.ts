@@ -26,8 +26,11 @@ export const useCountCards = (id?: string) => {
   );
 };
 
-export const useCountWorkingCards = (id?: string) => {
-  return useQuery<number, AxiosError>(
+export const useCountWorkingCardsInChapter = (id?: string) => {
+  return useQuery<
+    { total: number; learn: number; started: number },
+    AxiosError
+  >(
     ['chapters', id, 'working-cards', 'count'],
     queryGet(`/chapters/${id}/working-cards/count`),
     {

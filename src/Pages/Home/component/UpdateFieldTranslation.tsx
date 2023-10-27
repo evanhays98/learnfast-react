@@ -1,16 +1,23 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { theme, Theme } from '../../../libs/theme';
-import { Button, Formix, Input, useToast } from '../../../libs/core';
+import {
+  Button,
+  Formix,
+  Icon,
+  Icons,
+  Input,
+  ModalDelete,
+  useToast,
+} from '../../../libs/core';
 import { Card } from '../../../libs/dtos';
 import * as Yup from 'yup';
 import classnames from 'classnames';
-import { useUpdateCard } from '../../../libs/api';
+import { useDeleteCard, useUpdateCard } from '../../../libs/api';
 import { CardType } from '../../../libs/enums';
 
 interface Props {
   card: Card;
-  chapterId: string;
 }
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
@@ -23,7 +30,7 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     flexDirection: 'column',
     alignItems: 'flex-start',
     gap: theme.marginBase * 5,
-    padding: [theme.marginBase * 4, theme.marginBase * 2],
+    padding: [theme.marginBase * 2, theme.marginBase * 2],
     maxWidth: theme.marginBase * 70,
     margin: 0,
   },
@@ -54,6 +61,22 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     fontSize: 0,
     transition: 'all ease 0.3s',
   },
+  iconContainer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    width: '100%',
+    marginBottom: -theme.marginBase * 2,
+  },
+  buttonHeader: {
+    ...theme.basicFlex,
+    borderRadius: theme.borderRadius.std,
+    boxShadow: `0px 0px 20px 0px ${'rgba(201,119,168,0.3)'}`,
+    width: theme.marginBase * 5,
+    height: theme.marginBase * 5,
+  },
+  iconDelete: {
+    color: '#de4d80',
+  },
 }));
 
 interface Values {
@@ -77,14 +100,11 @@ const validationSchema = Yup.object().shape({
   information: Yup.string().required('Required'),
 });
 
-export const UpdateFieldTranslation = ({
-                                         card,
-                                         chapterId,
-                                       }: Props) => {
+export const UpdateFieldTranslation = ({ card }: Props) => {
   const classes = useStyles({ theme });
-  const { mutateAsync: updateCard } = useUpdateCard(
-    card.id,
-  );
+  const { mutateAsync: updateCard } = useUpdateCard(card.id);
+  const { mutateAsync: deleteCard } = useDeleteCard(card.id, card.chapterId);
+  const [deleteModalIsOpen, setDeleteModalIsOpen] = useState(false);
   const toast = useToast();
 
   const initialValues = useMemo(
@@ -109,41 +129,68 @@ export const UpdateFieldTranslation = ({
       await updateCard({ field: values, type: CardType.TRANSLATION });
       toast.saved('Card updated');
     } catch (e) {
-      toast.error('Can\'t update card');
+      toast.error("Can't update card");
     }
   };
 
+  const onDelete = async () => {
+    await deleteCard();
+  };
+
   return (
-    <Formix
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={submit}
-      className={classes.workCard}
-    >
-      {({ values }: any) => (
-        <>
-          <Input title='Sentence' name='sentence' textarea />
-          <Input
-            className={classes.translation}
-            title='Translation'
-            name='translation'
-          />
-          <Input
-            className={classes.indication}
-            title='Indication'
-            name='information'
-          />
-          {valuesChanged(values) && (
-            <div className={classes.submitButtonContainer}>
-              <Button
-                type='submit'
-                text='Update card'
-                className={classnames(classes.button)}
-              />
+    <>
+      <Formix
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        onSubmit={submit}
+        className={classes.workCard}
+      >
+        {({ values }: any) => (
+          <>
+            <div className={classes.iconContainer}>
+              <div
+                className={classes.buttonHeader}
+                onClick={() => {
+                  setDeleteModalIsOpen(true);
+                }}
+              >
+                <Icons icon={Icon.delete} className={classes.iconDelete} />
+              </div>
             </div>
-          )}
-        </>
-      )}
-    </Formix>
+            <Input title="Sentence" name="sentence" textarea />
+            <Input
+              className={classes.translation}
+              title="Translation"
+              name="translation"
+            />
+            <Input
+              className={classes.indication}
+              title="Indication"
+              name="information"
+            />
+            {valuesChanged(values) && (
+              <div className={classes.submitButtonContainer}>
+                <Button
+                  type="submit"
+                  text="Update card"
+                  className={classnames(classes.button)}
+                />
+              </div>
+            )}
+          </>
+        )}
+      </Formix>
+      <ModalDelete
+        title="Delete Card"
+        isOpened={deleteModalIsOpen}
+        onRequestClose={() => {
+          setDeleteModalIsOpen(false);
+        }}
+        onDelete={onDelete}
+        message="Are you sure you want to delete this card? All person that was working on it will never see it again."
+        toastSuccess="Card was deleted"
+        toastWarning="Card was not deleted"
+      />
+    </>
   );
 };

@@ -2,8 +2,21 @@ import { useMutation, useQuery, useQueryClient } from 'react-query';
 import { queryCreate, queryGet, queryUpdate } from './fetch';
 import { useCallback } from 'react';
 import { AxiosError } from 'axios';
-import { CreateUser, LoginUser, Role, UpdateUserDto, User, UserAccessToken } from '../dtos';
+import {
+  CreateUser,
+  LoginUser,
+  Role,
+  UpdateUserDto,
+  User,
+  UserAccessToken,
+} from '../dtos';
 
+export const useRefresh = () => {
+  const queryClient = useQueryClient();
+  return useCallback(() => {
+    queryClient.invalidateQueries();
+  }, [queryClient]);
+};
 export const useLogout = () => {
   const queryClient = useQueryClient();
 

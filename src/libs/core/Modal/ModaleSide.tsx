@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { createUseStyles } from 'react-jss';
-import { theme, Theme } from '../theme';
-import { Button } from './Buttons';
-import { Icon, Icons } from './Icons';
+import { theme, Theme } from '../../theme';
+import { Button } from '../Buttons';
+import { Icon, Icons } from '../Icons';
 import classnames from 'classnames';
+import { useEffectAnimationModal } from '../../utils';
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   mainContainer: {
@@ -20,7 +21,7 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     right: 0,
     zIndex: 90,
     animationName: '$appearMainContainer',
-    animationDuration: '.5s',
+    animationDuration: '.3s',
     animationTimingFunction: 'ease-in-out',
     animationFillMode: 'forwards',
     '@media (max-width: 300px)': {
@@ -66,18 +67,15 @@ interface Props {
 export const ModalSide = ({ children, isOpen, setIsOpen, title }: Props) => {
   const classes = useStyles({ theme });
   const [isClosing, setIsClosing] = useState(false);
+  const [firstRender, setFirstRender] = useState(true);
 
-  useEffect(() => {
-    if (isClosing) {
-      setTimeout(() => {
-        setIsClosing(false);
-      }, 500);
-    }
-  }, [isClosing, isOpen]);
-
-  useEffect(() => {
-    if (!isOpen) setIsClosing(true);
-  }, [isOpen]);
+  useEffectAnimationModal({
+    firstRender,
+    setFirstRender,
+    isOpen,
+    isClosing,
+    setIsClosing,
+  });
 
   if (!isOpen && !isClosing) {
     return null;
@@ -93,6 +91,7 @@ export const ModalSide = ({ children, isOpen, setIsOpen, title }: Props) => {
         <Button
           square
           onClick={() => {
+            setIsClosing(true);
             setIsOpen(false);
           }}
         >

@@ -8,7 +8,7 @@ import {
   UpdateCard,
 } from '../dtos';
 import { AxiosError } from 'axios';
-import { queryCreate, queryGet } from './fetch';
+import { queryCreate, queryDelete, queryGet } from './fetch';
 
 interface PaginatedParams {
   queryParams: PaginatedQueryParams;
@@ -20,11 +20,7 @@ export const useCreateCard = () => {
   return useMutation<Card, undefined, CreateCard>(queryCreate(`/cards`), {
     onSuccess: async (data) => {
       queryClient.setQueryData(['cards', data.id], data);
-      await queryClient.invalidateQueries([
-        'chapters',
-        data.chapterId,
-        'cards',
-      ]);
+      await queryClient.invalidateQueries(['chapters', data.chapterId]);
     },
   });
 };
@@ -34,23 +30,22 @@ export const useUpdateCard = (id: string) => {
   return useMutation<Card, undefined, UpdateCard>(queryCreate(`/cards/${id}`), {
     onSuccess: async (data) => {
       queryClient.setQueryData(['cards', id], data);
-      await queryClient.invalidateQueries([
-        'chapters',
-        data.chapterId,
-        'cards',
-      ]);
+      await queryClient.invalidateQueries(['chapters', data.chapterId]);
     },
   });
 };
 
-export const useDeleteCard = (id: string) => {
+export const useDeleteCard = (id: string, chapterId: string) => {
   const queryClient = useQueryClient();
-  return useMutation<Card, AxiosError>(queryCreate(`/cards/${id}`), {
-    onSuccess: async (data) => {
-      await queryClient.invalidateQueries(['cards', id]);
-      await queryClient.invalidateQueries(['chapters', data.chapterId]);
+  return useMutation<{ chapterId: string }, AxiosError>(
+    queryDelete(`/cards/${id}`),
+    {
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(['cards', id]);
+        await queryClient.invalidateQueries(['chapters', chapterId]);
+      },
     },
-  });
+  );
 };
 
 export const useCards = (
