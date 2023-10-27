@@ -60,6 +60,7 @@ interface BaseButtonProps {
   square?: boolean;
   disabled?: boolean;
   onClick?: () => void;
+  iconClassName?: string;
   type?: 'button' | 'submit' | 'reset';
 }
 
@@ -87,6 +88,7 @@ export const Button = (props: BaseButtonProps & GenericButtonProps) => {
     disabled,
     onClick,
     type,
+    iconClassName,
     ...rest
   } = props;
   const classes = useStyles({
@@ -125,7 +127,9 @@ export const Button = (props: BaseButtonProps & GenericButtonProps) => {
     >
       {props.children}
       {props.text && props.text}
-      {icon && <Icons icon={icon} size={square ? 24 : 20} />}
+      {icon && (
+        <Icons icon={icon} className={iconClassName} size={square ? 24 : 20} />
+      )}
     </ButtonComp>
   );
 };

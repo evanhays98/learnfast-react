@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { createUseStyles } from 'react-jss';
-import { theme, Theme } from '../theme';
-import { Icon, Icons } from './Icons';
-import { Button } from './Buttons';
+import { theme, Theme } from '../../theme';
+import { Icon, Icons } from '../Icons';
+import { Button } from '../Buttons';
 import classnames from 'classnames';
+import { useEffectAnimationModal } from '../../utils';
 
 const useStyles = createUseStyles<string, { height: number }, any>(
   (theme: Theme) => ({
@@ -31,7 +32,6 @@ const useStyles = createUseStyles<string, { height: number }, any>(
       right: 0,
       height: window.innerHeight,
       zIndex: 91,
-      overflow: 'scroll',
       display: 'flex',
       justifyContent: 'flex-end',
       alignItems: 'flex-end',
@@ -47,9 +47,11 @@ const useStyles = createUseStyles<string, { height: number }, any>(
       boxShadow: theme.boxShadow.std,
       width: '100%',
       padding: theme.marginBase * 2,
+      paddingBottom: theme.marginBase * 10,
       minHeight: 400,
-      marginBottom: theme.marginBase * 7,
       height: 'fit-content',
+      maxHeight: '100%',
+      overflowY: 'auto',
     },
     animationContainer: {
       animationName: '$disappearContainer',
@@ -112,27 +114,23 @@ const useStyles = createUseStyles<string, { height: number }, any>(
 interface Props {
   children?: React.ReactNode;
   isOpen: boolean;
-  setIsOpen: (isOpen: boolean) => void;
+  onRequestClose: () => void;
   title?: string;
 }
 
-export const Modal = ({ children, isOpen, setIsOpen, title }: Props) => {
+export const Modal = ({ children, isOpen, onRequestClose, title }: Props) => {
   const [height, setHeight] = React.useState(0);
   const classes = useStyles({ theme, height: height });
   const [isClosing, setIsClosing] = React.useState(false);
   const [firstRender, setFirstRender] = React.useState(true);
 
-  useEffect(() => {
-    if (firstRender) {
-      setFirstRender(false);
-      return;
-    }
-    if (!isOpen && !isClosing && !firstRender) {
-      setTimeout(() => {
-        setIsClosing(false);
-      }, 500);
-    }
-  }, [firstRender, isClosing, isOpen]);
+  useEffectAnimationModal({
+    firstRender,
+    setFirstRender,
+    isOpen,
+    isClosing,
+    setIsClosing,
+  });
 
   if (!isOpen && !isClosing) {
     return null;
@@ -159,7 +157,7 @@ export const Modal = ({ children, isOpen, setIsOpen, title }: Props) => {
               square
               onClick={() => {
                 setIsClosing(true);
-                setIsOpen(false);
+                onRequestClose();
               }}
             >
               <Icons icon={Icon.close} size={theme.icon.normal + 2}></Icons>

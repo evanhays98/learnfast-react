@@ -1,7 +1,7 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
 import { Theme, theme } from '../theme/Theme';
-import { CircularProgress } from '@mui/material';
+import { Icon, Icons } from './Icons';
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   globalContainer: {
@@ -11,13 +11,28 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     width: '100%',
     height: '100%',
   },
+  icon: {
+    animation: '$active 1s linear infinite',
+  },
+  '@keyframes active': {
+    '0%': {
+      transform: 'rotate(0deg)',
+    },
+    '100%': {
+      transform: 'rotate(360deg)',
+    },
+  },
 }));
 
-export const CenteredLoader = () => {
+interface Props {
+  sx?: any;
+}
+
+export const CenteredLoader = ({ sx }: Props) => {
   const classes = useStyles({ theme });
   return (
     <div className={classes.globalContainer}>
-      <CircularProgress />
+      <Icons icon={Icon.load} className={classes.icon} />
     </div>
   );
 };

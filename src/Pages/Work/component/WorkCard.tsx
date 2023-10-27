@@ -3,7 +3,11 @@ import { createUseStyles } from 'react-jss';
 import { theme, Theme } from '../../../libs/theme';
 import { Button } from '../../../libs/core';
 import classnames from 'classnames';
-import { useValidateWorkingCard, useVerificationWorkingCard, useWorkingCard } from '../../../libs/api';
+import {
+  useValidateWorkingCard,
+  useVerificationWorkingCard,
+  useWorkingCard,
+} from '../../../libs/api';
 import { WorkingCardHistoryEnums } from '../../../libs/enums';
 import { Points } from './Points';
 import { Form, Formik, FormikHelpers } from 'formik';
@@ -12,6 +16,7 @@ interface Props {
   workingCardId?: string;
   onFinish: () => void;
   lng: string;
+  removeStartAnimation?: boolean;
 }
 
 interface CutSentence {
@@ -189,7 +194,12 @@ interface Values {
   answer: string;
 }
 
-export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
+export const WorkCard = ({
+  workingCardId,
+  onFinish,
+  lng,
+  removeStartAnimation,
+}: Props) => {
   const classes = useStyles({ theme, width: 450 });
 
   const ref = useRef<HTMLInputElement | null>(null);
@@ -272,14 +282,17 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
 
   const afterCheck = async () => {
     if (!lang) {
-      setTimeout(() => {
-        setDisappear(true);
-        setTimeout(() => {
-          setReveal(false);
-          setMiss(false);
-          onFinish();
-        }, 500);
-      }, (fieldTranslation?.sentence?.split(' ').length || 0) * 320 + 800);
+      setTimeout(
+        () => {
+          setDisappear(true);
+          setTimeout(() => {
+            setReveal(false);
+            setMiss(false);
+            onFinish();
+          }, 500);
+        },
+        (fieldTranslation?.sentence?.split(' ').length || 0) * 320 + 800,
+      );
     } else {
       const utterance = new SpeechSynthesisUtterance(
         fieldTranslation?.sentence.split('//').join(''),
@@ -340,7 +353,7 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
     <div
       className={classnames(classes.workCard, classes.animatedBlock, {
         [classes.disappear]: disappear,
-        [classes.appear]: appear,
+        [classes.appear]: appear && !removeStartAnimation,
       })}
     >
       <input
@@ -352,12 +365,11 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
           height: 0,
         }}
         ref={reff}
-        type='text'
+        type="text"
       />
       <Formik initialValues={{ answer: '' }} onSubmit={onVerification}>
         {({ values: { answer }, setFieldValue, resetForm }) => (
           <Form>
-            {workingCard?.card?.chapterId}
             {workingCard && (
               <div className={classes.content}>
                 <Points workingCard={workingCard} />
@@ -387,7 +399,7 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
                         className={classnames(classes.input, {
                           [classes.revealInput]: reveal,
                         })}
-                        type='text'
+                        type="text"
                         value={reveal ? 'true' : answer}
                         onChange={async (e) => {
                           await setFieldValue('answer', e.target.value);
@@ -425,8 +437,8 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
               <Button
                 disabled={disabled}
                 className={classes.markAsLearn}
-                type='button'
-                text='Mark as learn'
+                type="button"
+                text="Mark as learn"
                 line
                 onClick={async () => {
                   await onValidate();
@@ -436,8 +448,8 @@ export const WorkCard = ({ workingCardId, onFinish, lng }: Props) => {
               <Button
                 disabled={disabled}
                 className={classes.button}
-                text='Submit'
-                type='submit'
+                text="Submit"
+                type="submit"
               />
             </div>
           </Form>

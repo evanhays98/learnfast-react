@@ -8,6 +8,8 @@
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@mui/material": "^5.10.17",
+    "@nrwl/workspace": "^17.0.2",
+    "@nx/workspace": "^17.0.2",
     "@types/react": "18.0.21",
     "@types/react-dom": "^18.0.6",
     "@types/react-router-dom": "^5.3.3",
@@ -65,7 +67,8 @@
     ]
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.16.7",
     "@types/lodash": "^4.14.191",
-    "@babel/plugin-proposal-private-property-in-object": "^7.16.7"
+    "prettier": "^3.0.3"
   }
 }

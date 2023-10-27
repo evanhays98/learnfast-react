@@ -3,14 +3,13 @@ import { createUseStyles } from 'react-jss';
 import { Theme, theme } from 'src/libs/theme';
 import { Icon, Icons } from '../../libs/core';
 import { Button } from 'src/libs/core/Buttons';
-import { Modal } from '../../libs/core/Modal';
+import { Modal } from '../../libs/core/Modal/Modal';
 import { Form, Formik } from 'formik';
 import Input from '../../libs/core/Input/Input';
 import * as Yup from 'yup';
 import { useChapters, useCreateChapter } from '../../libs/api';
 import { ChapterInformation } from './component/ChapterInformation';
 import PWAInstallButton from '../../libs/core/PWAInstallButton';
-
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   globalContainer: {
@@ -79,15 +78,14 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
 }));
 
 interface Values {
-  title: string,
-  description: string,
+  title: string;
+  description: string;
 }
 
 const validationSchema = Yup.object().shape({
   title: Yup.string().required('Required').min(3, 'Too short'),
   description: Yup.string().required('Required').min(3, 'Too short'),
 });
-
 
 export const Home = () => {
   const classes = useStyles({ theme });
@@ -108,9 +106,13 @@ export const Home = () => {
       <div className={classes.titleContainer}>
         <div className={classes.firstTitleContainer}>
           <h1 className={classes.title}>Chapters</h1>
-          <Button className={classes.button} square onClick={() => {
-            setIsOpened(true);
-          }}>
+          <Button
+            className={classes.button}
+            square
+            onClick={() => {
+              setIsOpened(true);
+            }}
+          >
             <Icons icon={Icon.addFolder} size={theme.icon.normal + 8} />
           </Button>
         </div>
@@ -121,20 +123,25 @@ export const Home = () => {
           <ChapterInformation chapter={chapter} key={chapter.id} />
         ))}
       </div>
-      <Modal isOpen={isOpened} setIsOpen={setIsOpened} title='Add a chapter'>
-        <Formik initialValues={{ title: '', description: '' }} onSubmit={submit}
-                validationSchema={validationSchema}>
+      <Modal
+        isOpen={isOpened}
+        onRequestClose={() => setIsOpened(false)}
+        title="Add a chapter"
+      >
+        <Formik
+          initialValues={{ title: '', description: '' }}
+          onSubmit={submit}
+          validationSchema={validationSchema}
+        >
           <Form>
             <div className={classes.modalContainer}>
-              <Input title='title' name='title' />
-              <Input title='description' name='description' />
-              <Button text='submit' type='submit' full />
+              <Input title="title" name="title" />
+              <Input title="description" name="description" />
+              <Button text="submit" type="submit" full />
             </div>
           </Form>
         </Formik>
       </Modal>
-
     </div>
-
   );
 };
