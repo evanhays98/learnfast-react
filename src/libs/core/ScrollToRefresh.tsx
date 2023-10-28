@@ -6,7 +6,18 @@ const ScrollToRefresh = () => {
   const [showRefreshButton, setShowRefreshButton] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [y, setY] = useState(0);
-  const mainContainer = document.getElementById('main-container');
+  const [mainContainer, setMainContainer] = useState<HTMLElement | null>(null);
+
+  useEffect(() => {
+    const handleLoad = () => {
+      const mainContainer = document.getElementById('main-container');
+      setMainContainer(mainContainer);
+    };
+    document.addEventListener('touchstart', handleLoad);
+    return () => {
+      document.removeEventListener('touchstart', handleLoad);
+    };
+  }, [mainContainer]);
 
   useEffect(() => {
     if (refresh) {
@@ -24,6 +35,12 @@ const ScrollToRefresh = () => {
     let pressY = 0;
     let disable = false;
     let passive = false;
+
+    if (!mainContainer) {
+      return;
+    }
+
+    console.log(mainContainer);
 
     const handlePress = (e: TouchEvent) => {
       console.log(disable);
@@ -43,8 +60,8 @@ const ScrollToRefresh = () => {
     };
 
     const handleRelease = (e: TouchEvent) => {
-      const mainContainer = document.getElementById('main-container');
-      if (isPressing && mainContainer && mainContainer.scrollTop === 0) {
+      pressY = 0;
+      if (isPressing && !disable) {
         let releaseY = 0;
         if (e.changedTouches && e.changedTouches.length > 0) {
           releaseY = e.changedTouches[0].clientY;
@@ -69,36 +86,37 @@ const ScrollToRefresh = () => {
         const moveY = e.touches[0].clientY;
         pressureDifference = moveY - pressY;
       }
-      if (disable) {
+      if (!disable && pressureDifference < 0) {
+        disable = true;
+        setY(0);
         return;
       }
-      setY(pressureDifference);
+      if (!disable && pressY > 0) {
+        setY(pressureDifference);
+      }
     };
 
     const handleScroll = () => {
       const mainContainer = document.getElementById('main-container');
-      disable = !(
-        mainContainer &&
-        mainContainer.scrollTop === 0 &&
-        !isPressing
-      );
+      if (disable && mainContainer && mainContainer.scrollTop === 0) {
+        disable = false;
+      }
     };
 
     if (mainContainer) {
-      mainContainer.addEventListener('scroll', handleScroll);
+      mainContainer.addEventListener('scrollend', handleScroll);
     }
 
     document.addEventListener('touchstart', handlePress);
 
-    document.addEventListener('touchmove', handleMove, { passive });
+    document.addEventListener('touchmove', handleMove, { passive: false });
 
     document.addEventListener('touchend', handleRelease);
 
     return () => {
       if (mainContainer) {
-        mainContainer.removeEventListener('scroll', handleScroll);
+        mainContainer.removeEventListener('scrollend', handleScroll);
       }
-      document.removeEventListener('scroll', handleScroll);
 
       document.removeEventListener('touchstart', handlePress);
 

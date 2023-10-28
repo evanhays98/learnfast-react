@@ -13,8 +13,8 @@ function App() {
       <HashRouter>
         <PageBackground />
         <ToastContainer />
-        <ScrollToRefresh />
         <AppRouter />
+        <ScrollToRefresh />
       </HashRouter>
     </QueryClientProvider>
   );
