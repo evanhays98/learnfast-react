@@ -6,6 +6,30 @@ const ScrollToRefresh = () => {
   const [showRefreshButton, setShowRefreshButton] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [y, setY] = useState(0);
+  const [enable, setEnable] = useState(true);
+
+  useEffect(() => {
+    const mainContainer = document.getElementById('main-container');
+    const handleScroll = () => {
+      if (!mainContainer) {
+        setEnable(false);
+        return;
+      }
+      if (mainContainer && mainContainer.scrollTop === 0 && !enable) {
+        setEnable(true);
+      }
+    };
+
+    if (mainContainer) {
+      mainContainer.addEventListener('scrollend', handleScroll);
+    }
+
+    return () => {
+      if (mainContainer) {
+        mainContainer.removeEventListener('scrollend', handleScroll);
+      }
+    };
+  }, [enable]);
 
   useEffect(() => {
     if (refresh) {
@@ -23,6 +47,9 @@ const ScrollToRefresh = () => {
     let pressY = 0;
 
     const handlePress = (e: TouchEvent) => {
+      if (!enable) {
+        return;
+      }
       if (e.touches && e.touches.length > 0) {
         pressY = e.touches[0].clientY;
       }
@@ -35,6 +62,9 @@ const ScrollToRefresh = () => {
     };
 
     const handleRelease = (e: TouchEvent) => {
+      if (!enable) {
+        return;
+      }
       if (isPressing) {
         let releaseY = 0;
         if (e.changedTouches && e.changedTouches.length > 0) {
@@ -54,18 +84,27 @@ const ScrollToRefresh = () => {
     };
 
     const handleMove = (e: TouchEvent) => {
+      if (!enable) {
+        return;
+      }
       e.preventDefault();
       let pressureDifference = 0;
       if (e.touches && e.touches.length > 0) {
         const moveY = e.touches[0].clientY;
         pressureDifference = moveY - pressY;
       }
-      setY(pressureDifference);
+      if (pressureDifference < 0) {
+        setEnable(false);
+        return;
+      }
+      if (enable) {
+        setY(pressureDifference);
+      }
     };
 
     document.addEventListener('touchstart', handlePress);
 
-    document.addEventListener('touchmove', handleMove, { passive: false });
+    document.addEventListener('touchmove', handleMove, { passive: !enable });
 
     document.addEventListener('touchend', handleRelease);
 
@@ -76,7 +115,7 @@ const ScrollToRefresh = () => {
 
       document.removeEventListener('touchmove', handleMove);
     };
-  }, []);
+  }, [enable]);
 
   return (
     <div
@@ -87,11 +126,11 @@ const ScrollToRefresh = () => {
         left: '0',
         zIndex: 100000,
         backgroundColor: 'transparent',
-        display: y !== 0 ? 'flex' : 'none',
+        display: enable ? 'flex' : 'none',
         backdropFilter: 'blur(20px)',
         justifyContent: 'center',
         alignItems: 'center',
-        height: y,
+        height: enable ? y : 0,
         maxHeight: '100%',
         opacity: y === 100 ? 1 : y / 200,
         transition: y === 100 ? 'all 0.3s ease-in-out' : 'none',
