@@ -6,18 +6,30 @@ const ScrollToRefresh = () => {
   const [showRefreshButton, setShowRefreshButton] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const [y, setY] = useState(0);
-  const [mainContainer, setMainContainer] = useState<HTMLElement | null>(null);
+  const [enable, setEnable] = useState(true);
 
   useEffect(() => {
-    const handleLoad = () => {
-      const mainContainer = document.getElementById('main-container');
-      setMainContainer(mainContainer);
+    const mainContainer = document.getElementById('main-container');
+    const handleScroll = () => {
+      if (!mainContainer) {
+        setEnable(false);
+        return;
+      }
+      if (mainContainer && mainContainer.scrollTop === 0 && !enable) {
+        setEnable(true);
+      }
     };
-    document.addEventListener('touchstart', handleLoad);
+
+    if (mainContainer) {
+      mainContainer.addEventListener('scrollend', handleScroll);
+    }
+
     return () => {
-      document.removeEventListener('touchstart', handleLoad);
+      if (mainContainer) {
+        mainContainer.removeEventListener('scrollend', handleScroll);
+      }
     };
-  }, [mainContainer]);
+  }, [enable]);
 
   useEffect(() => {
     if (refresh) {
@@ -33,19 +45,9 @@ const ScrollToRefresh = () => {
   useEffect(() => {
     let isPressing = false;
     let pressY = 0;
-    let disable = false;
-    let passive = false;
-
-    if (!mainContainer) {
-      return;
-    }
-
-    console.log(mainContainer);
 
     const handlePress = (e: TouchEvent) => {
-      console.log(disable);
-      const mainContainer = document.getElementById('main-container');
-      if (mainContainer && mainContainer.scrollTop !== 0) {
+      if (!enable) {
         return;
       }
       if (e.touches && e.touches.length > 0) {
@@ -60,14 +62,16 @@ const ScrollToRefresh = () => {
     };
 
     const handleRelease = (e: TouchEvent) => {
-      pressY = 0;
-      if (isPressing && !disable) {
+      if (!enable) {
+        return;
+      }
+      if (isPressing) {
         let releaseY = 0;
         if (e.changedTouches && e.changedTouches.length > 0) {
           releaseY = e.changedTouches[0].clientY;
         }
 
-        const pressureDifference = releaseY - pressY;
+        const pressureDifference = Math.abs(releaseY - pressY);
         if (pressureDifference > 100) {
           setY(100);
           setTimeout(() => {
@@ -77,54 +81,41 @@ const ScrollToRefresh = () => {
           setY(0);
         }
       }
-      isPressing = false;
     };
 
     const handleMove = (e: TouchEvent) => {
+      if (!enable) {
+        return;
+      }
+      e.preventDefault();
       let pressureDifference = 0;
       if (e.touches && e.touches.length > 0) {
         const moveY = e.touches[0].clientY;
         pressureDifference = moveY - pressY;
       }
-      if (!disable && pressureDifference < 0) {
-        disable = true;
-        setY(0);
+      if (pressureDifference < 0) {
+        setEnable(false);
         return;
       }
-      if (!disable && pressY > 0) {
+      if (enable) {
         setY(pressureDifference);
       }
     };
 
-    const handleScroll = () => {
-      const mainContainer = document.getElementById('main-container');
-      if (disable && mainContainer && mainContainer.scrollTop === 0) {
-        disable = false;
-      }
-    };
-
-    if (mainContainer) {
-      mainContainer.addEventListener('scrollend', handleScroll);
-    }
-
     document.addEventListener('touchstart', handlePress);
 
-    document.addEventListener('touchmove', handleMove, { passive: false });
+    document.addEventListener('touchmove', handleMove, { passive: !enable });
 
     document.addEventListener('touchend', handleRelease);
 
     return () => {
-      if (mainContainer) {
-        mainContainer.removeEventListener('scrollend', handleScroll);
-      }
-
       document.removeEventListener('touchstart', handlePress);
 
       document.removeEventListener('touchend', handleRelease);
 
       document.removeEventListener('touchmove', handleMove);
     };
-  }, [mainContainer]);
+  }, [enable]);
 
   return (
     <div
@@ -135,11 +126,11 @@ const ScrollToRefresh = () => {
         left: '0',
         zIndex: 100000,
         backgroundColor: 'transparent',
-        display: y !== 0 ? 'flex' : 'none',
+        display: enable ? 'flex' : 'none',
         backdropFilter: 'blur(20px)',
         justifyContent: 'center',
         alignItems: 'center',
-        height: y,
+        height: enable ? y : 0,
         maxHeight: '100%',
         opacity: y === 100 ? 1 : y / 200,
         transition: y === 100 ? 'all 0.3s ease-in-out' : 'none',
