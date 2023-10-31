@@ -14,7 +14,7 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     top: 0,
     left: 0,
     right: 0,
-    overflowY: 'scroll',
+    overflow: 'hidden',
     transition: 'all 0.3s ease-in-out',
     display: 'flex',
     flexDirection: 'column',

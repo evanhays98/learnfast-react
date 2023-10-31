@@ -11,6 +11,8 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     display: 'flex',
     flexDirection: 'column',
     position: 'relative',
+    overflow: 'hidden',
+    overscrollBehavior: 'none',
   },
   navBar: {
     width: '100%',
@@ -22,11 +24,14 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
     borderTopRightRadius: 20,
     zIndex: 100,
     boxShadow: '0px -10px 30px -10px rgba(80, 84, 133, 0.8)',
+    overflow: 'hidden',
+    overscrollBehavior: 'none',
   },
   pageContainer: {
     width: '100%',
     height: '100%',
     overflow: 'auto',
+    overscrollBehavior: 'none',
   },
 }));
 
@@ -39,13 +44,15 @@ export const NavBar = ({ children }: Props) => {
   const { data: lastChapter } = useLastChapterWorked();
   return (
     <div className={classes.page}>
-      <div className={classes.pageContainer} id='main-container'>
+      <div className={classes.pageContainer} id="main-container">
         {children}
       </div>
       <div className={classes.navBar}>
-        <NavBarLink icon={Icon.home} to='/' />
-        {lastChapter && <NavBarLink icon={Icon.work} to={`/work/${lastChapter.id}`} />}
-        <NavBarLink icon={Icon.profile} to='/profile' />
+        <NavBarLink icon={Icon.home} to="/" />
+        {lastChapter && (
+          <NavBarLink icon={Icon.work} to={`/work/${lastChapter.id}`} />
+        )}
+        <NavBarLink icon={Icon.profile} to="/profile" />
       </div>
     </div>
   );

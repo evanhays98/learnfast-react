@@ -73,6 +73,7 @@ const useStyles = createUseStyles<string, { width: number }, any>(
       ...theme.fonts.caption,
       color: theme.colors.lightGray,
       display: 'inline',
+      lineHeight: 1.5,
     },
     request: {
       display: 'inline',

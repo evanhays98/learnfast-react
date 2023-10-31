@@ -102,9 +102,9 @@ export const Profile = () => {
     } else {
       await Notification.requestPermission((permission) => {
         if (permission === 'granted') {
-          const notification = new Notification('Notification test', {
-            body: 'Notification test',
-            icon: 'https://github.com/evanhays98/learnfast-react/blob/master/public/memorix.png',
+          const notification = new Notification('Memorix', {
+            body: 'Long time no see ! Come back and learn with us !',
+            icon: 'memorix.png',
           });
           notification.onclick = () => {
             navigate('/');

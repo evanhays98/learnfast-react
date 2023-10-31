@@ -101,6 +101,7 @@ const useStyles = createUseStyles<string, { atTop: boolean }, any>(
     },
     iconFollower: {
       color: '#8ec4c3',
+      top: 2,
     },
     iconCard: {
       color: '#8ec4c3',

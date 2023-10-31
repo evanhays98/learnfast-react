@@ -22,17 +22,33 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
       transform: 'rotate(360deg)',
     },
   },
+  iconContainer: {
+    background: 'rgba(14,6,47,0.2)',
+    backdropFilter: 'blur(2px)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 50,
+    height: 50,
+    borderRadius: '50%',
+  },
 }));
 
 interface Props {
-  sx?: any;
+  back?: boolean;
 }
 
-export const CenteredLoader = ({ sx }: Props) => {
+export const CenteredLoader = ({ back }: Props) => {
   const classes = useStyles({ theme });
   return (
     <div className={classes.globalContainer}>
-      <Icons icon={Icon.load} className={classes.icon} />
+      {back ? (
+        <div className={classes.iconContainer}>
+          <Icons icon={Icon.load} className={classes.icon} />
+        </div>
+      ) : (
+        <Icons icon={Icon.load} className={classes.icon} />
+      )}
     </div>
   );
 };
