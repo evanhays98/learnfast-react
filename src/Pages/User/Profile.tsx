@@ -8,6 +8,9 @@ import { Button, Formix, FormixError, useToast } from '../../libs/core';
 import { AxiosError } from 'axios';
 import { FormikHelpers } from 'formik';
 import * as Yup from 'yup';
+import { useNavigate } from 'react-router-dom';
+
+const image = require('src/images/memorix.png');
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   globalContainer: {
@@ -82,7 +85,8 @@ const validationSchema = Yup.object().shape({
   mail: Yup.string()
     .required('Email is required')
     .email('Invalid email format'),
-  pseudo: Yup.string().required('Pseudo is required')
+  pseudo: Yup.string()
+    .required('Pseudo is required')
     .min(3, 'Pseudo must be at least 3 characters long'),
 });
 
@@ -92,6 +96,25 @@ export const Profile = () => {
   const { mutate: logout } = useLogout();
   const { mutateAsync: updateProfile } = useUpdateUser();
   const toast = useToast();
+  const navigate = useNavigate();
+
+  const notification = async () => {
+    if (!('Notification' in window)) {
+      return;
+    } else {
+      await Notification.requestPermission((permission) => {
+        if (permission === 'granted') {
+          const notification = new Notification('Notification test', {
+            body: 'Notification test',
+            icon: 'https://github.com/evanhays98/learnfast-react/blob/master/public/memorix.png',
+          });
+          notification.onclick = () => {
+            navigate('/');
+          };
+        }
+      });
+    }
+  };
 
   const initialValues: Values | null = useMemo(() => {
     if (!me) {
@@ -124,7 +147,7 @@ export const Profile = () => {
     } catch (e) {
       if (e instanceof AxiosError) {
         helpers.setErrors({
-          error: e.response?.data?.message || 'Une erreur s\'est produite',
+          error: e.response?.data?.message || "Une erreur s'est produite",
         });
       }
       throw e;
@@ -142,17 +165,21 @@ export const Profile = () => {
         <PWAInstallButton />
       </div>
 
-      <Formix validationSchema={validationSchema} initialValues={initialValues} onSubmit={onSubmit}>
+      <Formix
+        validationSchema={validationSchema}
+        initialValues={initialValues}
+        onSubmit={onSubmit}
+      >
         {({ values }: any) => (
           <>
-            <Input title='Mail' name='mail' />
-            <Input title='Pseudo' name='pseudo' />
+            <Input title="Mail" name="mail" />
+            <Input title="Pseudo" name="pseudo" />
             <FormixError />
             {valueUpdated(values) && (
               <Button
                 className={classes.buttonUpdate}
-                text='Update profile'
-                type='submit'
+                text="Update profile"
+                type="submit"
               />
             )}
           </>
@@ -163,8 +190,14 @@ export const Profile = () => {
         <Button
           className={classes.buttonLogOut}
           line
-          text='Log out'
+          text="Log out"
           onClick={() => logout()}
+        />
+        <Button
+          className={classes.buttonLogOut}
+          line
+          text="send notification"
+          onClick={notification}
         />
       </div>
     </div>
