@@ -46,6 +46,9 @@ const ScrollToRefresh = () => {
   const [press, setPress] = useState(false);
   const [isScrolling, setIsScrolling] = useState(false);
   const [dateLastScroll, setDateLastScroll] = useState(0);
+  const initialWindowHeight =
+    document.getElementById('main-container')?.offsetTop || 0;
+  const [test, setTest] = useState<any>(window.innerHeight);
   const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
   const classes = useStyles({ theme, y, enable });
@@ -67,10 +70,22 @@ const ScrollToRefresh = () => {
         setEnable(true);
       }
     }
+
+    const handleFocus = (e: any) => {
+      const mainContainer = document.getElementById('main-container');
+      if (!mainContainer) {
+        return;
+      }
+      setTest(`${JSON.stringify(e)}`);
+    };
+
+    window.addEventListener('scroll', handleFocus, { passive: false });
+
     return () => {
       clearInterval(intervalId);
+      window.removeEventListener('scroll', handleFocus);
     };
-  }, [dateLastScroll, press, isScrolling]);
+  }, [dateLastScroll, press, isScrolling, initialWindowHeight]);
 
   useEffect(() => {
     const mainContainer = document.getElementById('main-container');
@@ -186,17 +201,31 @@ const ScrollToRefresh = () => {
   }, [enable, isSafari]);
 
   return (
-    <div className={classes.container}>
-      {showRefreshButton ? (
-        <div>
-          <CenteredLoader back />
-        </div>
-      ) : (
-        <div className={classes.iconContainer}>
-          {y > 1 && <Icons icon={Icon.load} className={classes.icon} />}
-        </div>
-      )}
-    </div>
+    <>
+      <div
+        style={{
+          position: 'fixed',
+          bottom: '50px',
+          right: '10px',
+
+          color: 'red',
+          zIndex: 100000,
+        }}
+      >
+        {test}
+      </div>
+      <div className={classes.container}>
+        {showRefreshButton ? (
+          <div>
+            <CenteredLoader back />
+          </div>
+        ) : (
+          <div className={classes.iconContainer}>
+            {y > 1 && <Icons icon={Icon.load} className={classes.icon} />}
+          </div>
+        )}
+      </div>
+    </>
   );
 };
 
