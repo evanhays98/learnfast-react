@@ -183,7 +183,7 @@ const ScrollToRefresh = () => {
 
       document.removeEventListener('touchmove', handleMove);
     };
-  }, [enable]);
+  }, [enable, isSafari]);
 
   return (
     <div className={classes.container}>
