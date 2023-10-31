@@ -10,8 +10,6 @@ import { FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 
-const image = require('src/images/memorix.png');
-
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   globalContainer: {
     minHeight: '100%',
