@@ -8,6 +8,7 @@ import { Content } from '../libs/core/Content';
 import { Profile } from './User/Profile';
 import { WorkContent } from '../libs/core';
 import { Chapter } from './Home/Chapter';
+import { PageComponents } from './PageComponents/PageComponents';
 
 export const AppRouter = () => {
   return (
@@ -25,6 +26,7 @@ export const AppRouter = () => {
       </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/test" element={<PageComponents />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

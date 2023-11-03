@@ -10,9 +10,10 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <HashRouter>
-        <PageBackground />
         <ToastContainer />
-        <AppRouter />
+        <PageBackground>
+          <AppRouter />
+        </PageBackground>
       </HashRouter>
     </QueryClientProvider>
   );

@@ -1,21 +1,53 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Theme, theme } from 'src/libs/theme';
 
 const useStyles = createUseStyles((theme: Theme) => ({
   pageBackground: {
-    position: 'absolute',
+    position: 'relative',
+    width: '100%',
+    height: '100%',
     background: theme.colors.darkGradient,
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
     overflow: 'hidden',
     overscrollBehavior: 'none',
   },
 }));
 
-export const PageBackground = () => {
+interface Props {
+  children: React.ReactNode;
+  className?: string;
+}
+
+export const PageBackground = ({ children }: Props) => {
   const classes = useStyles({ theme });
-  return <div className={classes.pageBackground} />;
+  const [elementHeight, setElementHeight] = useState(
+    window?.visualViewport?.height || window.innerHeight,
+  );
+
+  useEffect(() => {
+    const handleResize = () => {
+      // Calculate the new height (viewport height minus keyboard height)
+      const newHeight = window?.visualViewport?.height || window.innerHeight;
+
+      // Update the element's height
+      setElementHeight(newHeight);
+    };
+    // Listen for window resize events
+    window.addEventListener('resize', handleResize);
+
+    // Clean up the event listener on component unmount
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+  return (
+    <div
+      className={classes.pageBackground}
+      style={{
+        height: elementHeight,
+      }}
+    >
+      {children}
+    </div>
+  );
 };

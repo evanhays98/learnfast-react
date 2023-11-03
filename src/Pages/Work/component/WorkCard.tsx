@@ -40,7 +40,6 @@ const useStyles = createUseStyles<string, { width: number }, any>(
       maxWidth: theme.marginBase * 70,
       height: 'fit-content',
       position: 'relative',
-      marginBottom: theme.marginBase * 8,
       '@media (min-width: 768px)': {
         margin: 'auto',
       },
