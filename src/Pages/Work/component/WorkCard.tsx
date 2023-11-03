@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { createUseStyles } from 'react-jss';
 import { theme, Theme } from '../../../libs/theme';
 import { Button } from '../../../libs/core';
@@ -221,13 +227,9 @@ export const WorkCard = ({
   const { mutateAsync: verificationWorkingCard } =
     useVerificationWorkingCard(workingCardId);
 
-  const synth = window.speechSynthesis;
-
-  const synthLang = useMemo(
-    () => (synth ? synth.getVoices().map((voice) => voice.lang) : []),
-    [synth],
-  );
   const lang = useMemo(() => {
+    const synth = window.speechSynthesis;
+    const synthLang = synth ? synth.getVoices().map((voice) => voice.lang) : [];
     const lng2 = lng.replace('-', '_');
     if (synthLang.includes(lng)) {
       return lng;
@@ -240,7 +242,7 @@ export const WorkCard = ({
       return lng3;
     }
     return null;
-  }, [lng, synthLang]);
+  }, [lng]);
 
   const content: CutSentence[] = useMemo(() => {
     const cutSentence = fieldTranslation?.sentence?.split('//');
@@ -274,15 +276,15 @@ export const WorkCard = ({
     }, 550);
   }, [isRender]);
 
-  const beforeCheck = () => {
+  const beforeCheck = useCallback(() => {
     if (disabled) {
       return;
     }
     focusInput2();
     setDisabled(true);
-  };
+  }, [disabled]);
 
-  const afterCheck = async () => {
+  const afterCheck = useCallback(() => {
     if (!lang) {
       setTimeout(
         () => {
@@ -301,7 +303,7 @@ export const WorkCard = ({
       );
       utterance.lang = lang;
       setTimeout(() => {
-        synth.speak(utterance);
+        window.speechSynthesis.speak(utterance);
       }, 300);
       utterance.onend = () => {
         setDisappear(true);
@@ -312,31 +314,31 @@ export const WorkCard = ({
         }, 500);
       };
     }
-  };
+  }, [lang, fieldTranslation, onFinish]);
 
-  const onVerification = async (
-    values: Values,
-    { resetForm }: FormikHelpers<Values>,
-  ) => {
-    beforeCheck();
-    let answerWorkingCard = await verificationWorkingCard({
-      answer: values.answer,
-    });
-    const lastHistory =
-      answerWorkingCard.history[answerWorkingCard.history.length - 1];
-    if (lastHistory === WorkingCardHistoryEnums.MISS_ANSWER) {
-      setMiss(true);
-    }
-    setReveal(true);
-    await afterCheck();
-    resetForm();
-  };
+  const onVerification = useCallback(
+    async (values: Values, { resetForm }: FormikHelpers<Values>) => {
+      beforeCheck();
+      let answerWorkingCard = await verificationWorkingCard({
+        answer: values.answer,
+      });
+      const lastHistory =
+        answerWorkingCard.history[answerWorkingCard.history.length - 1];
+      if (lastHistory === WorkingCardHistoryEnums.MISS_ANSWER) {
+        setMiss(true);
+      }
+      setReveal(true);
+      afterCheck();
+      resetForm();
+    },
+    [afterCheck, beforeCheck, verificationWorkingCard],
+  );
 
   const onValidate = async () => {
     beforeCheck();
     await validateWorkingCard();
     setReveal(true);
-    await afterCheck();
+    afterCheck();
   };
 
   const focusInput = () => {
