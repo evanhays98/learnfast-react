@@ -1,19 +1,9 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export const useScrollToEnd = () => {
   const [isAtEnd, setIsAtEnd] = useState<boolean>(false);
 
-  const container = useMemo(() => {
-    return document.getElementById('main-container');
-  }, []);
-
-  const handleScroll = useCallback(() => {
-    console.log(
-      'container',
-      container?.offsetHeight,
-      container?.scrollTop,
-      container?.scrollHeight,
-    );
+  const handleScroll = useCallback((container: HTMLElement | null) => {
     if (
       container?.offsetHeight &&
       container?.scrollTop &&
@@ -22,18 +12,22 @@ export const useScrollToEnd = () => {
         container.scrollHeight - 10
     ) {
       setIsAtEnd(true);
+    } else {
+      setIsAtEnd(false);
     }
-  }, [container]);
+  }, []);
 
   useEffect(() => {
+    const container = document.getElementById('main-container');
     if (!container) {
       return;
     }
-    window.addEventListener('scroll', handleScroll);
+    const boundHandleScroll = () => handleScroll(container);
+    container.addEventListener('scroll', boundHandleScroll);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      container.removeEventListener('scroll', boundHandleScroll);
     };
-  }, [container, handleScroll]);
+  }, [handleScroll]);
 
   return isAtEnd;
 };

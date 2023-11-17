@@ -38,6 +38,13 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   columnValue: {
     ...theme.fonts.caption,
   },
+  tableContainer: {
+    width: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center',
+    gap: theme.marginBase * 3,
+  },
 }));
 
 interface Props<T> {
@@ -85,7 +92,7 @@ export const SimpleTable = <T extends { [key: string]: any }>({
     <div className={classes.container}>
       {pages.pages.map((page) => {
         return (
-          <>
+          <div key={page.meta.currentPage} className={classes.tableContainer}>
             {page.data.map((data) => {
               return (
                 <div
@@ -105,7 +112,7 @@ export const SimpleTable = <T extends { [key: string]: any }>({
                 </div>
               );
             })}
-          </>
+          </div>
         );
       })}
     </div>

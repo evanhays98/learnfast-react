@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { createUseStyles } from 'react-jss';
 import { Theme, theme } from 'src/libs/theme';
-import { FilterHeader, SimpleTable } from '../../../libs/core';
+import { FilterHeader, SimpleTable, useScrollToEnd } from '../../../libs/core';
 import { lastUsageConfig, usePaginatedConfig } from '../../../libs/config';
 import { PaginatedQueryParams } from '../../../libs/dtos';
 import { useLastUsageUser } from '../../../libs/api';
@@ -12,8 +12,11 @@ export const LastUsageByUser = () => {
   const classes = useStyles({ theme });
 
   const { filterAndSortConfig } = usePaginatedConfig(lastUsageConfig);
+
+  const isAtEnd = useScrollToEnd();
+
   const [paginateQuery, setPaginateQuery] = useState<PaginatedQueryParams>({
-    limit: 50,
+    limit: 4,
     search: '',
     sortBy: [],
   });
@@ -22,6 +25,14 @@ export const LastUsageByUser = () => {
     fetchNextPage,
     hasNextPage,
   } = useLastUsageUser(paginateQuery);
+
+  useEffect(() => {
+    (async () => {
+      if (isAtEnd && hasNextPage) {
+        await fetchNextPage();
+      }
+    })();
+  }, [fetchNextPage, hasNextPage, isAtEnd]);
 
   return (
     <>

@@ -252,6 +252,7 @@ export const FilterHeader = ({
               <div ref={refContainer} className={classes.container}>
                 {columnsNames.map(({ name, value }, index) => (
                   <div
+                    key={value}
                     className={classnames(classes.columnContainer, {
                       [classes.deActiveFilter]:
                         filterIndex !== null && Number(filterIndex) !== index,

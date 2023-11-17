@@ -56,7 +56,7 @@ export const useWorkingCard = (id?: string) => {
 export const useLastUsageUser = (pageParamSelect: PaginatedQueryParams) => {
   return useCustomInfiniteQuery<LastUsageUser>(
     ['working-cards', 'last-usage-user'],
-    '/working-cards/last-usage-user/',
+    '/working-cards/last-usage-user',
     pageParamSelect,
   );
 };
