@@ -3,17 +3,13 @@ import {
   Card,
   computePaginationParams,
   CreateCard,
+  PaginatedParams,
   PaginatedQueryParams,
   PaginatedResults,
   UpdateCard,
 } from '../dtos';
 import { AxiosError } from 'axios';
 import { queryCreate, queryDelete, queryGet } from './fetch';
-
-interface PaginatedParams {
-  queryParams: PaginatedQueryParams;
-  nextPageUrl: string;
-}
 
 export const useCreateCard = () => {
   const queryClient = useQueryClient();

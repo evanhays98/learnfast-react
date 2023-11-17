@@ -1,4 +1,4 @@
-import { Card } from '../dtos';
+import { Card, LastUsageUser } from '../dtos';
 
 interface Config {
   sortable: boolean;
@@ -52,6 +52,19 @@ export const cardConfig: ColumnConfig<Card> = {
   },
 };
 
+export const lastUsageConfig: ColumnConfig<LastUsageUser> = {
+  pseudo: {
+    sortable: true,
+    filterable: true,
+    name: 'Pseudo',
+  },
+  lastUsage: {
+    sortable: true,
+    filterable: true,
+    name: 'Last Usage',
+  },
+};
+
 export const getFilterAndSortConfig = <T>(
   config: ColumnConfig<T>,
   defaultValue = '',
@@ -84,9 +97,9 @@ export const getFilterAndSortConfig = <T>(
   return result;
 };
 
-export const useCardConfig = () => {
+export const usePaginatedConfig = (config: ColumnConfig<any>) => {
   return {
-    cardConfig,
-    cardFilterAndSortConfig: getFilterAndSortConfig(cardConfig),
+    config,
+    filterAndSortConfig: getFilterAndSortConfig(config),
   };
 };

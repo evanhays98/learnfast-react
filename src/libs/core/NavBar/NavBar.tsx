@@ -1,9 +1,9 @@
 import React from 'react';
 import { createUseStyles } from 'react-jss';
-import { theme, Theme } from '../../theme/Theme';
+import { theme, Theme } from '../../theme';
 import { NavBarLink } from './NavBarLink';
 import { Icon } from '../Icons';
-import { useLastChapterWorked } from '../../api';
+import { useIsAdmin, useLastChapterWorked } from '../../api';
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   page: {
@@ -42,6 +42,7 @@ interface Props {
 export const NavBar = ({ children }: Props) => {
   const classes = useStyles({ theme });
   const { data: lastChapter } = useLastChapterWorked();
+  const isAdmin = useIsAdmin();
   return (
     <div className={classes.page}>
       <div className={classes.pageContainer} id="main-container">
@@ -53,6 +54,7 @@ export const NavBar = ({ children }: Props) => {
           <NavBarLink icon={Icon.work} to={`/work/${lastChapter.id}`} />
         )}
         <NavBarLink icon={Icon.profile} to="/profile" />
+        {isAdmin && <NavBarLink icon={Icon.admin} to="/admin" />}
       </div>
     </div>
   );

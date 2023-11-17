@@ -8,6 +8,7 @@ import { Content } from '../libs/core/Content';
 import { Profile } from './User/Profile';
 import { WorkContent } from '../libs/core';
 import { Chapter } from './Home/Chapter';
+import { Admin } from './Admin/admin';
 
 export const AppRouter = () => {
   return (
@@ -15,6 +16,7 @@ export const AppRouter = () => {
       <Route path="/*" element={<Content />}>
         <Route path="" element={<Home />} />
         <Route path="profile" element={<Profile />} />
+        <Route path="admin" element={<Admin />} />
         <Route path="chapter/:id" element={<Chapter />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>

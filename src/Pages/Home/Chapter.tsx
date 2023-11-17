@@ -9,7 +9,7 @@ import { Card, PaginatedQueryParams } from '../../libs/dtos';
 import { UpdateFieldTranslation } from './component/UpdateFieldTranslation';
 import { CardType } from '../../libs/enums';
 import { ModalCreateCard } from './component/ModalCreateCard';
-import { useCardConfig } from '../../libs/config';
+import { cardConfig, usePaginatedConfig } from '../../libs/config';
 import { ModalEditChapter } from './component/ModalEditChapter';
 
 const useStyles = createUseStyles<string, { atTop: boolean }, any>(
@@ -142,7 +142,7 @@ export const Chapter = () => {
   }, []);
   const [modalSideBar, setModalSideBar] = useState<boolean>(false);
 
-  const { cardFilterAndSortConfig } = useCardConfig();
+  const { filterAndSortConfig } = usePaginatedConfig(cardConfig);
 
   const cards =
     cardsPaginated?.pages.reduce((acc, page) => {
@@ -236,7 +236,7 @@ export const Chapter = () => {
           }}
         />
         <FilterHeader
-          columnsNames={cardFilterAndSortConfig}
+          columnsNames={filterAndSortConfig}
           paginateQuery={paginateQuery}
           onFilter={(values) => {
             setPaginateQuery(values);

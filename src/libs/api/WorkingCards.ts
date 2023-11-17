@@ -1,5 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from 'react-query';
-import { AnswerWorkingCard, WorkingCard } from '../dtos';
+import {
+  AnswerWorkingCard,
+  LastUsageUser,
+  PaginatedQueryParams,
+  useCustomInfiniteQuery,
+  WorkingCard,
+} from '../dtos';
 import { AxiosError } from 'axios';
 import { queryCreate, queryGet } from './fetch';
 
@@ -44,5 +50,13 @@ export const useWorkingCard = (id?: string) => {
     queryGet(`/working-cards/${id}`, {
       enabled: !!id && !!queryClient.getQueryData(['users', 'me']),
     }),
+  );
+};
+
+export const useLastUsageUser = (pageParamSelect: PaginatedQueryParams) => {
+  return useCustomInfiniteQuery<LastUsageUser>(
+    ['working-cards', 'last-usage-user'],
+    '/working-cards/last-usage-user/',
+    pageParamSelect,
   );
 };

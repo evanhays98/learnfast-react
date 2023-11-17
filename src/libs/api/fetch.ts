@@ -1,9 +1,10 @@
 import Axios, { AxiosRequestConfig } from 'axios';
 import qs from 'qs';
 
-export const API_URL = window.location.protocol === 'http:' ?
-  `http://${window.location.hostname}:3003` :
-  'https://clear-waistcoat-colt.cyclic.app';
+export const API_URL =
+  window.location.protocol === 'http:'
+    ? `http://${window.location.hostname}:3003`
+    : 'https://clear-waistcoat-colt.cyclic.app';
 export const fetchWithAuth = async <T = any>(
   options: AxiosRequestConfig,
 ): Promise<T> => {
@@ -57,32 +58,31 @@ export interface QueryUpdateOptions {
 
 export const queryUpdate =
   (path: string | ((data: any) => string), options?: QueryUpdateOptions) =>
-    (data: any) => {
-      const finalPath = typeof path === 'string' ? path : path(data);
+  (data: any) => {
+    const finalPath = typeof path === 'string' ? path : path(data);
 
-      return queryFetch({
-        url: `${API_URL}${finalPath}`,
-        params: options && options.params,
-        method: 'PATCH',
-        data,
-      });
-    };
+    return queryFetch({
+      url: `${API_URL}${finalPath}`,
+      params: options && options.params,
+      method: 'PATCH',
+      data,
+    });
+  };
 
 export const queryReplace =
   (path: string | ((data: any) => string), options?: QueryUpdateOptions) =>
-    (data: any) => {
-      const finalPath = typeof path === 'string' ? path : path(data);
+  (data: any) => {
+    const finalPath = typeof path === 'string' ? path : path(data);
 
-      return queryFetch({
-        url: `${API_URL}${finalPath}`,
-        params: options && options.params,
-        method: 'PUT',
-        data,
-      });
-    };
+    return queryFetch({
+      url: `${API_URL}${finalPath}`,
+      params: options && options.params,
+      method: 'PUT',
+      data,
+    });
+  };
 
-export interface QueryCreateOptions extends QueryUpdateOptions {
-}
+export interface QueryCreateOptions extends QueryUpdateOptions {}
 
 export const queryCreate =
   (path: string, options?: QueryCreateOptions) => (data?: any) =>
@@ -95,13 +95,13 @@ export const queryCreate =
 
 export const queryDelete =
   (path: string | ((data: any) => string), options?: QueryUpdateOptions) =>
-    (data: any) => {
-      const finalPath = typeof path === 'string' ? path : path(data);
+  (data: any) => {
+    const finalPath = typeof path === 'string' ? path : path(data);
 
-      return queryFetch({
-        url: `${API_URL}${finalPath}`,
-        params: options && options.params,
-        method: 'DELETE',
-        data,
-      });
-    };
+    return queryFetch({
+      url: `${API_URL}${finalPath}`,
+      params: options && options.params,
+      method: 'DELETE',
+      data,
+    });
+  };

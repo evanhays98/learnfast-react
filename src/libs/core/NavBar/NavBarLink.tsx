@@ -21,20 +21,24 @@ const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   },
 }));
 
-
 interface Props {
-  icon: Icon,
-  to: string,
+  icon: Icon;
+  to: string;
 }
-
 
 export const NavBarLink = ({ icon, to }: Props) => {
   const classes = useStyles({ theme });
   return (
-    <NavLink to={to} className={({ isActive }: any) => classnames(classes.container, { [classes.active]: isActive })}>
+    <NavLink
+      to={to}
+      className={({ isActive }: any) =>
+        classnames(classes.container, { [classes.active]: isActive })
+      }
+    >
       {icon === Icon.home && <Icons icon={Icon.home} />}
       {icon === Icon.work && <Icons icon={Icon.work} />}
       {icon === Icon.profile && <Icons icon={Icon.profile} />}
+      {icon === Icon.admin && <Icons icon={Icon.admin} />}
     </NavLink>
   );
 };

@@ -14,3 +14,5 @@ export * from './WorkContent';
 export * from './FilterHeader';
 export * from './FormikButton';
 export * from './Modal';
+export * from './SimpleTable';
+export * from './useScrollToEnd';

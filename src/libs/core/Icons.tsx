@@ -5,7 +5,12 @@ import {
   AiOutlineFolderAdd,
   AiOutlineHome,
 } from 'react-icons/ai';
-import { MdDelete, MdOutlineEdit, MdWorkOutline } from 'react-icons/md';
+import {
+  MdDelete,
+  MdOutlineAdminPanelSettings,
+  MdOutlineEdit,
+  MdWorkOutline,
+} from 'react-icons/md';
 import { RiUser3Line, RiUserFollowLine } from 'react-icons/ri';
 import { IoMdClose } from 'react-icons/io';
 import { Colors, ColorsTest, Theme, theme } from '../theme';
@@ -41,27 +46,28 @@ const useStyles = createUseStyles<string, { size: number; color: Colors }, any>(
 );
 
 export enum Icon {
-  home,
-  work,
-  profile,
-  close,
-  check,
-  pin,
-  edit,
-  addFolder,
-  search,
-  addCard,
-  toTop,
-  delete,
-  dotsVertical,
-  arrowLeft,
-  arrowRight,
-  sortAsc,
-  sortDesc,
-  filter,
-  follower,
-  card,
-  load,
+  home = 'home',
+  work = 'work',
+  profile = 'profile',
+  close = 'close',
+  check = 'check',
+  pin = 'pin',
+  edit = 'edit',
+  addFolder = 'addFolder',
+  search = 'search',
+  addCard = 'addCard',
+  toTop = 'toTop',
+  delete = 'delete',
+  dotsVertical = 'dotsVertical',
+  arrowLeft = 'arrowLeft',
+  arrowRight = 'arrowRight',
+  sortAsc = 'sortAsc',
+  sortDesc = 'sortDesc',
+  filter = 'filter',
+  follower = 'follower',
+  card = 'card',
+  load = 'load',
+  admin = 'admin',
 }
 
 interface Props {
@@ -140,6 +146,9 @@ export const Icons = ({ icon, size, color, className, style }: Props) => {
         <BsCardList className={classNames} style={style} />
       )}
       {icon === Icon.load && <TbReload className={classNames} style={style} />}
+      {icon === Icon.admin && (
+        <MdOutlineAdminPanelSettings className={classNames} style={style} />
+      )}
     </>
   );
 };

@@ -230,18 +230,11 @@ export const WorkCard = ({
   const lang = useMemo(() => {
     const synth = window.speechSynthesis;
     const synthLang = synth ? synth.getVoices().map((voice) => voice.lang) : [];
-    const lng2 = lng.replace('-', '_');
-    if (synthLang.includes(lng)) {
-      return lng;
-    }
-    if (synthLang.includes(lng2)) {
-      return lng2;
-    }
-    const lng3 = lng.replace('_', '-');
-    if (synthLang.includes(lng3)) {
-      return lng3;
-    }
-    return null;
+    const normalizedLng = lng.replace(/[-_]/g, '');
+    const matchedLang = synthLang.find(
+      (lang) => lang.replace(/[-_]/g, '') === normalizedLng,
+    );
+    return matchedLang || null;
   }, [lng]);
 
   const content: CutSentence[] = useMemo(() => {
@@ -285,7 +278,20 @@ export const WorkCard = ({
   }, [disabled]);
 
   const afterCheck = useCallback(() => {
-    if (!lang) {
+    const utterance = new SpeechSynthesisUtterance(
+      fieldTranslation?.sentence.split('//').join(''),
+    );
+    utterance.voice =
+      window.speechSynthesis.getVoices().find((voice) => voice.lang === lang) ||
+      null;
+    utterance.lang = lang || '';
+    if (
+      !lang ||
+      !window.speechSynthesis ||
+      !utterance ||
+      !utterance.lang ||
+      !utterance.voice
+    ) {
       setTimeout(
         () => {
           setDisappear(true);
@@ -298,9 +304,6 @@ export const WorkCard = ({
         (fieldTranslation?.sentence?.split(' ').length || 0) * 320 + 800,
       );
     } else {
-      const utterance = new SpeechSynthesisUtterance(
-        fieldTranslation?.sentence.split('//').join(''),
-      );
       utterance.lang = lang;
       setTimeout(() => {
         window.speechSynthesis.speak(utterance);
