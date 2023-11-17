@@ -1,16 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { createUseStyles } from 'react-jss';
-import { Theme, theme } from 'src/libs/theme';
 import { FilterHeader, SimpleTable, useScrollToEnd } from '../../../libs/core';
 import { lastUsageConfig, usePaginatedConfig } from '../../../libs/config';
 import { PaginatedQueryParams } from '../../../libs/dtos';
 import { useLastUsageUser } from '../../../libs/api';
 
-const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({}));
-
 export const LastUsageByUser = () => {
-  const classes = useStyles({ theme });
-
   const { filterAndSortConfig } = usePaginatedConfig(lastUsageConfig);
 
   const isAtEnd = useScrollToEnd();
