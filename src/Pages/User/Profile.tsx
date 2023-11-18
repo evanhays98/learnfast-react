@@ -9,6 +9,7 @@ import { AxiosError } from 'axios';
 import { FormikHelpers } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
+import memorixImage from '../../images/memorix.ico';
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   globalContainer: {
@@ -102,13 +103,12 @@ export const Profile = () => {
     } else {
       await Notification.requestPermission((permission) => {
         if (permission === 'granted') {
-          const notification = new Notification('Memorix', {
-            body: 'Long time no see ! Come back and learn with us !',
-            icon: 'memorix.png',
+          navigator.serviceWorker.ready.then((registration) => {
+            registration.showNotification('Memorix', {
+              body: 'Long time no see ! Come back and learn with us !',
+              icon: memorixImage,
+            });
           });
-          notification.onclick = () => {
-            navigate('/');
-          };
         }
       });
     }

@@ -7,7 +7,7 @@ import { useIsAdmin, useLastChapterWorked } from '../../api';
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
   page: {
-    height: '100%',
+    height: window.innerHeight,
     display: 'flex',
     flexDirection: 'column',
     position: 'relative',
