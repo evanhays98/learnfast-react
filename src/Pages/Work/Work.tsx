@@ -104,6 +104,8 @@ export const Work = () => {
   } = useWorkingCards(id);
   const [number, setNumber] = React.useState(0);
 
+  const speechSynthesis = window.speechSynthesis;
+
   useEffect(() => {
     setNumber(0);
   }, [workingCards]);
@@ -160,6 +162,10 @@ export const Work = () => {
     setNumber(number + 1);
   };
 
+  if (speechSynthesis && !speechSynthesis.getVoices()) {
+    return <CenteredLoader />;
+  }
+
   return (
     <div className={classes.globalContainer}>
       <div className={classes.titleContainer}>
@@ -183,6 +189,7 @@ export const Work = () => {
           lng={chapter.lng}
           onFinish={onFinish}
           removeStartAnimation={removeAnimation}
+          speechSynthesis={speechSynthesis}
         />
       </div>
     </div>

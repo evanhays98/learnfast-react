@@ -20,6 +20,7 @@ import { Form, Formik, FormikHelpers } from 'formik';
 
 interface Props {
   workingCardId?: string;
+  speechSynthesis?: SpeechSynthesis;
   onFinish: () => void;
   lng: string;
   removeStartAnimation?: boolean;
@@ -207,6 +208,7 @@ export const WorkCard = ({
   onFinish,
   lng,
   removeStartAnimation,
+  speechSynthesis,
 }: Props) => {
   const classes = useStyles({ theme, width: 450 });
 
@@ -219,6 +221,7 @@ export const WorkCard = ({
   const [disappear, setDisappear] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [isRender, setIsRender] = useState(false);
+  const [lang, setLang] = useState<string | null>(null);
 
   const { data: workingCard } = useWorkingCard(workingCardId);
   const { fieldTranslation } = workingCard?.card || {};
@@ -227,15 +230,22 @@ export const WorkCard = ({
   const { mutateAsync: verificationWorkingCard } =
     useVerificationWorkingCard(workingCardId);
 
-  const lang = useMemo(() => {
-    const synth = window.speechSynthesis;
-    const synthLang = synth ? synth.getVoices().map((voice) => voice.lang) : [];
-    const normalizedLng = lng.replace(/[-_]/g, '');
-    const matchedLang = synthLang.find(
-      (lang) => lang.replace(/[-_]/g, '') === normalizedLng,
-    );
-    return matchedLang || null;
-  }, [lng]);
+  useEffect(() => {
+    const setVoices = () => {
+      const synthLang = speechSynthesis?.getVoices().map((voice) => voice.lang);
+      const normalizedLng = lng.replace(/[-_]/g, '');
+      const matchedLang = synthLang?.find(
+        (lang) => lang.replace(/[-_]/g, '') === normalizedLng,
+      );
+      setLang(matchedLang || null);
+    };
+
+    if (typeof speechSynthesis !== 'undefined') {
+      if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = setVoices;
+      }
+    }
+  }, [lng, speechSynthesis]);
 
   const content: CutSentence[] = useMemo(() => {
     const cutSentence = fieldTranslation?.sentence?.split('//');
@@ -282,12 +292,11 @@ export const WorkCard = ({
       fieldTranslation?.sentence.split('//').join(''),
     );
     utterance.voice =
-      window.speechSynthesis.getVoices().find((voice) => voice.lang === lang) ||
-      null;
+      speechSynthesis?.getVoices().find((voice) => voice.lang === lang) || null;
     utterance.lang = lang || '';
     if (
       !lang ||
-      !window.speechSynthesis ||
+      !speechSynthesis ||
       !utterance ||
       !utterance.lang ||
       !utterance.voice
@@ -306,7 +315,7 @@ export const WorkCard = ({
     } else {
       utterance.lang = lang;
       setTimeout(() => {
-        window.speechSynthesis.speak(utterance);
+        speechSynthesis.speak(utterance);
       }, 300);
       utterance.onend = () => {
         setDisappear(true);
@@ -317,7 +326,7 @@ export const WorkCard = ({
         }, 500);
       };
     }
-  }, [lang, fieldTranslation, onFinish]);
+  }, [fieldTranslation?.sentence, speechSynthesis, lang, onFinish]);
 
   const onVerification = useCallback(
     async (values: Values, { resetForm }: FormikHelpers<Values>) => {
