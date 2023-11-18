@@ -1,13 +1,14 @@
 {
   "files": {
     "main.css": "/static/css/main.91458be2.css",
-    "main.js": "/static/js/main.018aee28.js",
+    "main.js": "/static/js/main.ef0cad78.js",
+    "static/media/memorix.ico": "/static/media/memorix.6ca60b610b213f36cc03.ico",
     "index.html": "/index.html",
     "main.91458be2.css.map": "/static/css/main.91458be2.css.map",
-    "main.018aee28.js.map": "/static/js/main.018aee28.js.map"
+    "main.ef0cad78.js.map": "/static/js/main.ef0cad78.js.map"
   },
   "entrypoints": [
     "static/css/main.91458be2.css",
-    "static/js/main.018aee28.js"
+    "static/js/main.ef0cad78.js"
   ]
 }

@@ -46,8 +46,8 @@ this.addEventListener('push', (event) => {
   const data = event.data.json();
   const options = {
     body: data.body,
-    icon: 'images/icons/icon-72x72.png',
-    badge: 'images/icons/icon-72x72.png',
+    icon: data.icon,
+    badge: data.badge,
   };
   event.waitUntil(this.registration.showNotification(data.title, options));
 });
