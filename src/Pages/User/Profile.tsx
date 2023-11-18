@@ -8,7 +8,6 @@ import { Button, Formix, FormixError, useToast } from '../../libs/core';
 import { AxiosError } from 'axios';
 import { FormikHelpers } from 'formik';
 import * as Yup from 'yup';
-import { useNavigate } from 'react-router-dom';
 import memorixImage from '../../images/memorix.ico';
 
 const useStyles = createUseStyles<string, {}, any>((theme: Theme) => ({
@@ -95,7 +94,6 @@ export const Profile = () => {
   const { mutate: logout } = useLogout();
   const { mutateAsync: updateProfile } = useUpdateUser();
   const toast = useToast();
-  const navigate = useNavigate();
 
   const notification = async () => {
     if (!('Notification' in window)) {
