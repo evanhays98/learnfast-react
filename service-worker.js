@@ -27,39 +27,15 @@ this.addEventListener('activate', (event) => {
 
   event.waitUntil(
     // Clean up old caches except for the current CACHE_NAME
-    caches
-      .keys()
-      .then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => {
-            if (!cacheWhitelist.includes(cacheName)) {
-              return caches.delete(cacheName);
-            }
-          }),
-        );
-      })
-      .then(() => {
-        // Start sending notifications at intervals when the service worker is activated
-        function createNotification() {
-          this.registration
-            .showNotification('Memorix', {
-              body: `Long time no see! Come back to Memorix! ${CACHE_NAME}`,
-              icon: '%PUBLIC_URL%/memorix.ico', // Replace with the actual image path
-            })
-            .then(() => {
-              console.log('Notification sent');
-            })
-            .catch((error) => {
-              console.error('Notification error:', error);
-            })
-            .finally(() => {
-              // Schedule the next notification after 2 minutes
-              setTimeout(createNotification, 2 * 60 * 1000);
-            });
-        }
-
-        createNotification();
-      }),
+    caches.keys().then((cacheNames) => {
+      return Promise.all(
+        cacheNames.map((cacheName) => {
+          if (!cacheWhitelist.includes(cacheName)) {
+            return caches.delete(cacheName);
+          }
+        }),
+      );
+    }),
   );
 });
 
