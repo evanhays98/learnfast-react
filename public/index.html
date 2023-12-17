@@ -36,6 +36,16 @@
               'ServiceWorker registration successful with scope: ',
               registration.scope,
             );
+            registration.pushManager.subscribe({
+              userVisibleOnly: true,
+              applicationServerKey: 'BNQxzSybxTYtHQgwRdFPn9EzJRJHxLwxO5_T1ZdvrDXtpDHXkKBNAIvrhcdXeRgoH7NlBX8LKjv9wFODppFZVsk',
+            })
+              .then(function(subscription) {
+                console.log('User is subscribed:', subscription);
+              })
+              .catch(function(err) {
+                console.log('Failed to subscribe the user: ', err);
+              });
           },
           function(err) {
             // registration failed :(
@@ -44,15 +54,6 @@
         );
       });
 
-      async function subscribe() {
-        const registration = await navigator.serviceWorker.ready;
-        const subscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: 'BNQxzSybxTYtHQgwRdFPn9EzJRJHxLwxO5_T1ZdvrDXtpDHXkKBNAIvrhcdXeRgoH7NlBX8LKjv9wFODppFZVsk',
-        });
-      }
-
-      subscribe();
     }
   </script>
   <title>Memorix</title>
