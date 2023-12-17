@@ -1,4 +1,4 @@
-const CACHE_NAME = 'version-2.3';
+const CACHE_NAME = 'version-2.4';
 const urlsToCache = ['index.html', 'offline.html'];
 
 this.addEventListener('install', (event) => {
@@ -40,22 +40,25 @@ this.addEventListener('activate', (event) => {
       })
       .then(() => {
         // Start sending notifications at intervals when the service worker is activated
-        setInterval(
-          () => {
-            this.registration
-              .showNotification('Memorix', {
-                body: `Long time no see! Come back to Memorix! ${CACHE_NAME}`,
-                icon: '%PUBLIC_URL%/memorix.ico', // Replace with the actual image path
-              })
-              .then(() => {
-                console.log('Notification sent');
-              })
-              .catch((error) => {
-                console.error('Notification error:', error);
-              });
-          },
-          2 * 60 * 1000,
-        ); // 2 minutes interval for notifications
+        function createNotification() {
+          this.registration
+            .showNotification('Memorix', {
+              body: `Long time no see! Come back to Memorix! ${CACHE_NAME}`,
+              icon: '%PUBLIC_URL%/memorix.ico', // Replace with the actual image path
+            })
+            .then(() => {
+              console.log('Notification sent');
+            })
+            .catch((error) => {
+              console.error('Notification error:', error);
+            })
+            .finally(() => {
+              // Schedule the next notification after 2 minutes
+              setTimeout(createNotification, 2 * 60 * 1000);
+            });
+        }
+
+        createNotification();
       }),
   );
 });
