@@ -1,4 +1,4 @@
-const CACHE_NAME = 'version-2';
+const CACHE_NAME = 'version-2.1';
 const urlsToCache = ['index.html', 'offline.html'];
 
 this.addEventListener('install', (event) => {
