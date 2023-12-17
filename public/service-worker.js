@@ -11,6 +11,19 @@ this.addEventListener('install', (event) => {
       body: 'Welcome back to Memorix!',
       icon: '%PUBLIC_URL%/memorix.ico', // Replace with the actual image path
     }),
+    setInterval(
+      () => {
+        this.registration
+          .showNotification('Memorix', {
+            body: 'Welcome back to Memorix!',
+            icon: '%PUBLIC_URL%/memorix.ico', // Replace with the actual image path
+          })
+          .then((notification) => {
+            console.log('Notification sent');
+          });
+      },
+      2 * 60 * 1000,
+    ),
   );
 });
 
