@@ -1,4 +1,4 @@
-const CACHE_NAME = 'version-2.1';
+const CACHE_NAME = 'version-2.3';
 const urlsToCache = ['index.html', 'offline.html'];
 
 this.addEventListener('install', (event) => {
@@ -8,22 +8,9 @@ this.addEventListener('install', (event) => {
       return cache.addAll(urlsToCache);
     }),
     this.registration.showNotification('Memorix', {
-      body: 'Welcome back to Memorix!',
+      body: `Welcome back to Memorix! ${CACHE_NAME}`,
       icon: '%PUBLIC_URL%/memorix.ico', // Replace with the actual image path
     }),
-    setInterval(
-      () => {
-        this.registration
-          .showNotification('Memorix', {
-            body: 'Welcome back to Memorix!',
-            icon: '%PUBLIC_URL%/memorix.ico', // Replace with the actual image path
-          })
-          .then((notification) => {
-            console.log('Notification sent');
-          });
-      },
-      2 * 60 * 1000,
-    ),
   );
 });
 
@@ -35,20 +22,41 @@ this.addEventListener('fetch', (event) => {
   );
 });
 
-this.addEventListener('activate', (event) => {
-  const cacheWhitelist = [];
-  cacheWhitelist.push(CACHE_NAME);
+self.addEventListener('activate', (event) => {
+  const cacheWhitelist = [CACHE_NAME];
 
   event.waitUntil(
-    caches.keys().then((cacheNames) =>
-      Promise.all(
-        cacheNames.map((cacheName) => {
-          if (!cacheWhitelist.includes(cacheName)) {
-            return caches.delete(cacheName);
-          }
-        }),
-      ),
-    ),
+    // Clean up old caches except for the current CACHE_NAME
+    caches
+      .keys()
+      .then((cacheNames) => {
+        return Promise.all(
+          cacheNames.map((cacheName) => {
+            if (!cacheWhitelist.includes(cacheName)) {
+              return caches.delete(cacheName);
+            }
+          }),
+        );
+      })
+      .then(() => {
+        // Start sending notifications at intervals when the service worker is activated
+        setInterval(
+          () => {
+            this.registration
+              .showNotification('Memorix', {
+                body: `Long time no see! Come back to Memorix! ${CACHE_NAME}`,
+                icon: '%PUBLIC_URL%/memorix.ico', // Replace with the actual image path
+              })
+              .then(() => {
+                console.log('Notification sent');
+              })
+              .catch((error) => {
+                console.error('Notification error:', error);
+              });
+          },
+          2 * 60 * 1000,
+        ); // 2 minutes interval for notifications
+      }),
   );
 });
 
