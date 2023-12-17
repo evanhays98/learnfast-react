@@ -54,7 +54,10 @@
           userVisibleOnly: true,
           applicationServerKey: 'BNQxzSybxTYtHQgwRdFPn9EzJRJHxLwxO5_T1ZdvrDXtpDHXkKBNAIvrhcdXeRgoH7NlBX8LKjv9wFODppFZVsk',
         });
-        console.log('subscription', subscription);
+        console.log('endpoint', subscription.endpoint);
+        // ArrayBuffer to string
+        console.log('p256dh', btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('p256dh')))));
+        console.log('auth', btoa(String.fromCharCode.apply(null, new Uint8Array(subscription.getKey('auth')))));
       }
 
     }
