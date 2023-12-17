@@ -25,6 +25,7 @@
     work correctly both with client-side routing and a non-root public URL.
     Learn how to configure a non-root public URL by running `npm run build`.
   -->
+
   <script>
     if ('serviceWorker' in navigator) {
       console.log('serviceWorker in navigator');
@@ -36,16 +37,7 @@
               'ServiceWorker registration successful with scope: ',
               registration.scope,
             );
-            registration.pushManager.subscribe({
-              userVisibleOnly: true,
-              applicationServerKey: 'BNQxzSybxTYtHQgwRdFPn9EzJRJHxLwxO5_T1ZdvrDXtpDHXkKBNAIvrhcdXeRgoH7NlBX8LKjv9wFODppFZVsk',
-            })
-              .then(function(subscription) {
-                console.log('User is subscribed:', subscription);
-              })
-              .catch(function(err) {
-                console.log('Failed to subscribe the user: ', err);
-              });
+            subscribe();
           },
           function(err) {
             // registration failed :(
@@ -54,13 +46,25 @@
         );
       });
 
+      async function subscribe() {
+        console.log('subscribe');
+        const registration = await navigator.serviceWorker.ready;
+        console.log('registration', registration);
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: 'BNQxzSybxTYtHQgwRdFPn9EzJRJHxLwxO5_T1ZdvrDXtpDHXkKBNAIvrhcdXeRgoH7NlBX8LKjv9wFODppFZVsk',
+        });
+        console.log('subscription', subscription);
+      }
+
     }
   </script>
   <title>Memorix</title>
 </head>
 <body>
 <noscript>You need to enable JavaScript to run this app.</noscript>
-<div id='root'></div>
+<div id='root'>
+</div>
 <!--
   This HTML file is a template.
   If you open it directly in the browser, you will see an empty page.
